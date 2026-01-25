@@ -1,0 +1,238 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Premium Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #4f46e5, #818cf8);
+    border-radius: 5px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #6366f1, #a5b4fc);
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Specific Sidebar Scrollbar for Acknowledge Log */
+.custom-sidebar-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #6366f1 rgba(255, 255, 255, 0.05);
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    display: block !important;
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    margin: 4px;
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #6366f1, #a855f7);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #818cf8, #c084fc);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+body {
+    background-color: #0B0C15;
+    color: white;
+}
+
+@layer utilities {
+    .animate-pulse-slow {
+        animation: pulse-slow 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse-slow {
+
+        0%,
+        100% {
+            opacity: 0.2;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.3;
+            transform: scale(1.05);
+        }
+    }
+
+    .animate-blob-pulse {
+        animation: blob-bounce 3s infinite ease-in-out alternate;
+    }
+
+    @keyframes blob-bounce {
+        0% {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            transform: scale(1);
+        }
+
+        50% {
+            border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+            transform: scale(1.05);
+        }
+
+        100% {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            transform: scale(1);
+        }
+    }
+
+    .animate-blob-wild {
+        animation: blob-wild 0.6s infinite ease-in-out alternate;
+    }
+
+    @keyframes blob-wild {
+        0% {
+            border-radius: 70% 30% 30% 70% / 60% 40% 70% 40%;
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        100% {
+            border-radius: 30% 70% 70% 30% / 40% 60% 30% 70%;
+            transform: scale(1.15) rotate(5deg);
+        }
+    }
+
+    @keyframes fall {
+        0% {
+            transform: translateY(-10vh) rotate(0deg);
+            opacity: 1;
+        }
+
+        90% {
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(110vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    .animate-fall {
+        animation: fall linear forwards;
+    }
+
+    .animate-disco {
+        animation: disco 2s linear infinite;
+    }
+
+    @keyframes disco {
+        0% {
+            background-color: rgba(255, 0, 0, 0.2);
+        }
+
+        14% {
+            background-color: rgba(255, 127, 0, 0.2);
+        }
+
+        28% {
+            background-color: rgba(255, 255, 0, 0.2);
+        }
+
+        42% {
+            background-color: rgba(0, 255, 0, 0.2);
+        }
+
+        57% {
+            background-color: rgba(0, 0, 255, 0.2);
+        }
+
+        71% {
+            background-color: rgba(75, 0, 130, 0.2);
+        }
+
+        85% {
+            background-color: rgba(148, 0, 211, 0.2);
+        }
+
+        100% {
+            background-color: rgba(255, 0, 0, 0.2);
+        }
+    }
+
+    .animate-spin-slow {
+        animation: spin-slow 20s linear infinite;
+    }
+
+    .animate-spin-reverse-slow {
+        animation: spin-slow 25s linear infinite reverse;
+    }
+
+    @keyframes spin-slow {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .animate-screen-shake {
+        animation: screen-shake 0.2s cubic-bezier(.36, .07, .19, .97) both;
+    }
+
+    @keyframes screen-shake {
+
+        0%,
+        100% {
+            transform: translate(0, 0);
+        }
+
+        10%,
+        90% {
+            transform: translate(-1px, -1px);
+        }
+
+        20%,
+        80% {
+            transform: translate(2px, 0px);
+        }
+
+        30%,
+        50%,
+        70% {
+            transform: translate(-2px, 1px);
+        }
+
+        40%,
+        60% {
+            transform: translate(2px, -1px);
+        }
+    }
+}
+
+/* Global Reduced Motion Override */
+.reduce-motion * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+}
