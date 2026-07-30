@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/update-lottery", "schedule": "30 13 * * *" }
+  ]
+}
