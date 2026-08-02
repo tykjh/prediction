@@ -13,7 +13,11 @@ export default async function handler(req, res) {
   }
 
   const dryRun = req.query.dryRun === 'true';
-  const month = currentYyyyMm();
+  const monthOverride = req.query.month;
+  if (monthOverride && !/^\d{4}-\d{2}$/.test(monthOverride)) {
+    return res.status(400).json({ error: 'month must be in YYYY-MM format' });
+  }
+  const month = monthOverride || currentYyyyMm();
   const summary = {};
 
   for (const gameKey of Object.keys(GAME_ENDPOINTS)) {
