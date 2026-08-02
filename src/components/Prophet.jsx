@@ -110,7 +110,7 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
         // Dynamic Max
         const MAX = activeGameConfig?.settings?.maxNumber || 49;
 
-        for (let pos = 0; pos < 6; pos++) {
+        for (let pos = 0; pos < PICK; pos++) {
             // Gather Y values (numbers at this position)
             const y = dataset.map(d => d.numbers[pos]);
             const x = y.map((_, i) => i);
@@ -136,8 +136,8 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
         // Ensure unique
         const unique = Array.from(new Set(result)).sort((a, b) => a - b);
-        // Fill if unique < 6 (rare)
-        while (unique.length < 6) {
+        // Fill if unique < PICK (rare)
+        while (unique.length < PICK) {
             let r = getSecureRandomNumber(1, MAX);
             if (!unique.includes(r)) unique.push(r);
         }
@@ -163,7 +163,7 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
         const consensus = Object.entries(counts)
             .sort((a, b) => b[1] - a[1])
-            .slice(0, 6)
+            .slice(0, PICK)
             .map(x => parseInt(x[0]))
             .sort((a, b) => a - b);
 

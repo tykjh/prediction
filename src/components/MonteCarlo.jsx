@@ -77,14 +77,14 @@ const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
             if (currentSim < totalSims) {
                 requestAnimationFrame(processBatch);
             } else {
-                finishSimulation(simcounts);
+                finishSimulation(simcounts, PICK);
             }
         };
 
         requestAnimationFrame(processBatch);
     };
 
-    const finishSimulation = (counts) => {
+    const finishSimulation = (counts, pick) => {
         setIsRunning(false);
 
         // Sort by frequency
@@ -92,7 +92,7 @@ const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
             .map(([num, count]) => ({ num: parseInt(num), count }))
             .sort((a, b) => b.count - a.count);
 
-        const top6 = sorted.slice(0, 6).map(x => x.num).sort((a, b) => a - b);
+        const top6 = sorted.slice(0, pick).map(x => x.num).sort((a, b) => a - b);
         setResults({ top6, distribution: sorted });
     };
 

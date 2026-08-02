@@ -23,14 +23,14 @@ export default async function handler(req, res) {
   for (const gameKey of Object.keys(GAME_ENDPOINTS)) {
     const { historyFile } = GAME_ENDPOINTS[gameKey];
     try {
-      const fetched = await fetchGameMonth(gameKey, month);
+      const { records: fetched, skipped } = await fetchGameMonth(gameKey, month);
       const { content: existing, sha } = await getFile(historyFile);
 
       const existingPeriods = new Set(existing.map((r) => r.period));
       const newRecords = fetched.filter((r) => !existingPeriods.has(r.period));
 
       if (newRecords.length === 0) {
-        summary[gameKey] = { added: 0 };
+        summary[gameKey] = { added: 0, skipped };
         continue;
       }
 
@@ -44,6 +44,7 @@ export default async function handler(req, res) {
       summary[gameKey] = {
         added: newRecords.length,
         periods: newRecords.map((r) => r.period),
+        skipped,
         dryRun,
       };
 
