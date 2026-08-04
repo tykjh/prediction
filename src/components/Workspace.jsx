@@ -7,6 +7,7 @@ import AdvancedStatsHub from './analytics/AdvancedStatsHub';
 import { calculatePrediction, calculateHybridPrediction } from '../utils/prediction';
 import { trainAndPredict } from '../utils/lstmModel';
 import initialHistory from '../data/history.json';
+import { useLanguage } from '../i18n/LanguageContext';
 
 // Reusable Section Component (Moved from App.jsx)
 const CollapsibleSection = ({ title, children, defaultOpen = true, icon = "📊", playSound }) => {
@@ -47,6 +48,7 @@ const CollapsibleSection = ({ title, children, defaultOpen = true, icon = "📊"
 };
 
 const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSound, isLightMode, reducedMotion, activeGameConfig }) => {
+    const { t } = useLanguage();
     // Local state for Prediction Engine
     const [prediction, setPrediction] = useState({
         standard: [],
@@ -209,8 +211,8 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
             {/* Workspace Header */}
             {/* Workspace Header */}
             <MagicHeader
-                title="Operations Workspace"
-                subtitle={<>Manage historical data, train neural networks, <br />and generate standard predictions.</>}
+                title={t('workspace.headerTitle')}
+                subtitle={<>{t('workspace.headerSubtitleLine1')} <br />{t('workspace.headerSubtitleLine2')}</>}
                 icon="💠"
                 themeIndex={bgTheme}
                 isLightMode={isLightMode}
@@ -218,7 +220,7 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
             />
 
             {/* --- 1. Prediction Engine (Collapsible) --- */}
-            <CollapsibleSection title="Prediction Engine" icon="✨" defaultOpen={true}>
+            <CollapsibleSection title={t('workspace.sectionPredictionEngine')} icon="✨" defaultOpen={true}>
                 <div className="relative">
                     {/* Global Settings for Engine */}
                     <div className="flex flex-wrap justify-end items-center gap-4 mb-6 border-b border-slate-800/50 light:border-slate-200 pb-4">
@@ -229,20 +231,20 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
                                 onChange={(e) => setPredictIncludeSpecial(e.target.checked)}
                                 className="w-4 h-4 text-purple-500 rounded focus:ring-purple-600 bg-slate-700 light:bg-white border-gray-600 light:border-slate-300"
                             />
-                            <span className="text-xs font-bold text-slate-300 light:text-slate-700">Include Special No. (Trend Only)</span>
+                            <span className="text-xs font-bold text-slate-300 light:text-slate-700">{t('workspace.includeSpecialNo')}</span>
                         </label>
 
 
                         <div className="flex items-center gap-2 bg-slate-800 light:bg-slate-100 px-4 py-2 rounded-full border border-slate-700 light:border-slate-200 hover:border-slate-500 transition-colors">
-                            <span className="text-xs font-bold text-slate-400 light:text-slate-600">Analysis Range:</span>
+                            <span className="text-xs font-bold text-slate-400 light:text-slate-600">{t('workspace.analysisRange')}</span>
                             <select
                                 value={predictionRange}
                                 onChange={(e) => setPredictionRange(e.target.value)}
                                 className="bg-transparent text-sm font-black text-white light:text-slate-800 focus:outline-none cursor-pointer"
                             >
-                                <option className="bg-slate-900 light:bg-white text-slate-300 light:text-slate-900 font-bold" value="ALL">All History ({historyData.length})</option>
+                                <option className="bg-slate-900 light:bg-white text-slate-300 light:text-slate-900 font-bold" value="ALL">{t('workspace.allHistory', { n: historyData.length })}</option>
                                 {rangeOptions.map(opt => (
-                                    <option className="bg-slate-900 light:bg-white text-slate-300 light:text-slate-900 font-bold" key={opt} value={opt}>Recent {opt} Draws</option>
+                                    <option className="bg-slate-900 light:bg-white text-slate-300 light:text-slate-900 font-bold" key={opt} value={opt}>{t('workspace.recentDraws', { n: opt })}</option>
                                 ))}
                             </select>
                         </div>
@@ -253,8 +255,8 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
 
                         {/* 1. Standard */}
                         <PredictionRow
-                            title="Standard Prediction"
-                            subtitle="Based on All-Time High Frequency"
+                            title={t('workspace.standardTitle')}
+                            subtitle={t('workspace.standardSubtitle')}
                             onGenerate={generateStandard}
                             isLoading={loadingStates.standard}
                             numbers={prediction.standard}
@@ -266,8 +268,8 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
 
                         {/* 2. Weighted */}
                         <PredictionRow
-                            title="Weighted Prediction"
-                            subtitle="High Recency Weight (Recent Trends)"
+                            title={t('workspace.weightedTitle')}
+                            subtitle={t('workspace.weightedSubtitle')}
                             onGenerate={generateWeighted}
                             isLoading={loadingStates.weighted}
                             numbers={prediction.weighted}
@@ -279,8 +281,8 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
 
                         {/* 3. Hybrid */}
                         <PredictionRow
-                            title="Contextual AI (Hybrid)"
-                            subtitle="Two-Stage Random Selection (Group -> Number)"
+                            title={t('workspace.hybridTitle')}
+                            subtitle={t('workspace.hybridSubtitle')}
                             onGenerate={generateHybrid}
                             isLoading={loadingStates.hybrid}
                             numbers={prediction.hybrid.numbers}
@@ -295,8 +297,8 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
 
                         {/* 4. AI Weighted */}
                         <PredictionRow
-                            title="AI Deep Learning (Weighted)"
-                            subtitle="LSTM Model trained with Recency Bias"
+                            title={t('workspace.aiWeightedTitle')}
+                            subtitle={t('workspace.aiWeightedSubtitle')}
                             onGenerate={generateAIWeighted}
                             isLoading={loadingStates.lstm}
                             numbers={prediction.lstm}
@@ -310,8 +312,8 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
 
                         {/* 5. AI Unweighted */}
                         <PredictionRow
-                            title="AI Deep Learning (Unweighted)"
-                            subtitle="LSTM Model trained on Pure History"
+                            title={t('workspace.aiUnweightedTitle')}
+                            subtitle={t('workspace.aiUnweightedSubtitle')}
                             onGenerate={generateAIUnweighted}
                             isLoading={loadingStates.lstmUnweighted}
                             numbers={prediction.lstmUnweighted} // Raw array
@@ -334,12 +336,12 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
             </CollapsibleSection>
 
             {/* --- 2. Charts (Collapsible) --- */}
-            <CollapsibleSection title="Statistical Analysis" icon="📈" defaultOpen={true}>
+            <CollapsibleSection title={t('workspace.sectionStatisticalAnalysis')} icon="📈" defaultOpen={true}>
                 <AdvancedStatsHub historyData={historyData} isLightMode={isLightMode} activeGameConfig={activeGameConfig} />
             </CollapsibleSection>
 
             {/* --- 3. History (Collapsible) --- */}
-            <CollapsibleSection title="Historical Data" icon="📜" defaultOpen={true}>
+            <CollapsibleSection title={t('workspace.sectionHistoricalData')} icon="📜" defaultOpen={true}>
                 <HistoryList
                     historyData={historyData}
                     activeGameConfig={activeGameConfig}
@@ -354,7 +356,7 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
             </CollapsibleSection>
 
             {/* --- 4. Input (Collapsible) --- */}
-            <CollapsibleSection title="Data Management" icon="📝" defaultOpen={true}>
+            <CollapsibleSection title={t('workspace.sectionDataManagement')} icon="📝" defaultOpen={true}>
                 <InputSection
                     onAddEntry={onAddEntry}
                     existingPeriods={existingPeriods}
@@ -364,7 +366,7 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
             </CollapsibleSection>
 
             <footer className="text-center text-slate-600 text-xs py-8">
-                <p>Lottery Prediction System • {new Date().getFullYear()}</p>
+                <p>{t('workspace.footer', { year: new Date().getFullYear() })}</p>
             </footer>
 
         </div>

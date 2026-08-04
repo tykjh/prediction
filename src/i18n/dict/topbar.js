@@ -1,0 +1,28 @@
+export const topbar = {
+    en: {
+        workspace: 'Workspace',
+        labs: 'Labs',
+        quality: 'Quality',
+        playground: 'Go to Playground',
+        switchGame: 'Click to Switch Game',
+        darkMode: 'Switch to Dark Mode',
+        lightMode: 'Switch to Light Mode',
+        language: 'Switch Language',
+        superLotto: 'Super Lotto',
+        jinCai539: 'Jin Cai 539',
+        lotto649: 'Lotto 6/49',
+    },
+    zh: {
+        workspace: '工作區',
+        labs: '實驗室',
+        quality: '品質測試',
+        playground: '前往遊樂場',
+        switchGame: '點擊切換遊戲',
+        darkMode: '切換至深色模式',
+        lightMode: '切換至淺色模式',
+        language: '切換語言',
+        superLotto: '威力彩',
+        jinCai539: '今彩539',
+        lotto649: '大樂透',
+    },
+};

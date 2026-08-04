@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const FloatingMenu = ({ onToggleView, onQuickPick, onToggleTheme, onMoneyRain, onResetTheme, currentTheme = 0, playSound, isLightMode, activeGameLogo, onSwitchGame, onOpenSidebar }) => {
+    const { t } = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
     const pressTimer = useRef(null);
     const isLongPressHandled = useRef(false);
@@ -23,35 +25,35 @@ const FloatingMenu = ({ onToggleView, onQuickPick, onToggleTheme, onMoneyRain, o
     // Menu Items Configuration
     const menuItems = [
         // Operations
-        { icon: "⚡", label: "Flash Pick", action: onQuickPick, color: "bg-amber-500", delay: "delay-[75ms]" },
+        { icon: "⚡", label: t('floatingMenu.flashPick'), action: onQuickPick, color: "bg-amber-500", delay: "delay-[75ms]" },
         {
             icon: "🎨",
-            label: "Mood Shift (Long Press Reset)",
+            label: t('floatingMenu.moodShift'),
             action: onToggleTheme,
             longPressAction: onResetTheme,
             color: getNextThemeStyle(), // Dynamic Color
             delay: "delay-[100ms]"
         },
-        { icon: "💸", label: "Make it Rain", action: onMoneyRain, color: "bg-emerald-600", delay: "delay-[125ms]" },
+        { icon: "💸", label: t('floatingMenu.makeItRain'), action: onMoneyRain, color: "bg-emerald-600", delay: "delay-[125ms]" },
 
         // Game Switchers (Separator visual not needed, just color distinct)
         {
             icon: "🎱",
-            label: "Switch to Lotto 6/49",
+            label: t('floatingMenu.switchLotto649'),
             action: () => onSwitchGame && onSwitchGame('LOTTO649'),
             color: "bg-indigo-500",
             delay: "delay-[150ms]"
         },
         {
             icon: "💰",
-            label: "Switch to Super Lotto",
+            label: t('floatingMenu.switchSuperLotto'),
             action: () => onSwitchGame && onSwitchGame('SUPERLOTTO'),
             color: "bg-rose-500",
             delay: "delay-[175ms]"
         },
         {
             icon: "💵",
-            label: "Switch to Jin Cai 539",
+            label: t('floatingMenu.switchJinCai539'),
             action: () => onSwitchGame && onSwitchGame('539'),
             color: "bg-emerald-500",
             delay: "delay-[200ms]"

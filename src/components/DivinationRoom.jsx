@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import MagicHeader from './MagicHeader';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const TAROT_CARDS = [
     { name: "The Fool", meaning: "New beginnings, optimism, trust in life." },
@@ -33,7 +34,10 @@ import { SIXTY_JIAZI_POEMS } from '../data/sixty_jiazi_poems';
 import { PENGHU_POEMS } from '../data/penghu_poems';
 import { GUANYIN_POEMS } from '../data/guanyin_poems';
 
+const DIRECTIONS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+
 const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightMode }) => {
+    const { t } = useLanguage();
     const [poemSource, setPoemSource] = useState('leiyushi'); // 'leiyushi' | 'daily' | 'sixty' | 'penghu' | 'guanyin'
     const [poem, setPoem] = useState(null);
     const [candidates, setCandidates] = useState([]); // Stage 1 result
@@ -160,8 +164,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
 
     const spinCompass = () => {
         if (playSound) playSound('coin');
-        const dirs = ['North', 'North-East', 'East', 'South-East', 'South', 'South-West', 'West', 'North-West'];
-        const randomDir = dirs[Math.floor(Math.random() * dirs.length)];
+        const randomDir = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
         setDirection(randomDir);
     };
 
@@ -175,8 +178,8 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
         <div className={`mx-auto space-y-6 ${embedded ? 'p-0' : ''}`}>
             {!embedded && (
                 <MagicHeader
-                    title="Oracle Room"
-                    subtitle="Consult the mystic forces for daily guidance."
+                    title={t('divinationRoom.title')}
+                    subtitle={t('divinationRoom.subtitle')}
                     icon="🔮"
                     themeIndex={bgTheme}
                     isLightMode={isLightMode}
@@ -230,8 +233,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                     )}
 
                     <p className="text-sm text-slate-400 light:text-slate-500 mb-6">
-                        虔誠祈求，抽一支靈籤指引迷津。
-                        <br />(Sincerely pray and draw a lot for guidance)
+                        {t('divinationRoom.prayInstruction')}
                     </p>
 
                     {/* Stage 0: Initial State */}
@@ -245,7 +247,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                 onClick={drawCandidates}
                                 className="px-8 py-3 rounded-full bg-gradient-to-r from-red-700 to-red-900 light:from-red-500 light:to-red-600 hover:from-red-600 hover:to-red-800 light:hover:from-red-400 light:hover:to-red-500 text-amber-100 light:text-white font-bold transition-all active:scale-95 shadow-lg shadow-red-900/40 light:shadow-red-500/30 border border-red-500/20 light:border-red-400"
                             >
-                                抽籤 (Draw Lot)
+                                {t('divinationRoom.drawLotButton')}
                             </button>
                         </div>
                     )}
@@ -254,30 +256,30 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                     {isThinking && (
                         <div className="flex flex-col items-center justify-center animate-in fade-in duration-300 py-12">
                             <div className="text-6xl mb-4 animate-bounce">🎲</div>
-                            <p className="text-amber-200 light:text-slate-700 font-mono animate-pulse">Shaking the cylinder...</p>
+                            <p className="text-amber-200 light:text-slate-700 font-mono animate-pulse">{t('divinationRoom.shakingCylinder')}</p>
                         </div>
                     )}
 
                     {/* Stage 2: Selection (Bamboo Sticks) */}
                     {candidates.length > 0 && !poem && (
                         <div className="animate-in fade-in zoom-in duration-500 w-full mb-6">
-                            <h3 className="text-xl font-bold text-amber-100 light:text-slate-900 mb-6 animate-pulse">Pick a stick...</h3>
+                            <h3 className="text-xl font-bold text-amber-100 light:text-slate-900 mb-6 animate-pulse">{t('divinationRoom.pickAStick')}</h3>
                             <div className="flex justify-center gap-4 h-48 items-end">
                                 {candidates.map((cand, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => selectCandidate(cand)}
                                         className="group relative w-8 h-32 bg-amber-200 rounded-t-full hover:h-40 hover:-translate-y-2 transition-all duration-300 shadow-lg shadow-black/50 border border-amber-400 overflow-hidden"
-                                        title="Pick this fortune"
+                                        title={t('divinationRoom.pickThisFortuneTitle')}
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-b from-amber-100 to-amber-600 opacity-80"></div>
                                         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs font-bold text-amber-900 rotate-90 whitespace-nowrap opacity-50 text-[8px]">
-                                            FORTUNE
+                                            {t('divinationRoom.fortuneStickLabel')}
                                         </div>
                                     </button>
                                 ))}
                             </div>
-                            <p className="text-xs text-slate-400 mt-6">(True Random Selection)</p>
+                            <p className="text-xs text-slate-400 mt-6">{t('divinationRoom.trueRandomCaption')}</p>
                         </div>
                     )}
 
@@ -290,10 +292,10 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         if (poemSource === 'leiyushi') {
-                                            const saveText = `${poem.header.number}籤 ${poem.header.luck}\n${poem.poem}\n[聖意]\n${poem.shengYi.join('\n')}`;
+                                            const saveText = `第${poem.header.number}籤 ${poem.header.luck}\n${poem.poem}\n【聖意】\n${poem.shengYi.join('\n')}`;
                                             onSave(saveText, '雷雨師');
                                         } else if (poemSource === 'sixty') {
-                                            const saveText = `${poem.header.number} ${poem.header.stemBranch}\n${poem.poem}\n[Nature] ${poem.meta.nature} [Direction] ${poem.meta.direction}\n[Stories] ${poem.stories.join(', ')}`;
+                                            const saveText = `${poem.header.number} 【${poem.header.stemBranch}】\n${poem.poem}\n五行：${poem.meta.nature}　方位：${poem.meta.direction}\n【故事】${poem.stories.join('、')}`;
                                             onSave(saveText, '六十甲子籤');
                                         } else if (poemSource === 'penghu') {
                                             const predictionsText = Object.entries(poem.predictions).map(([k, v]) => `[${k}] ${v}`).join('\n');
@@ -308,7 +310,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                         }
                                     }}
                                     className="absolute top-4 left-4 w-10 h-10 rounded-full bg-black/20 light:bg-white hover:bg-white/20 light:hover:bg-slate-50 text-white/50 light:text-indigo-400 hover:text-white light:hover:text-indigo-600 flex items-center justify-center transition-all active:scale-95 border border-white/10 light:border-slate-200 hover:border-white/30 shadow-sm"
-                                    title="Save to Vault"
+                                    title={t('divinationRoom.saveToVaultTitle')}
                                 >
                                     💾
                                 </button>
@@ -329,7 +331,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
 
                                     {/* Primary Info: ShengYi */}
                                     <div className="text-slate-200 light:text-slate-700 text-base font-sans leading-relaxed whitespace-pre-line mb-6 bg-slate-900/40 light:bg-slate-100/50 p-6 rounded border border-white/5 light:border-slate-200 text-left">
-                                        <span className="text-amber-400 light:text-amber-700 font-bold text-lg block mb-3 border-b border-amber-400/20 light:border-amber-700/20 pb-2">【聖意 Holy Intent】</span>
+                                        <span className="text-amber-400 light:text-amber-700 font-bold text-lg block mb-3 border-b border-amber-400/20 light:border-amber-700/20 pb-2">【{t('divinationRoom.holyIntent')}】</span>
                                         <ul className="list-disc list-inside space-y-1 text-sm">
                                             {poem.shengYi.map((item, i) => (
                                                 <li key={i}>{item}</li>
@@ -342,7 +344,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                         onClick={() => setShowSecondary(!showSecondary)}
                                         className={`mb-4 text-xs underline underline-offset-4 ${isLightMode ? 'text-slate-500 hover:text-slate-800' : 'text-white/50 hover:text-white'}`}
                                     >
-                                        {showSecondary ? "Hide Details" : "Show Interpretation & Stories"}
+                                        {showSecondary ? t('divinationRoom.hideDetails') : t('divinationRoom.showInterpretationStories')}
                                     </button>
 
                                     {/* Secondary Info Content */}
@@ -351,7 +353,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                             {/* DongPoJie */}
                                             {poem.dongPoJie && poem.dongPoJie.length > 0 && (
                                                 <div className="text-slate-300 light:text-slate-700 text-sm font-sans leading-relaxed text-left bg-slate-900/40 light:bg-slate-100/50 p-4 rounded border border-white/5 light:border-slate-200">
-                                                    <span className="text-emerald-400 light:text-emerald-700 font-bold block mb-2">【東坡解 Dongpo's Interpretation】</span>
+                                                    <span className="text-emerald-400 light:text-emerald-700 font-bold block mb-2">【{t('divinationRoom.dongpoInterpretation')}】</span>
                                                     {poem.dongPoJie.map((line, i) => <p key={i} className="mb-1">{line}</p>)}
                                                 </div>
                                             )}
@@ -360,13 +362,13 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {poem.jieYue && (
                                                     <div className="text-slate-300 light:text-slate-700 text-xs font-sans leading-relaxed text-left bg-slate-900/40 light:bg-slate-100/50 p-4 rounded border border-white/5 light:border-slate-200">
-                                                        <span className="text-indigo-400 light:text-indigo-700 font-bold block mb-2">【解曰 Explanation】</span>
+                                                        <span className="text-indigo-400 light:text-indigo-700 font-bold block mb-2">【{t('divinationRoom.explanation')}】</span>
                                                         <p>{poem.jieYue}</p>
                                                     </div>
                                                 )}
                                                 {poem.shiYi && (
                                                     <div className="text-slate-300 light:text-slate-700 text-xs font-sans leading-relaxed text-left bg-slate-900/40 light:bg-slate-100/50 p-4 rounded border border-white/5 light:border-slate-200">
-                                                        <span className="text-indigo-400 light:text-indigo-700 font-bold block mb-2">【釋義 Meaning】</span>
+                                                        <span className="text-indigo-400 light:text-indigo-700 font-bold block mb-2">【{t('divinationRoom.meaning')}】</span>
                                                         <p>{poem.shiYi}</p>
                                                     </div>
                                                 )}
@@ -375,7 +377,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                             {/* Stories */}
                                             {poem.stories && poem.stories.length > 0 && (
                                                 <div className="text-slate-300 light:text-slate-700 text-sm font-sans leading-relaxed text-left bg-slate-900/40 light:bg-slate-100/50 p-4 rounded border border-white/5 light:border-slate-200">
-                                                    <span className="text-pink-400 light:text-pink-700 font-bold block mb-2">【故事 Stories】</span>
+                                                    <span className="text-pink-400 light:text-pink-700 font-bold block mb-2">【{t('divinationRoom.stories')}】</span>
                                                     {poem.stories.map((story, i) => (
                                                         <div key={i} className="mb-3 last:mb-0">
                                                             <p className="whitespace-pre-line">{story}</p>
@@ -399,13 +401,13 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
 
                                     {/* Meaning */}
                                     <div className="text-slate-200 light:text-slate-700 text-base font-sans leading-relaxed whitespace-pre-line mb-6 bg-slate-900/40 light:bg-slate-100/50 p-6 rounded border border-white/5 light:border-slate-200 text-left">
-                                        <span className="text-amber-400 light:text-amber-700 font-bold text-lg block mb-3 border-b border-amber-400/20 light:border-amber-700/20 pb-2">【釋義 Meaning】</span>
+                                        <span className="text-amber-400 light:text-amber-700 font-bold text-lg block mb-3 border-b border-amber-400/20 light:border-amber-700/20 pb-2">【{t('divinationRoom.meaning')}】</span>
                                         {poem.meaning}
                                     </div>
 
                                     {/* Predictions */}
                                     <div className="text-slate-300 light:text-slate-700 text-sm font-sans leading-relaxed whitespace-pre-line text-left bg-slate-900/40 light:bg-slate-100/50 p-6 rounded border border-white/5 light:border-slate-200">
-                                        <span className="text-emerald-400 light:text-emerald-700 font-bold text-lg block mb-3 border-b border-emerald-400/20 light:border-emerald-700/20 pb-2">【判定 Predictions】</span>
+                                        <span className="text-emerald-400 light:text-emerald-700 font-bold text-lg block mb-3 border-b border-emerald-400/20 light:border-emerald-700/20 pb-2">【{t('divinationRoom.judgement')}】</span>
                                         {poem.predictions}
                                     </div>
                                 </>
@@ -435,7 +437,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                         onClick={() => setShowSecondary(!showSecondary)}
                                         className={`mb-4 text-xs underline underline-offset-4 ${isLightMode ? 'text-slate-500 hover:text-slate-800' : 'text-white/50 hover:text-white'}`}
                                     >
-                                        {showSecondary ? "Hide Dictionary & Stories" : "Show Predictions (籤解) & Stories"}
+                                        {showSecondary ? t('divinationRoom.sixtyToggleHide') : t('divinationRoom.sixtyToggleShow')}
                                     </button>
 
                                     {/* Secondary Info Content */}
@@ -443,7 +445,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                         <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
                                             {/* Predictions */}
                                             <div className="text-slate-300 light:text-slate-700 text-sm font-sans leading-relaxed text-left bg-indigo-900/40 light:bg-indigo-50 p-4 rounded border border-white/5 light:border-indigo-200">
-                                                <span className="text-indigo-300 light:text-indigo-700 font-bold block mb-2 border-b border-white/10 light:border-indigo-200 pb-1">【籤解 Predictions】</span>
+                                                <span className="text-indigo-300 light:text-indigo-700 font-bold block mb-2 border-b border-white/10 light:border-indigo-200 pb-1">【{t('divinationRoom.predictionsHint')}】</span>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
                                                     {Object.entries(poem.predictions).map(([key, val], i) => (
                                                         <div key={i} className="flex text-xs">
@@ -457,7 +459,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                             {/* Stories */}
                                             {poem.stories && poem.stories.length > 0 && (
                                                 <div className="text-slate-300 light:text-slate-700 text-sm font-sans leading-relaxed text-left bg-indigo-900/40 light:bg-indigo-50 p-4 rounded border border-white/5 light:border-indigo-200">
-                                                    <span className="text-pink-300 light:text-pink-700 font-bold block mb-2 border-b border-white/10 light:border-indigo-200 pb-1">【故事 Stories】</span>
+                                                    <span className="text-pink-300 light:text-pink-700 font-bold block mb-2 border-b border-white/10 light:border-indigo-200 pb-1">【{t('divinationRoom.stories')}】</span>
                                                     {poem.stories.map((story, i) => (
                                                         <div key={i} className="mb-3 last:mb-0">
                                                             <p className="whitespace-pre-line">{story}</p>
@@ -486,7 +488,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                     {/* Primary Info: Meaning Only */}
                                     <div className="space-y-4 mb-6 text-left">
                                         <div className={`${isLightMode ? 'bg-amber-100/50' : 'bg-black/20'} p-4 rounded-lg`}>
-                                            <h4 className="text-amber-400 light:text-amber-700 font-bold mb-1">【詩意】(Meaning)</h4>
+                                            <h4 className="text-amber-400 light:text-amber-700 font-bold mb-1">【{t('divinationRoom.poeticMeaning')}】</h4>
                                             <p className={`${isLightMode ? 'text-amber-900' : 'text-amber-100/90'}`}>{poem.meaning}</p>
                                         </div>
                                     </div>
@@ -496,21 +498,21 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                         onClick={() => setShowSecondary(!showSecondary)}
                                         className={`mb-4 text-xs underline decoration-dotted underline-offset-4 ${isLightMode ? 'text-amber-700 hover:text-amber-900' : 'text-amber-400 hover:text-amber-200'}`}
                                     >
-                                        {showSecondary ? "Hide Details" : "Show Details (Intent & Story)"}
+                                        {showSecondary ? t('divinationRoom.hideDetails') : t('divinationRoom.showDetailsIntentStory')}
                                     </button>
 
                                     {showSecondary && (
                                         <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-4 text-left">
                                             {/* Explanation (Moved here) */}
                                             <div className={`${isLightMode ? 'bg-amber-100/50' : 'bg-black/20'} p-4 rounded-lg`}>
-                                                <h4 className="text-amber-400 light:text-amber-700 font-bold mb-1">【解曰】(Explanation)</h4>
+                                                <h4 className="text-amber-400 light:text-amber-700 font-bold mb-1">【{t('divinationRoom.explanation')}】</h4>
                                                 <p className={`${isLightMode ? 'text-amber-900' : 'text-amber-100/90'}`}>{poem.explanation}</p>
                                             </div>
 
                                             {/* Holy Intent Grid */}
                                             {poem.intent && Object.keys(poem.intent).length > 0 && (
                                                 <div className={`${isLightMode ? 'bg-amber-100/50' : 'bg-black/20'} p-4 rounded-lg`}>
-                                                    <h4 className={`font-bold mb-3 border-b pb-2 ${isLightMode ? 'text-amber-700 border-amber-500/30' : 'text-amber-400 border-amber-500/30'}`}>【聖意】(Holy Intent)</h4>
+                                                    <h4 className={`font-bold mb-3 border-b pb-2 ${isLightMode ? 'text-amber-700 border-amber-500/30' : 'text-amber-400 border-amber-500/30'}`}>【{t('divinationRoom.holyIntent')}】</h4>
                                                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                                                         {Object.entries(poem.intent).map(([key, value]) => (
                                                             <div key={key} className={`flex justify-between border-b pb-1 last:border-0 px-1 rounded ${isLightMode ? 'border-amber-900/10 hover:bg-amber-200/50' : 'border-white/5 hover:bg-white/5'}`}>
@@ -525,7 +527,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                             {/* Story */}
                                             {poem.story && (
                                                 <div className={`${isLightMode ? 'bg-amber-100/50' : 'bg-black/20'} p-4 rounded-lg`}>
-                                                    <h4 className={`font-bold mb-2 border-b pb-1 ${isLightMode ? 'text-amber-700 border-amber-500/30' : 'text-amber-400 border-amber-500/30'}`}>【故事】{poem.story.title}</h4>
+                                                    <h4 className={`font-bold mb-2 border-b pb-1 ${isLightMode ? 'text-amber-700 border-amber-500/30' : 'text-amber-400 border-amber-500/30'}`}>【{t('divinationRoom.stories')}】{poem.story.title}</h4>
                                                     <p className={`text-sm leading-relaxed whitespace-pre-line ${isLightMode ? 'text-amber-900/90' : 'text-amber-100/80'}`}>
                                                         {poem.story.content}
                                                     </p>
@@ -550,7 +552,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                             {poem.poem.split('\n\n【籤詩二】\n').map((part, idx) => (
                                                 <div key={idx} className="relative">
                                                     <div className="text-emerald-300/50 text-xs font-bold mb-1 ml-1">
-                                                        {idx === 0 ? '【籤詩一 Poem 1】' : '【籤詩二 Poem 2】'}
+                                                        {idx === 0 ? `【${t('divinationRoom.poemOneLabel')}】` : `【${t('divinationRoom.poemTwoLabel')}】`}
                                                     </div>
                                                     <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line tracking-widest bg-black/20 light:bg-emerald-50/50 p-6 rounded-lg shadow-inner border border-emerald-500/10 light:border-emerald-200">
                                                         {part}
@@ -569,7 +571,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                         onClick={() => setShowSecondary(!showSecondary)}
                                         className={`mb-4 text-xs underline underline-offset-4 ${isLightMode ? 'text-slate-500 hover:text-emerald-700' : 'text-white/50 hover:text-white'}`}
                                     >
-                                        {showSecondary ? "Hide Predictions" : "Show Predictions (籤解)"}
+                                        {showSecondary ? t('divinationRoom.penghuHidePredictions') : t('divinationRoom.penghuShowPredictions')}
                                     </button>
 
                                     {/* Secondary Info Content */}
@@ -577,7 +579,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                         <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
                                             {/* Predictions */}
                                             <div className="text-slate-300 light:text-slate-700 text-sm font-sans leading-relaxed text-left bg-emerald-900/40 light:bg-emerald-50 p-4 rounded border border-white/5 light:border-emerald-200">
-                                                <span className="text-emerald-300 light:text-emerald-700 font-bold block mb-2 border-b border-white/10 light:border-emerald-700/20 pb-1">【籤解 Predictions】</span>
+                                                <span className="text-emerald-300 light:text-emerald-700 font-bold block mb-2 border-b border-white/10 light:border-emerald-700/20 pb-1">【{t('divinationRoom.predictionsHint')}】</span>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
                                                     {Object.entries(poem.predictions).map(([key, val], i) => (
                                                         <div key={i} className="flex text-xs">
@@ -596,7 +598,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                 onClick={drawCandidates}
                                 className="mt-8 px-8 py-3 rounded-full bg-black/40 light:bg-emerald-100 hover:bg-black/60 light:hover:bg-emerald-200 text-amber-100 light:text-emerald-700 font-bold transition-all active:scale-95 border border-white/10 light:border-emerald-300 mx-auto block shadow-sm"
                             >
-                                重抽 (Redraw)
+                                {t('divinationRoom.redrawButton')}
                             </button>
                         </div>
                     )}
@@ -605,9 +607,9 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                 {/* 2. Tarot Card */}
                 <div className="bg-slate-900/40 light:bg-white p-6 rounded-3xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center shadow-lg light:shadow-xl">
                     <div className="text-4xl mb-4">🎴</div>
-                    <h3 className="text-xl font-bold text-indigo-300 light:text-indigo-700 mb-2">Daily Tarot</h3>
+                    <h3 className="text-xl font-bold text-indigo-300 light:text-indigo-700 mb-2">{t('divinationRoom.dailyTarotTitle')}</h3>
                     <p className="text-sm text-slate-400 light:text-slate-500 mb-6 min-h-[3rem]">
-                        Draw a card from the Major Arcana to understand the energy of your day.
+                        {t('divinationRoom.tarotDesc')}
                     </p>
 
                     {tarot && (
@@ -621,22 +623,22 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                         onClick={drawTarot}
                         className="mt-auto px-6 py-2 rounded-full bg-indigo-600 light:bg-indigo-500 hover:bg-indigo-500 light:hover:bg-indigo-400 text-white font-bold transition-all active:scale-95 shadow-lg shadow-indigo-500/20 light:shadow-indigo-500/30"
                     >
-                        {tarot ? 'Draw Again' : 'Draw Card'}
+                        {tarot ? t('divinationRoom.drawAgain') : t('divinationRoom.drawCard')}
                     </button>
                 </div>
 
                 {/* 3. Lucky Compass */}
                 <div className="bg-slate-900/40 light:bg-white p-6 rounded-3xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center shadow-lg light:shadow-xl">
                     <div className="text-4xl mb-4">🧭</div>
-                    <h3 className="text-xl font-bold text-emerald-300 light:text-emerald-700 mb-2">Lucky Compass</h3>
+                    <h3 className="text-xl font-bold text-emerald-300 light:text-emerald-700 mb-2">{t('divinationRoom.luckyCompassTitle')}</h3>
                     <p className="text-sm text-slate-400 light:text-slate-500 mb-6 min-h-[3rem]">
-                        Find your auspicious direction for wealth and travel today.
+                        {t('divinationRoom.compassDesc')}
                     </p>
 
                     {direction && (
                         <div className="mb-6 animate-in zoom-in duration-500">
-                            <div className="text-3xl font-black text-emerald-400 light:text-emerald-600 mb-1">{direction}</div>
-                            <div className="text-emerald-500/60 light:text-emerald-700/60 text-xs uppercase tracking-widest font-bold">Direction</div>
+                            <div className="text-3xl font-black text-emerald-400 light:text-emerald-600 mb-1">{t(`divinationRoom.dir${direction}`)}</div>
+                            <div className="text-emerald-500/60 light:text-emerald-700/60 text-xs uppercase tracking-widest font-bold">{t('divinationRoom.directionLabel')}</div>
                         </div>
                     )}
 
@@ -644,16 +646,16 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                         onClick={spinCompass}
                         className="mt-auto px-6 py-2 rounded-full bg-emerald-600 light:bg-emerald-500 hover:bg-emerald-500 light:hover:bg-emerald-400 text-white font-bold transition-all active:scale-95 shadow-lg shadow-emerald-500/20 light:shadow-emerald-500/30"
                     >
-                        Spin Compass
+                        {t('divinationRoom.spinCompassButton')}
                     </button>
                 </div>
 
                 {/* 4. Fortune Cookie */}
                 <div className="bg-slate-900/40 light:bg-white p-6 rounded-3xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center shadow-lg light:shadow-xl">
                     <div className="text-4xl mb-4">🥠</div>
-                    <h3 className="text-xl font-bold text-amber-300 light:text-amber-700 mb-2">Fortune Cookie</h3>
+                    <h3 className="text-xl font-bold text-amber-300 light:text-amber-700 mb-2">{t('divinationRoom.fortuneCookieTitle')}</h3>
                     <p className="text-sm text-slate-400 light:text-slate-500 mb-6 min-h-[3rem]">
-                        Crack open a cookie to reveal a hidden truth or advice.
+                        {t('divinationRoom.cookieDesc')}
                     </p>
 
                     {cookie && (
@@ -666,7 +668,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                         onClick={crackCookie}
                         className="mt-auto px-6 py-2 rounded-full bg-amber-600 light:bg-amber-500 hover:bg-amber-500 light:hover:bg-amber-400 text-white font-bold transition-all active:scale-95 shadow-lg shadow-amber-500/20 light:shadow-amber-500/30"
                     >
-                        Crack Cookie
+                        {t('divinationRoom.crackCookieButton')}
                     </button>
                 </div>
             </div>

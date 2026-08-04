@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useRef } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const MultiBetCell = ({ predictions, targetSet, specialNum, maxHits, isSeparate }) => {
+    const { t } = useLanguage();
     const [index, setIndex] = useState(0);
     const timerRef = useRef(null);
     const isLongPress = useRef(false);
@@ -102,7 +104,7 @@ const MultiBetCell = ({ predictions, targetSet, specialNum, maxHits, isSeparate 
                         onTouchEnd={endPress}
                         onClick={(e) => handleClick(e, nextBet)}
                         className="w-4 h-4 rounded-full bg-slate-700 hover:bg-slate-600 light:bg-slate-200 light:hover:bg-slate-300 flex items-center justify-center text-[9px] text-white light:text-slate-700 shadow-sm transition-colors select-none"
-                        title="Next Bet (Hold to Reset)"
+                        title={t('multiBetCell.nextBet')}
                     >
                         {safeIndex + 1}
                     </button>
@@ -115,7 +117,7 @@ const MultiBetCell = ({ predictions, targetSet, specialNum, maxHits, isSeparate 
                             onTouchEnd={endPress}
                             onClick={(e) => handleClick(e, nextWinner)}
                             className="w-4 h-4 rounded-full bg-yellow-500/20 hover:bg-yellow-500/40 border border-yellow-500/50 flex items-center justify-center text-[8px] shadow-sm transition-colors select-none"
-                            title="Next Winner (Hold to Top Prize)"
+                            title={t('multiBetCell.nextWinner')}
                         >
                             🏆
                         </button>

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 /*
  * DREAM CATCHER
@@ -6,6 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
  */
 
 const DreamCatcher = () => {
+    const { t } = useLanguage();
     const canvasRef = useRef(null);
     const animationRef = useRef(null);
 
@@ -136,13 +138,13 @@ const DreamCatcher = () => {
             {/* Controls Overlay */}
             <div className="absolute top-6 right-6 z-10 w-64 bg-slate-900/80 backdrop-blur-md rounded-xl border border-white/10 p-5 shadow-2xl space-y-5">
                 <h3 className="text-white font-bold text-sm uppercase tracking-widest flex items-center gap-2">
-                    <span className="text-lg">🕸️</span> Dream Weaver
+                    <span className="text-lg">🕸️</span> {t('dreamCatcher.title')}
                 </h3>
 
                 <div className="space-y-3">
                     <div className="space-y-1">
                         <div className="flex justify-between text-xs text-slate-400">
-                            <span>Segments</span>
+                            <span>{t('dreamCatcher.segments')}</span>
                             <span>{params.segments}</span>
                         </div>
                         <input type="range" min="3" max="32" value={params.segments} onChange={e => setParams({ ...params, segments: Number(e.target.value) })} className="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
@@ -150,7 +152,7 @@ const DreamCatcher = () => {
 
                     <div className="space-y-1">
                         <div className="flex justify-between text-xs text-slate-400">
-                            <span>Complexity</span>
+                            <span>{t('dreamCatcher.complexity')}</span>
                             <span>{params.depth}</span>
                         </div>
                         <input type="range" min="1" max="8" value={params.depth} onChange={e => setParams({ ...params, depth: Number(e.target.value) })} className="w-full accent-pink-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
@@ -158,7 +160,7 @@ const DreamCatcher = () => {
 
                     <div className="space-y-1">
                         <div className="flex justify-between text-xs text-slate-400">
-                            <span>Flow Speed</span>
+                            <span>{t('dreamCatcher.flowSpeed')}</span>
                             <span>{params.speed.toFixed(1)}</span>
                         </div>
                         <input type="range" min="0" max="3" step="0.1" value={params.speed} onChange={e => setParams({ ...params, speed: Number(e.target.value) })} className="w-full accent-emerald-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
@@ -170,10 +172,10 @@ const DreamCatcher = () => {
                         onClick={() => setParams(p => ({ ...p, breathing: !p.breathing }))}
                         className={`w-full py-2.5 rounded-lg text-sm font-bold transition-all ${params.breathing ? 'bg-indigo-500 text-white ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
                     >
-                        {params.breathing ? 'Zen Mode Active' : 'Start Zen Breath'}
+                        {params.breathing ? t('dreamCatcher.zenModeActive') : t('dreamCatcher.startZenBreath')}
                     </button>
                     <p className="text-xs text-slate-500 mt-2 text-center opacity-75">
-                        {params.breathing ? 'Inhale... Hold... Exhale...' : 'Syncs visuals to 4-7-8 breathing rhythm'}
+                        {params.breathing ? t('dreamCatcher.breathingCycle') : t('dreamCatcher.breathingHint')}
                     </p>
                 </div>
             </div>

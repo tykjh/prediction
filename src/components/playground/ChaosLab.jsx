@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useLanguage } from '../../i18n/LanguageContext';
 
-/* 
+/*
  * ==========================================
  * PARTICLE LIFE ENGINE
  * ==========================================
  */
 const ParticleLife = () => {
+    const { t } = useLanguage();
     const canvasRef = useRef(null);
     const [params, setParams] = useState({
         particleCount: 800,
@@ -171,21 +173,21 @@ const ParticleLife = () => {
         <div className="flex flex-col gap-4 w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-slate-800/50 rounded-xl border border-white/10 text-sm">
                 <div className="space-y-1">
-                    <label className="text-slate-400 text-xs font-bold uppercase">Particles</label>
+                    <label className="text-slate-400 text-xs font-bold uppercase">{t('chaosLab.particles')}</label>
                     <div className="flex items-center gap-2 text-white font-mono">
                         <input type="range" min="100" max="1500" value={params.particleCount} onChange={e => { setParams({ ...params, particleCount: Number(e.target.value) }); initAtoms(); }} className="w-full accent-indigo-500" />
                         {params.particleCount}
                     </div>
                 </div>
                 <div className="space-y-1">
-                    <label className="text-slate-400 text-xs font-bold uppercase">Force Strength</label>
+                    <label className="text-slate-400 text-xs font-bold uppercase">{t('chaosLab.forceStrength')}</label>
                     <div className="flex items-center gap-2 text-white font-mono">
                         <input type="range" min="0.1" max="2.0" step="0.1" value={params.forceMultiplier} onChange={e => setParams({ ...params, forceMultiplier: Number(e.target.value) })} className="w-full accent-emerald-500" />
                         {params.forceMultiplier}
                     </div>
                 </div>
                 <div className="space-y-1">
-                    <label className="text-slate-400 text-xs font-bold uppercase">Friction</label>
+                    <label className="text-slate-400 text-xs font-bold uppercase">{t('chaosLab.friction')}</label>
                     <div className="flex items-center gap-2 text-white font-mono">
                         <input type="range" min="0.50" max="0.99" step="0.01" value={params.friction} onChange={e => setParams({ ...params, friction: Number(e.target.value) })} className="w-full accent-rose-500" />
                         {params.friction}
@@ -193,7 +195,7 @@ const ParticleLife = () => {
                 </div>
                 <div className="flex items-end">
                     <button onClick={() => { initAtoms(); randomizeRules(); }} className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold text-white transition-colors text-xs uppercase tracking-wider">
-                        Re-Roll Universe
+                        {t('chaosLab.reRollUniverse')}
                     </button>
                 </div>
             </div>
@@ -216,13 +218,13 @@ const ParticleLife = () => {
                             }} />
                         )))}
                     </div>
-                    <div className="text-[10px] text-center text-slate-500 mt-1 uppercase font-bold tracking-widest">DNA</div>
+                    <div className="text-[10px] text-center text-slate-500 mt-1 uppercase font-bold tracking-widest">{t('chaosLab.dna')}</div>
                 </div>
 
                 <div className="absolute top-4 left-4 pointer-events-none">
                     <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 text-white text-xs font-bold border border-white/10">
                         <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                        Click & Drag to influence
+                        {t('chaosLab.clickDragHint')}
                     </span>
                 </div>
             </div>
@@ -237,6 +239,7 @@ const ParticleLife = () => {
  * ==========================================
  */
 const DoublePendulum = () => {
+    const { t } = useLanguage();
     const canvasRef = useRef(null);
     const animationRef = useRef(null);
     const [dragging, setDragging] = useState(false);
@@ -406,20 +409,20 @@ const DoublePendulum = () => {
         <div className="flex flex-col gap-4 w-full">
             <div className="flex flex-wrap lg:flex-nowrap justify-between items-center p-4 bg-slate-800/50 rounded-xl border border-white/10 gap-4">
                 <div className="flex flex-col gap-1">
-                    <h3 className="text-xl font-bold text-white">Double Pendulum</h3>
+                    <h3 className="text-xl font-bold text-white">{t('chaosLab.doublePendulum')}</h3>
                     <div className="flex gap-4 text-xs text-slate-400">
                         <label className="flex items-center gap-2">
-                            Gravity
+                            {t('chaosLab.gravity')}
                             <input type="range" min="0.1" max="3" step="0.1" value={config.g} onChange={e => setConfig({ ...config, g: Number(e.target.value) })} className="w-24 accent-indigo-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
                         </label>
                         <label className="flex items-center gap-2">
-                            Trail
+                            {t('chaosLab.trail')}
                             <input type="range" min="0" max="2000" value={config.trailLength} onChange={e => setConfig({ ...config, trailLength: Number(e.target.value) })} className="w-24 accent-pink-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
                         </label>
                     </div>
                 </div>
                 <button onClick={reset} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-bold transition-all shadow-lg active:scale-95 text-sm uppercase tracking-wider">
-                    Kick System
+                    {t('chaosLab.kickSystem')}
                 </button>
             </div>
             <div className="relative w-full h-[600px] bg-slate-950 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
@@ -430,7 +433,7 @@ const DoublePendulum = () => {
                     onMouseMove={handleMouseMove}
                 />
                 <div className="absolute top-4 left-4 pointer-events-none opacity-50">
-                    <span className="text-white text-xs font-bold bg-slate-800/80 px-2 py-1 rounded">Drag to Reset</span>
+                    <span className="text-white text-xs font-bold bg-slate-800/80 px-2 py-1 rounded">{t('chaosLab.dragToReset')}</span>
                 </div>
             </div>
         </div>
@@ -443,6 +446,7 @@ const DoublePendulum = () => {
  * ==========================================
  */
 const ChaosLab = () => {
+    const { t } = useLanguage();
     const [mode, setMode] = useState('particle'); // 'particle' | 'pendulum'
 
     return (
@@ -453,13 +457,13 @@ const ChaosLab = () => {
                         onClick={() => setMode('particle')}
                         className={`px-8 py-2.5 rounded-xl transition-all font-bold tracking-wide ${mode === 'particle' ? 'bg-indigo-600 text-white shadow-lg ring-1 ring-white/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
                     >
-                        Particle Life
+                        {t('chaosLab.particleLifeTab')}
                     </button>
                     <button
                         onClick={() => setMode('pendulum')}
                         className={`px-8 py-2.5 rounded-xl transition-all font-bold tracking-wide ${mode === 'pendulum' ? 'bg-indigo-600 text-white shadow-lg ring-1 ring-white/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
                     >
-                        Double Pendulum
+                        {t('chaosLab.doublePendulum')}
                     </button>
                 </div>
             </div>

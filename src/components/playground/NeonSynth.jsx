@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const NeonSynth = () => {
+    const { t } = useLanguage();
     const [isPlaying, setIsPlaying] = useState(false);
     const [bpm, setBpm] = useState(128);
     const [currentStep, setCurrentStep] = useState(0);
@@ -234,23 +236,23 @@ const NeonSynth = () => {
                                 ${isPlaying ? 'bg-rose-600 text-white hover:bg-rose-500' : 'bg-indigo-600 text-white hover:bg-indigo-500'}`}
                             >
                                 {isPlaying ? (
-                                    <><span>■</span> STOP</>
+                                    <><span>■</span> {t('neonSynth.stop')}</>
                                 ) : (
-                                    <><span>▶</span> PLAY</>
+                                    <><span>▶</span> {t('neonSynth.play')}</>
                                 )}
                             </button>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">Tempo (BPM)</label>
+                                <label className="text-xs font-bold text-slate-400 uppercase">{t('neonSynth.tempo')}</label>
                                 <div className="flex items-center gap-2">
                                     <input type="range" min="60" max="200" value={bpm} onChange={(e) => setBpm(Number(e.target.value))} className="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
                                     <span className="text-white font-mono font-bold w-8">{bpm}</span>
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">Master Vol</label>
+                                <label className="text-xs font-bold text-slate-400 uppercase">{t('neonSynth.masterVol')}</label>
                                 <div className="flex items-center gap-2">
                                     <input type="range" min="0" max="1" step="0.01" value={volume} onChange={(e) => setVolume(Number(e.target.value))} className="w-full accent-pink-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
                                 </div>
@@ -258,7 +260,7 @@ const NeonSynth = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-400 uppercase">Waveform</label>
+                            <label className="text-xs font-bold text-slate-400 uppercase">{t('neonSynth.waveform')}</label>
                             <div className="flex bg-slate-800 p-1 rounded-lg">
                                 {['sine', 'square', 'sawtooth'].map(type => (
                                     <button
@@ -278,7 +280,7 @@ const NeonSynth = () => {
                 <div className="md:col-span-2 bg-slate-950 border border-slate-700 rounded-xl p-1 relative shadow-inner overflow-hidden">
                     <canvas ref={canvasRef} className="w-full h-full rounded-lg opacity-90" />
                     <div className="absolute top-4 left-4 text-xs font-mono text-emerald-500/50 pointer-events-none">
-                        Wait for Input...
+                        {t('neonSynth.waitForInput')}
                     </div>
                 </div>
             </div>
@@ -296,7 +298,7 @@ const NeonSynth = () => {
                         <div key={trackName} className="flex flex-col md:flex-row items-center gap-4">
                             <div className="w-full md:w-24 flex justify-between md:justify-end items-center px-2">
                                 <span className={`font-bold text-sm uppercase tracking-wider ${trackIndex === 3 ? 'text-pink-400' : 'text-slate-400'}`}>
-                                    {trackName}
+                                    {t(`neonSynth.tracks.${trackName.toLowerCase()}`)}
                                 </span>
                                 <div className={`w-1.5 h-1.5 rounded-full ml-2 ${grid[trackIndex][currentStep] ? 'bg-green-400 shadow-[0_0_5px_#4ade80]' : 'bg-slate-800'}`}></div>
                             </div>

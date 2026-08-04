@@ -3,15 +3,17 @@ import MagicHeader from './MagicHeader';
 import BacktestLab from './BacktestLab';
 import BacktestLabProphet from './BacktestLabProphet';
 import BacktestLabHybrid from './BacktestLabHybrid';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const BacktestView = ({ historyData, bgTheme, isLightMode, reducedMotion, activeGameConfig }) => {
+    const { t } = useLanguage();
     return (
         <div className="mx-auto space-y-6">
 
             {/* Header */}
             <MagicHeader
-                title="Prediction Quality Assessment"
-                subtitle="Verify model accuracy against historical data."
+                title={t('backtestView.title')}
+                subtitle={t('backtestView.subtitle')}
                 icon="🎯"
                 themeIndex={bgTheme}
                 isLightMode={isLightMode}

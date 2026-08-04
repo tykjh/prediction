@@ -1,0 +1,26 @@
+export const monteCarlo = {
+    en: {
+        title: 'Monte Carlo Simulator',
+        subtitle: 'Probability Weighted Simulation based on recent trends.',
+        refData: 'Ref Data (Draws)',
+        allN: 'All ({n})',
+        simulations: 'Simulations',
+        running: 'Running...',
+        run: '▶ Run',
+        saveResult: 'Save Result',
+        mostLikely: 'Most Likely Combination',
+        topFrequent: 'Top 20 most frequent numbers in {n} simulations',
+    },
+    zh: {
+        title: '蒙地卡羅模擬器',
+        subtitle: '根據近期趨勢進行機率加權模擬。',
+        refData: '參考資料(期數)',
+        allN: '全部 ({n})',
+        simulations: '模擬次數',
+        running: '執行中...',
+        run: '▶ 執行',
+        saveResult: '儲存結果',
+        mostLikely: '最可能組合',
+        topFrequent: '{n} 次模擬中最常出現的前 20 個號碼',
+    },
+};

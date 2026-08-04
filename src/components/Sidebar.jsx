@@ -2,8 +2,10 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import DivinationRoom from './DivinationRoom';
 import html2canvas from 'html2canvas';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onDeletePrediction, onClearVault, onImportVault, onCheckVault, systemSettings, onUpdateSettings, playSound, historyData = [], isLightMode, activeGameID, activeGameConfig, onSwitchGame, gameTypes }) => {
+    const { t } = useLanguage();
     const [currentView, setCurrentView] = React.useState('menu'); // menu, vault, config
     const [expandedGroups, setExpandedGroups] = React.useState({});
 
@@ -71,11 +73,11 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
     const fileInputRef = React.useRef(null);
 
     const verifyAccess = () => {
-        const password = window.prompt("Enter System Password:");
+        const password = window.prompt(t('sidebar.passwordPrompt'));
         if (password === "2026111") {
             return true;
         } else {
-            alert("⚠️ ACCESS DENIED ⚠️\nIncorrect system password.");
+            alert(t('sidebar.accessDenied'));
             if (playSound) playSound('error');
             return false;
         }
@@ -91,7 +93,7 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                     onImportVault(data);
                     if (playSound) playSound('success');
                 } catch (error) {
-                    alert("Error parsing JSON file");
+                    alert(t('sidebar.jsonParseError'));
                     if (playSound) playSound('error');
                 }
             };
@@ -158,11 +160,11 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                     <div className="bg-indigo-500/20 light:bg-indigo-100 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-indigo-500/30 light:border-indigo-300 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 light:text-indigo-700 shadow-inner">
                         💾
                     </div>
-                    <div className="text-[10px] uppercase font-black tracking-widest text-indigo-400 light:text-indigo-600 opacity-60 group-hover:opacity-100 transition-opacity">Storage Alpha</div>
+                    <div className="text-[10px] uppercase font-black tracking-widest text-indigo-400 light:text-indigo-600 opacity-60 group-hover:opacity-100 transition-opacity">{t('sidebar.vaultTag')}</div>
                 </div>
                 <div className="relative z-10">
-                    <h3 className="text-2xl font-black text-white light:text-slate-900 group-hover:translate-x-1 transition-transform tracking-tight">The Vault</h3>
-                    <p className="text-xs text-slate-400 light:text-slate-500 font-bold mt-1 uppercase tracking-wider">{savedPredictions.length} Secure Records</p>
+                    <h3 className="text-2xl font-black text-white light:text-slate-900 group-hover:translate-x-1 transition-transform tracking-tight">{t('sidebar.vaultTitle')}</h3>
+                    <p className="text-xs text-slate-400 light:text-slate-500 font-bold mt-1 uppercase tracking-wider">{t('sidebar.vaultSub', { n: savedPredictions.length })}</p>
                 </div>
             </button >
 
@@ -180,11 +182,11 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                     <div className="bg-fuchsia-500/20 light:bg-fuchsia-100 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-fuchsia-500/30 light:border-fuchsia-300 group-hover:bg-fuchsia-500 group-hover:text-white transition-all duration-500 light:text-fuchsia-700 shadow-inner">
                         🔮
                     </div>
-                    <div className="text-[10px] uppercase font-black tracking-widest text-fuchsia-400 light:text-fuchsia-600 opacity-60 group-hover:opacity-100 transition-opacity">Nexus Prime</div>
+                    <div className="text-[10px] uppercase font-black tracking-widest text-fuchsia-400 light:text-fuchsia-600 opacity-60 group-hover:opacity-100 transition-opacity">{t('sidebar.oracleTag')}</div>
                 </div>
                 <div className="relative z-10">
-                    <h3 className="text-2xl font-black text-white light:text-slate-900 group-hover:translate-x-1 transition-transform tracking-tight">Oracle Room</h3>
-                    <p className="text-xs text-slate-400 light:text-slate-500 font-bold mt-1 uppercase tracking-wider">Divination Stream</p>
+                    <h3 className="text-2xl font-black text-white light:text-slate-900 group-hover:translate-x-1 transition-transform tracking-tight">{t('sidebar.oracleTitle')}</h3>
+                    <p className="text-xs text-slate-400 light:text-slate-500 font-bold mt-1 uppercase tracking-wider">{t('sidebar.oracleSub')}</p>
                 </div>
             </button >
 
@@ -202,11 +204,11 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                     <div className="bg-slate-700/50 light:bg-slate-200/50 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-white/10 light:border-slate-300 group-hover:bg-slate-700 group-hover:text-white transition-all duration-500 light:text-slate-900 shadow-inner">
                         ⚙️
                     </div>
-                    <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 light:text-slate-500 opacity-60 group-hover:opacity-100 transition-opacity">System Core</div>
+                    <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 light:text-slate-500 opacity-60 group-hover:opacity-100 transition-opacity">{t('sidebar.configTag')}</div>
                 </div>
                 <div className="relative z-10">
-                    <h3 className="text-2xl font-black text-white light:text-slate-900 group-hover:translate-x-1 transition-transform tracking-tight">Configuration</h3>
-                    <p className="text-xs text-slate-400 light:text-slate-500 font-bold mt-1 uppercase tracking-wider">Engine Tuning</p>
+                    <h3 className="text-2xl font-black text-white light:text-slate-900 group-hover:translate-x-1 transition-transform tracking-tight">{t('sidebar.configTitle')}</h3>
+                    <p className="text-xs text-slate-400 light:text-slate-500 font-bold mt-1 uppercase tracking-wider">{t('sidebar.configSub')}</p>
                 </div>
             </button >
         </div >
@@ -240,7 +242,7 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                         <button
                             onClick={onCheckVault}
                             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 light:text-amber-700 hover:from-amber-500 hover:to-orange-500 hover:text-white rounded-2xl border border-amber-500/30 transition-all active:scale-95 group shadow-lg shadow-amber-500/10"
-                            title="Auto-Check Results"
+                            title={t('sidebar.verifyAllTitle')}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 group-hover:rotate-[360deg] transition-transform duration-700">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
@@ -327,7 +329,7 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                                                                         handleShareClick(item);
                                                                     }}
                                                                     className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-xl border border-white/5 hover:border-indigo-500/30 transition-all active:scale-90"
-                                                                    title="Share"
+                                                                    title={t('sidebar.shareTitle')}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
@@ -342,7 +344,7 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                                                                         if (playSound) playSound('delete');
                                                                     }}
                                                                     className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl border border-white/5 hover:border-red-500/30 transition-all active:scale-90"
-                                                                    title="Delete"
+                                                                    title={t('sidebar.deleteTitle')}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -661,79 +663,79 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                 <div className="bg-slate-900/40 rounded-3xl border border-white/5 p-8 shadow-2xl relative overflow-hidden group">
                     <div className="flex items-center gap-3 mb-6 relative z-10">
                         <span className="text-xl">📜</span>
-                        <h4 className="text-slate-200 font-black uppercase tracking-widest text-xs">Acknowledge Log</h4>
+                        <h4 className="text-slate-200 font-black uppercase tracking-widest text-xs">{t('sidebar.sectionChangelog')}</h4>
                     </div>
                     <div className="space-y-6 font-mono text-[9px] text-slate-400 font-bold h-64 overflow-y-scroll custom-sidebar-scrollbar pr-6 relative z-10 transition-all scroll-smooth">
 
                         {/* 2026-01-20 (Today) */}
                         <div className="relative pl-6 border-l border-white/20">
                             <div className="absolute top-0 -left-[5px] w-2.5 h-2.5 rounded-full bg-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">Jan 20, 2026 [Slot Machine 2.0]</div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan20.date')}</div>
                             <ul className="space-y-2 text-slate-400">
-                                <li><strong>5-Reel Casino Engine</strong>: Upgraded Slot Machine with Left-to-Right win logic, Wilds, and Tiered Win Effects (Money Rain).</li>
-                                <li><strong>Infinite Economy</strong>: Implemented BigInt support for quadrillion-dollar bets and 100% precision.</li>
-                                <li><strong>Physics Stability</strong>: Fixed critical Double Pendulum layout thrashing in Chaos Lab.</li>
-                                <li><strong>UX Refinements</strong>: Added "Wide Mode" inputs for high-rollers and persistent Net Win display.</li>
+                                <li><strong>{t('sidebar.changelog.jan20.item1Label')}</strong>: {t('sidebar.changelog.jan20.item1Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.jan20.item2Label')}</strong>: {t('sidebar.changelog.jan20.item2Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.jan20.item3Label')}</strong>: {t('sidebar.changelog.jan20.item3Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.jan20.item4Label')}</strong>: {t('sidebar.changelog.jan20.item4Desc')}</li>
                             </ul>
                         </div>
 
                         {/* 2026-01-18 */}
                         <div className="relative pl-6 border-l border-white/20 pt-4">
                             <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">Jan 18, 2026</div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan18.date')}</div>
                             <ul className="space-y-2 text-slate-400">
-                                <li><strong>Hybrid Evolution Lab</strong>: Sophisticated testing environment for configuring 5-column strategies.</li>
-                                <li><strong>Strategy Config Deck</strong>: Independent tuning for Hot/Cold counts, Trend Depth, and Decays.</li>
+                                <li><strong>{t('sidebar.changelog.jan18.item1Label')}</strong>: {t('sidebar.changelog.jan18.item1Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.jan18.item2Label')}</strong>: {t('sidebar.changelog.jan18.item2Desc')}</li>
                             </ul>
                         </div>
 
                         {/* 2026-01-17 */}
                         <div className="relative pl-6 border-l border-white/20 pt-4">
                             <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">Jan 17, 2026</div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan17.date')}</div>
                             <ul className="space-y-2 text-slate-400">
-                                <li><strong>Backtest Multi-Bet</strong>: Unlocked unlimited batch simulations.</li>
-                                <li><strong>Data Persistence</strong>: Auto-save for user draw data (localStorage).</li>
-                                <li><strong>Algorithm Tuning</strong>: Recency weighting optimization (1.0 vs 0.5 points).</li>
+                                <li><strong>{t('sidebar.changelog.jan17.item1Label')}</strong>: {t('sidebar.changelog.jan17.item1Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.jan17.item2Label')}</strong>: {t('sidebar.changelog.jan17.item2Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.jan17.item3Label')}</strong>: {t('sidebar.changelog.jan17.item3Desc')}</li>
                             </ul>
                         </div>
 
                         {/* 2026-01-13 ~ 17 */}
                         <div className="relative pl-6 border-l border-white/20 pt-4">
                             <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">Jan 13-17, 2026 [Oracle Expansion]</div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan13_17.date')}</div>
                             <ul className="space-y-2 text-slate-400">
-                                <li><strong>Four Great Temples</strong>: Integrated Lei Yu Shi, 60 Jia Zi, Penghu, and Guanyin poems.</li>
-                                <li><strong>Dynamic Themes</strong>: Unique coloring and metadata for each fortune source.</li>
+                                <li><strong>{t('sidebar.changelog.jan13_17.item1Label')}</strong>: {t('sidebar.changelog.jan13_17.item1Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.jan13_17.item2Label')}</strong>: {t('sidebar.changelog.jan13_17.item2Desc')}</li>
                             </ul>
                         </div>
 
                         {/* 2026-01-11 */}
                         <div className="relative pl-6 border-l border-white/20 pt-4">
                             <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">Jan 11, 2026</div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan11.date')}</div>
                             <ul className="space-y-2 text-slate-400">
-                                <li><strong>Sonic System</strong>: Web Audio API integration for immersive UI sounds.</li>
-                                <li><strong>Two-Stage Drawing</strong>: True RNG + User Selection ritual for fortune telling.</li>
+                                <li><strong>{t('sidebar.changelog.jan11.item1Label')}</strong>: {t('sidebar.changelog.jan11.item1Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.jan11.item2Label')}</strong>: {t('sidebar.changelog.jan11.item2Desc')}</li>
                             </ul>
                         </div>
 
                         {/* 2026-01-10 */}
                         <div className="relative pl-6 border-l border-white/20 pt-4">
                             <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">Jan 10, 2026</div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan10.date')}</div>
                             <ul className="space-y-2 text-slate-400">
-                                <li><strong>Floating Menu (FAB)</strong>: Persistent quick-access toolbelt.</li>
-                                <li><strong>Chain Reactor</strong>: Lab for analyzing consecutive number patterns.</li>
+                                <li><strong>{t('sidebar.changelog.jan10.item1Label')}</strong>: {t('sidebar.changelog.jan10.item1Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.jan10.item2Label')}</strong>: {t('sidebar.changelog.jan10.item2Desc')}</li>
                             </ul>
                         </div>
 
                         {/* 2026-01-09 */}
                         <div className="relative pl-6 border-l border-white/20 pt-4">
                             <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">Jan 09, 2026 [Genesis]</div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan09.date')}</div>
                             <ul className="space-y-2 text-slate-400">
-                                <li><strong>Project Launch</strong>: Glassmorphism UI, Weighted Recency Algorithm, and core History/Stats components.</li>
+                                <li><strong>{t('sidebar.changelog.jan09.item1Label')}</strong>: {t('sidebar.changelog.jan09.item1Desc')}</li>
                             </ul>
                         </div>
                     </div>
@@ -902,7 +904,7 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                         className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/20 text-lg flex items-center justify-center gap-3 active:scale-95 transition-all"
                     >
                         {isDownloading ? (
-                            <span>Generating...</span>
+                            <span>{t('sidebar.generatingLabel')}</span>
                         ) : (
                             <>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
@@ -953,10 +955,10 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                         <div className="flex items-center gap-2 mt-1">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
                             <p className="text-slate-500 light:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                                {currentView === 'menu' ? 'System Services Active' :
-                                    currentView === 'vault' ? 'Secure Archive Decrypted' :
-                                        currentView === 'config' ? 'Kernel Access Granted' :
-                                            currentView === 'oracle' ? 'Divination Link Stable' : ''}
+                                {currentView === 'menu' ? t('sidebar.statusMenu') :
+                                    currentView === 'vault' ? t('sidebar.statusVault') :
+                                        currentView === 'config' ? t('sidebar.statusConfig') :
+                                            currentView === 'oracle' ? t('sidebar.statusOracle') : ''}
                             </p>
                         </div>
                     </div>

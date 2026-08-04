@@ -4,8 +4,10 @@ import HeatmapGrid from './HeatmapGrid';
 import TrendLines from './TrendLines';
 import ZoneRadar from './ZoneRadar';
 import LastDigitStats from './LastDigitStats';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
+    const { t } = useLanguage();
     // 0. Config Extraction
     const isSeparate = activeGameConfig?.settings?.specialNumber?.isSeparate || false;
     const PICK = activeGameConfig?.settings?.pickCount || 6;
@@ -135,10 +137,10 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
 
                 {/* Tabs */}
                 <div className="flex flex-wrap gap-2 justify-center">
-                    <TabButton id="frequency" icon="📊" label="Frequency" />
-                    <TabButton id="heatmap" icon="🔥" label="Heatmap" />
-                    <TabButton id="trends" icon="📈" label="Trends" />
-                    <TabButton id="distribution" icon="📐" label="Distribution" />
+                    <TabButton id="frequency" icon="📊" label={t('advancedStatsHub.tabFrequency')} />
+                    <TabButton id="heatmap" icon="🔥" label={t('advancedStatsHub.tabHeatmap')} />
+                    <TabButton id="trends" icon="📈" label={t('advancedStatsHub.tabTrends')} />
+                    <TabButton id="distribution" icon="📐" label={t('advancedStatsHub.tabDistribution')} />
                 </div>
 
                 {/* Filters */}
@@ -154,7 +156,7 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
                                     : 'text-slate-500 hover:text-slate-300'
                                     }`}
                             >
-                                Zone 1 (Wait)
+                                {t('advancedStatsHub.zoneMainLabel')}
                             </button>
                             <button
                                 onClick={() => setActiveZone('special')}
@@ -163,22 +165,22 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
                                     : 'text-slate-500 hover:text-slate-300'
                                     }`}
                             >
-                                Zone 2 (Special)
+                                {t('advancedStatsHub.zoneSpecialLabel')}
                             </button>
                         </div>
                     )}
 
                     {/* Range */}
                     <div className="flex items-center gap-2 px-3">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Range</span>
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t('advancedStatsHub.rangeLabel')}</span>
                         <select
                             value={rangeOption}
                             onChange={(e) => setRangeOption(e.target.value)}
                             className="bg-transparent text-sm font-bold text-white light:text-slate-900 focus:outline-none cursor-pointer"
                         >
-                            <option className="bg-slate-900 text-slate-200" value="ALL">All ({historyData?.length})</option>
+                            <option className="bg-slate-900 text-slate-200" value="ALL">{t('advancedStatsHub.rangeAll', { n: historyData?.length })}</option>
                             {rangeOptions.map(opt => (
-                                <option className="bg-slate-900 text-slate-200" key={opt} value={opt}>Last {opt}</option>
+                                <option className="bg-slate-900 text-slate-200" key={opt} value={opt}>{t('advancedStatsHub.rangeLast', { n: opt })}</option>
                             ))}
                         </select>
                     </div>
@@ -190,7 +192,7 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
                         <div className={`w-8 h-4 rounded-full relative transition-colors ${useWeighted ? 'bg-purple-500' : 'bg-slate-600'}`}>
                             <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${useWeighted ? 'left-4.5' : 'left-0.5'}`}></div>
                         </div>
-                        <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">Weighted</span>
+                        <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">{t('advancedStatsHub.weightedLabel')}</span>
                         <input type="checkbox" className="hidden" checked={useWeighted} onChange={e => setUseWeighted(e.target.checked)} />
                     </label>
 
@@ -202,7 +204,7 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
                                 <div className={`w-8 h-4 rounded-full relative transition-colors ${includeSpecial ? 'bg-pink-500' : 'bg-slate-600'}`}>
                                     <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${includeSpecial ? 'left-4.5' : 'left-0.5'}`}></div>
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">Special</span>
+                                <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">{t('advancedStatsHub.specialLabel')}</span>
                                 <input type="checkbox" className="hidden" checked={includeSpecial} onChange={e => setIncludeSpecial(e.target.checked)} />
                             </label>
                         </>
@@ -265,10 +267,13 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
 
             <div className="mt-4 text-center">
                 <p className="text-[10px] text-slate-500 light:text-slate-400 font-mono">
-                    Analyzing {processedHistory.length} draws with {useWeighted ? 'Recency Weights' : 'Raw Frequency'}.
+                    {t('advancedStatsHub.analyzingFooter', {
+                        n: processedHistory.length,
+                        mode: useWeighted ? t('advancedStatsHub.recencyWeights') : t('advancedStatsHub.rawFrequency')
+                    })}
                     {isSeparate && (
                         <span className="ml-2 text-cyan-400">
-                            [{activeZone === 'main' ? 'Zone 1: 1-38' : 'Zone 2: 1-8'}]
+                            [{activeZone === 'main' ? t('advancedStatsHub.zoneRangeMain') : t('advancedStatsHub.zoneRangeSpecial')}]
                         </span>
                     )}
                 </p>

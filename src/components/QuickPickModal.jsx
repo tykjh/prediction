@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getSecureRandomSet } from '../utils/secureRandom';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const QuickPickModal = ({ onClose, activeGameConfig }) => {
+    const { t } = useLanguage();
     const [numbers, setNumbers] = useState([]);
 
     useEffect(() => {
@@ -17,7 +19,7 @@ const QuickPickModal = ({ onClose, activeGameConfig }) => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300" onClick={onClose}>
             <div className="bg-slate-900 border border-slate-700 p-8 rounded-3xl shadow-2xl transform scale-100 flex flex-col items-center gap-6" onClick={e => e.stopPropagation()}>
                 <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-500 uppercase tracking-widest">
-                    ⚡ {activeGameConfig?.name || 'Flash Pick'}
+                    ⚡ {activeGameConfig?.name || t('quickPickModal.flashPick')}
                 </h2>
 
                 <div className="flex gap-3">
@@ -28,7 +30,7 @@ const QuickPickModal = ({ onClose, activeGameConfig }) => {
                     ))}
                 </div>
 
-                <p className="text-slate-500 text-xs uppercase tracking-widest mt-2">Good Luck!</p>
+                <p className="text-slate-500 text-xs uppercase tracking-widest mt-2">{t('quickPickModal.goodLuck')}</p>
             </div>
         </div>
     );

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const MoneyRain = ({ onComplete, playSound }) => {
+    const { t } = useLanguage();
     const [money, setMoney] = useState([]);
 
     useEffect(() => {
@@ -58,7 +60,7 @@ const MoneyRain = ({ onComplete, playSound }) => {
                     onClick={onComplete}
                     className="bg-red-600 hover:bg-red-500 text-white font-black uppercase py-2 px-6 rounded-full border-4 border-white shadow-[0_0_20px_rgba(255,0,0,0.5)] active:scale-95 transition-all text-sm tracking-widest"
                 >
-                    Stop Rain 🛑
+                    {t('moneyRain.stopRain')} 🛑
                 </button>
             </div>
 

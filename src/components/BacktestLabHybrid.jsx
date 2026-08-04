@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import MultiBetCell from './MultiBetCell';
 import { calculateHybridPrediction } from '../utils/prediction';
 import { getSecureRandomSet } from '../utils/secureRandom';
+import { useLanguage } from '../i18n/LanguageContext';
 
 // Default Config Template
 const DEFAULT_CONFIG = {
@@ -13,6 +14,7 @@ const DEFAULT_CONFIG = {
 };
 
 const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
+    const { t } = useLanguage();
     // --- State: Global Settings ---
     const [startPeriod, setStartPeriod] = useState(0); // Index
     const [endPeriod, setEndPeriod] = useState(0);   // Index
@@ -65,7 +67,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
         // 1. Validate Ref Size vs Trend Depth
         const refNum = Number(referenceSize);
         if (!refNum || refNum < 20) {
-            setErrorMsg("Reference Depth must be at least 20.");
+            setErrorMsg(t('backtestLabHybrid.errorRefMin'));
             return;
         }
 
@@ -76,7 +78,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
         });
 
         if (refNum < maxTrend + 20) {
-            setErrorMsg(`Reference Depth (${refNum}) is too small! It must be at least 20 higher than the largest Trend Depth (${maxTrend}). Suggestion: Set Ref to ${maxTrend + 20} or higher.`);
+            setErrorMsg(t('backtestLabHybrid.errorRefTooSmall', { refNum, maxTrend, suggestion: maxTrend + 20 }));
             return;
         }
 
@@ -241,7 +243,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
             });
             setLogs(tempLogs.reverse());
         } else {
-            setErrorMsg("No simulation data generated. Check range settings.");
+            setErrorMsg(t('backtestLabHybrid.errorNoData'));
         }
 
         setIsRunning(false);
@@ -273,31 +275,31 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                             🧬
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-white light:text-slate-800">Hybrid Evolution Lab</h2>
-                            <p className="text-xs text-slate-400 light:text-slate-500 font-medium">Parametric Multi-Model Comparison</p>
+                            <h2 className="text-2xl font-black text-white light:text-slate-800">{t('backtestLabHybrid.title')}</h2>
+                            <p className="text-xs text-slate-400 light:text-slate-500 font-medium">{t('backtestLabHybrid.subtitle')}</p>
                         </div>
                     </div>
 
                     {/* Global Simulation Controls */}
                     <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">Input Data Ref</label>
+                            <label className="text-[10px] font-bold text-slate-500 uppercase">{t('backtestLabHybrid.inputDataRef')}</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="number" className="w-20 bg-black/20 light:bg-white border border-white/10 light:border-slate-300 rounded px-2 py-1.5 text-xs text-white light:text-slate-800 text-center focus:outline-none focus:border-cyan-500 transition-colors"
                                     value={referenceSize}
                                     onChange={e => setReferenceSize(e.target.value)}
-                                    placeholder="Ref"
+                                    placeholder={t('backtestLabHybrid.refPlaceholder')}
                                 />
                                 <label className="flex items-center gap-2 text-xs text-slate-400 light:text-slate-600 cursor-pointer select-none border border-transparent hover:border-white/10 px-2 py-1 rounded transition-colors">
                                     <input type="checkbox" checked={isAccumulating} onChange={e => setIsAccumulating(e.target.checked)} className="accent-cyan-500" />
-                                    Accumulate
+                                    {t('backtestLabHybrid.accumulate')}
                                 </label>
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">Test Range</label>
+                            <label className="text-[10px] font-bold text-slate-500 uppercase">{t('backtestLabHybrid.testRange')}</label>
                             <div className="flex items-center gap-2">
                                 <select
                                     className="bg-black/20 light:bg-white border border-white/10 light:border-slate-300 rounded px-3 py-1.5 text-xs text-white light:text-slate-800 outline-none cursor-pointer focus:border-cyan-500 transition-colors"
@@ -320,7 +322,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">Multi-Bets</label>
+                            <label className="text-[10px] font-bold text-slate-500 uppercase">{t('backtestLabHybrid.multiBets')}</label>
                             <div className="flex items-center gap-2">
                                 <div className="relative">
                                     <input
@@ -344,7 +346,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                             disabled={isRunning}
                             className={`ml-auto px-6 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${isRunning ? 'bg-slate-800 text-slate-500 cursor-wait' : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg props-hover'}`}
                         >
-                            {isRunning ? `Running ${progress}%` : 'Execute Simulation'}
+                            {isRunning ? t('backtestLabHybrid.running', { progress }) : t('backtestLabHybrid.executeSimulation')}
                         </button>
                     </div>
 
@@ -366,7 +368,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                                 onClick={() => setActiveTab(idx)}
                                 className={getTabColor(idx, activeTab === idx)}
                             >
-                                Hybrid {idx + 1}
+                                {t('backtestLabHybrid.hybridTab', { n: idx + 1 })}
                             </div>
                         ))}
                     </div>
@@ -375,7 +377,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                     <div className="p-6 grid grid-cols-2 md:grid-cols-5 gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">Hot Pool Size</label>
+                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('backtestLabHybrid.hotPoolSize')}</label>
                             <input
                                 type="range" min="1" max="25" step="1"
                                 value={columnConfigs[activeTab].hotCount}
@@ -390,7 +392,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">Cold Pool Size</label>
+                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('backtestLabHybrid.coldPoolSize')}</label>
                             <input
                                 type="range" min="1" max="25" step="1"
                                 value={columnConfigs[activeTab].coldCount}
@@ -405,7 +407,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">Trend Depth</label>
+                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('backtestLabHybrid.trendDepth')}</label>
                             <input
                                 type="range" min="5" max="100" step="5"
                                 value={columnConfigs[activeTab].trendDepth}
@@ -420,20 +422,20 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">Weight Strategy</label>
+                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('backtestLabHybrid.weightStrategy')}</label>
                             <select
                                 value={columnConfigs[activeTab].weightStrategy}
                                 onChange={e => updateConfig('weightStrategy', e.target.value)}
                                 className="bg-slate-800 light:bg-white border border-slate-700 light:border-slate-300 text-xs text-white light:text-slate-800 rounded px-3 py-2 outline-none focus:border-cyan-500"
                             >
-                                <option value="standard">Standard (Balanced)</option>
-                                <option value="aggressive">Aggressive (Recent Bias)</option>
-                                <option value="flat">Flat (Historical Bias)</option>
+                                <option value="standard">{t('backtestLabHybrid.weightStandard')}</option>
+                                <option value="aggressive">{t('backtestLabHybrid.weightAggressive')}</option>
+                                <option value="flat">{t('backtestLabHybrid.weightFlat')}</option>
                             </select>
                             <div className="text-[10px] text-slate-500 leading-tight mt-1">
-                                {columnConfigs[activeTab].weightStrategy === 'aggressive' ? 'Heavily favors last 10 draws.' :
-                                    columnConfigs[activeTab].weightStrategy === 'flat' ? 'Even distribution over time.' :
-                                        'Step-down decay pattern.'}
+                                {columnConfigs[activeTab].weightStrategy === 'aggressive' ? t('backtestLabHybrid.descAggressive') :
+                                    columnConfigs[activeTab].weightStrategy === 'flat' ? t('backtestLabHybrid.descFlat') :
+                                        t('backtestLabHybrid.descStandard')}
                             </div>
                         </div>
 
@@ -445,7 +447,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                                     onChange={e => updateConfig('includeSpecial', e.target.checked)}
                                     className="w-4 h-4 rounded text-cyan-500 bg-slate-800 border-slate-600 accent-cyan-500"
                                 />
-                                <span className="text-xs font-bold text-slate-300 light:text-slate-700">Include Special</span>
+                                <span className="text-xs font-bold text-slate-300 light:text-slate-700">{t('backtestLabHybrid.includeSpecial')}</span>
                             </label>
                         </div>
                     </div>
@@ -455,15 +457,15 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                 {summary && (
                     <div className="grid grid-cols-7 divide-x divide-white/10 light:divide-slate-200 border-b border-white/10 light:border-slate-200 bg-slate-950/30 light:bg-slate-100">
                         {/* Headers */}
-                        <div className="p-4 flex flex-col justify-center items-center text-slate-500 text-[10px] uppercase font-bold">Model</div>
+                        <div className="p-4 flex flex-col justify-center items-center text-slate-500 text-[10px] uppercase font-bold">{t('backtestLabHybrid.model')}</div>
                         {['h1', 'h2', 'h3', 'h4', 'h5', 'rnd'].map((k, i) => (
                             <div key={k} className="p-4 text-center">
                                 <div className={`text-xs font-black uppercase mb-1 ${k === 'rnd' ? 'text-slate-500' :
                                     i === 0 ? 'text-blue-400' : i === 1 ? 'text-purple-400' : i === 2 ? 'text-amber-400' : i === 3 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                    {k === 'rnd' ? 'Random' : `Hybrid ${i + 1}`}
+                                    {k === 'rnd' ? t('backtestLabHybrid.random') : t('backtestLabHybrid.hybridTab', { n: i + 1 })}
                                 </div>
-                                <div className="text-xl text-white light:text-slate-800 font-bold">{summary.avgs[k]} <span className="text-[10px] text-slate-500 font-normal">avg</span></div>
-                                <div className="text-xs text-yellow-500 font-mono">{summary.wins[k]}% <span className="text-[9px] text-slate-600">win</span></div>
+                                <div className="text-xl text-white light:text-slate-800 font-bold">{summary.avgs[k]} <span className="text-[10px] text-slate-500 font-normal">{t('backtestLabHybrid.avg')}</span></div>
+                                <div className="text-xs text-yellow-500 font-mono">{summary.wins[k]}% <span className="text-[9px] text-slate-600">{t('backtestLabHybrid.win')}</span></div>
                             </div>
                         ))}
                     </div>
@@ -474,20 +476,20 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-slate-950 light:bg-white sticky top-0 z-50 shadow-lg">
                             <tr>
-                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">Period</th>
-                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">Actual</th>
+                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">{t('backtestLabHybrid.colPeriod')}</th>
+                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">{t('backtestLabHybrid.colActual')}</th>
                                 {[0, 1, 2, 3, 4].map(i => (
                                     <th key={i} className="p-3 border-b border-slate-800 light:border-slate-200 min-w-[140px]">
                                         <div className="flex flex-col">
                                             <span className={`text-[10px] font-black uppercase ${i === 0 ? 'text-blue-400' : i === 1 ? 'text-purple-400' : i === 2 ? 'text-amber-400' : i === 3 ? 'text-emerald-400' : 'text-rose-400'
-                                                }`}>Hybrid {i + 1}</span>
+                                                }`}>{t('backtestLabHybrid.hybridTab', { n: i + 1 })}</span>
                                             <span className="text-[8px] text-slate-500 font-mono mt-0.5">
                                                 H:{columnConfigs[i].hotCount} C:{columnConfigs[i].coldCount} T:{columnConfigs[i].trendDepth} {columnConfigs[i].weightStrategy[0].toUpperCase()}
                                             </span>
                                         </div>
                                     </th>
                                 ))}
-                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">Random</th>
+                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">{t('backtestLabHybrid.random')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50 light:divide-slate-200">

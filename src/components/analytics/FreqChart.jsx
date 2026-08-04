@@ -1,12 +1,14 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const FreqChart = ({ data, averageScore, isWeighted, isLightMode }) => {
+    const { t } = useLanguage();
     const ticks = Array.from({ length: 49 }, (_, i) => i + 1);
 
     if (!data || data.length === 0) return (
         <div className="h-64 flex items-center justify-center text-slate-500">
-            No data available for this range.
+            {t('freqChart.noData')}
         </div>
     );
 
@@ -38,7 +40,7 @@ const FreqChart = ({ data, averageScore, isWeighted, isLightMode }) => {
                             color: isLightMode ? '#0f172a' : '#fff'
                         }}
                         itemStyle={{ color: isLightMode ? '#0f172a' : '#fff' }}
-                        formatter={(value) => [value, isWeighted ? 'Score' : 'Count']}
+                        formatter={(value) => [value, isWeighted ? t('freqChart.score') : t('freqChart.count')]}
                     />
                     <Bar
                         dataKey="score"
@@ -51,7 +53,7 @@ const FreqChart = ({ data, averageScore, isWeighted, isLightMode }) => {
                         stroke="#ef4444"
                         strokeDasharray="3 3"
                         label={{
-                            value: 'AVG',
+                            value: t('freqChart.avg'),
                             fill: '#ef4444',
                             fontSize: 10,
                             position: 'right'
@@ -61,8 +63,8 @@ const FreqChart = ({ data, averageScore, isWeighted, isLightMode }) => {
             </ResponsiveContainer>
             <p className="text-center text-xs text-slate-500 light:text-slate-600 font-medium mt-2">
                 {isWeighted
-                    ? "Score based on Recency Weights. Red line = Average Score."
-                    : "Raw Frequency Count. Red line = Average Frequency."}
+                    ? t('freqChart.footerWeighted')
+                    : t('freqChart.footerRaw')}
             </p>
         </div>
     );

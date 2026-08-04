@@ -1,8 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { predictProphet, predictKNN, predictMarkov, predictRegression } from '../utils/advancedAlgorithms';
 import { getSecureRandomSet } from '../utils/secureRandom';
+import { useLanguage } from '../i18n/LanguageContext';
+
+const PROPHET_MODEL_LABEL_KEYS = {
+    knn: 'colKnn',
+    markov: 'colMarkov',
+    regression: 'colRegression',
+    prophet: 'colProphet',
+    random: 'colRandom',
+};
 
 const BacktestLabProphet = ({ historyData, isLightMode, activeGameConfig }) => {
+    const { t } = useLanguage();
     // Range Selection
     const [startPeriod, setStartPeriod] = useState(0); // Index in historyData (0 is newest)
     const [endPeriod, setEndPeriod] = useState(0);
@@ -175,14 +185,14 @@ const BacktestLabProphet = ({ historyData, isLightMode, activeGameConfig }) => {
                             🔮
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white light:text-slate-800 tracking-tight">Prophet Breakdown Analysis 2</h2>
-                            <p className="text-purple-200/60 light:text-purple-800/60 text-sm font-medium tracking-wide">Deep Dive: k-NN • Markov • Regression</p>
+                            <h2 className="text-3xl font-black text-white light:text-slate-800 tracking-tight">{t('backtestLabProphet.title')}</h2>
+                            <p className="text-purple-200/60 light:text-purple-800/60 text-sm font-medium tracking-wide">{t('backtestLabProphet.subtitle')}</p>
                         </div>
                     </div>
 
                     <div className="flex flex-wrap items-end gap-6">
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Ref Depth</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLabProphet.refDepth')}</label>
                             <input
                                 type="number"
                                 min="10"
@@ -203,12 +213,12 @@ const BacktestLabProphet = ({ historyData, isLightMode, activeGameConfig }) => {
                                 disabled={isRunning}
                             />
                             <label htmlFor="accToggleProphet" className="text-xs font-bold text-slate-300 light:text-slate-600 cursor-pointer select-none">
-                                Accumulate
+                                {t('backtestLabProphet.accumulate')}
                             </label>
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Test Range (Start Period)</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLabProphet.testRangeStart')}</label>
                             <select
                                 className="bg-slate-900 light:bg-slate-100 border border-slate-700 light:border-slate-300 text-white light:text-slate-900 px-4 py-2 rounded-lg text-sm"
                                 value={startPeriod}
@@ -222,7 +232,7 @@ const BacktestLabProphet = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
                         <div className="text-slate-600 font-bold text-xl">→</div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">End Period</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLabProphet.endPeriod')}</label>
                             <select
                                 className="bg-slate-900 light:bg-slate-100 border border-slate-700 light:border-slate-300 text-white light:text-slate-900 px-4 py-2 rounded-lg text-sm"
                                 value={endPeriod}
@@ -240,15 +250,15 @@ const BacktestLabProphet = ({ historyData, isLightMode, activeGameConfig }) => {
                             disabled={!isValid || isRunning}
                             className={`px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs shadow-xl transition-all ml-auto relative overflow-hidden group/btn ${isValid && !isRunning ? 'bg-purple-600 hover:bg-purple-500 text-white hover:shadow-purple-500/40 hover:-translate-y-0.5' : 'bg-slate-800/50 light:bg-slate-200 text-slate-500 light:text-slate-400 cursor-not-allowed border border-white/5 light:border-slate-300'}`}
                         >
-                            <span className="relative z-10">{isRunning ? `Analyzing ${progress}%...` : 'Start Analysis'}</span>
+                            <span className="relative z-10">{isRunning ? t('backtestLabProphet.analyzing', { progress }) : t('backtestLabProphet.startAnalysis')}</span>
                             {isValid && !isRunning && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>}
                         </button>
                     </div>
                     {!isValid && (
                         <div className="text-red-400 text-xs mt-2 space-y-1">
-                            {(startPeriod - endPeriod + 1) < 10 && <p>* Range must be at least 10 draws.</p>}
-                            {Number(referenceSize) < 10 && <p>* Ref Depth must be at least 10.</p>}
-                            {(startPeriod + Number(referenceSize)) >= historyData.length && <p>* Ref Depth exceeds available history for the selected Start Period.</p>}
+                            {(startPeriod - endPeriod + 1) < 10 && <p>{t('backtestLabProphet.errorRange')}</p>}
+                            {Number(referenceSize) < 10 && <p>{t('backtestLabProphet.errorRefDepth')}</p>}
+                            {(startPeriod + Number(referenceSize)) >= historyData.length && <p>{t('backtestLabProphet.errorRefExceeds')}</p>}
                         </div>
                     )}
                 </div>
@@ -258,9 +268,9 @@ const BacktestLabProphet = ({ historyData, isLightMode, activeGameConfig }) => {
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-6 bg-slate-900/50 light:bg-white border-b border-slate-800 light:border-slate-200">
                         {Object.entries(summary.avgs).map(([key, val]) => (
                             <div key={key} className="bg-slate-800/40 light:bg-slate-50 p-4 rounded-xl border border-slate-700 light:border-slate-200 text-center shadow-sm">
-                                <div className="text-[10px] uppercase font-bold text-slate-500 light:text-slate-500 mb-1">{key}</div>
+                                <div className="text-[10px] uppercase font-bold text-slate-500 light:text-slate-500 mb-1">{t(`backtestLabProphet.${PROPHET_MODEL_LABEL_KEYS[key]}`)}</div>
                                 <div className={`text-xl font-black ${Number(val) > 1.5 ? 'text-emerald-400 light:text-emerald-600' : 'text-white light:text-slate-900'}`}>{val}</div>
-                                <div className="text-[10px] text-slate-600 light:text-slate-400">hits/draw</div>
+                                <div className="text-[10px] text-slate-600 light:text-slate-400">{t('backtestLabProphet.hitsPerDraw')}</div>
                                 <div className="text-xs font-bold text-yellow-500 light:text-yellow-600 mt-1">{summary.wins[key]}%</div>
                             </div>
                         ))}
@@ -272,13 +282,13 @@ const BacktestLabProphet = ({ historyData, isLightMode, activeGameConfig }) => {
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-slate-900/80 light:bg-slate-100 backdrop-blur-md sticky top-0 z-10 shadow-lg border-b border-white/10 light:border-slate-200">
                             <tr>
-                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">Period</th>
-                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">Actual</th>
-                                <th className="p-4 text-xs font-bold text-blue-400 light:text-blue-600 uppercase border-b border-slate-800 light:border-slate-200">k-NN</th>
-                                <th className="p-4 text-xs font-bold text-cyan-400 light:text-cyan-600 uppercase border-b border-slate-800 light:border-slate-200">Markov</th>
-                                <th className="p-4 text-xs font-bold text-pink-400 light:text-pink-600 uppercase border-b border-slate-800 light:border-slate-200">Regression</th>
-                                <th className="p-4 text-xs font-bold text-purple-400 light:text-purple-600 uppercase border-b border-slate-800 light:border-slate-200">Consensus</th>
-                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">Random</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLabProphet.colPeriod')}</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLabProphet.colActual')}</th>
+                                <th className="p-4 text-xs font-bold text-blue-400 light:text-blue-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLabProphet.colKnn')}</th>
+                                <th className="p-4 text-xs font-bold text-cyan-400 light:text-cyan-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLabProphet.colMarkov')}</th>
+                                <th className="p-4 text-xs font-bold text-pink-400 light:text-pink-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLabProphet.colRegression')}</th>
+                                <th className="p-4 text-xs font-bold text-purple-400 light:text-purple-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLabProphet.colProphet')}</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLabProphet.colRandom')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50">

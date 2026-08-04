@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, AreaChart, Area } from 'recharts';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const TrendLines = ({ rawHistory, isLightMode, activeZone, isSeparate, PICK = 6, maxNumber = 49 }) => {
+    const { t } = useLanguage();
 
     // Process history into trend data (Chronological: Old -> New)
     const trendData = useMemo(() => {
@@ -92,7 +94,7 @@ const TrendLines = ({ rawHistory, isLightMode, activeZone, isSeparate, PICK = 6,
 
             {/* Chart 1: Sum Trend */}
             <div className="bg-slate-900/30 light:bg-slate-50/50 rounded-xl p-4 border border-white/5 light:border-slate-200">
-                <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-4 uppercase tracking-wider">Total Sum Volatility</h4>
+                <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-4 uppercase tracking-wider">{t('trendLines.sumVolatility')}</h4>
                 <div className="h-40">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={trendData}>
@@ -114,7 +116,7 @@ const TrendLines = ({ rawHistory, isLightMode, activeZone, isSeparate, PICK = 6,
 
             {/* Chart 2: Odd / Even Balance */}
             <div className="bg-slate-900/30 light:bg-slate-50/50 rounded-xl p-4 border border-white/5 light:border-slate-200">
-                <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-4 uppercase tracking-wider">Odd vs Even Count</h4>
+                <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-4 uppercase tracking-wider">{t('trendLines.oddEvenCount')}</h4>
                 <div className="h-40">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={trendData}>
@@ -123,8 +125,8 @@ const TrendLines = ({ rawHistory, isLightMode, activeZone, isSeparate, PICK = 6,
                             <YAxis domain={[0, 'auto']} {...commonAxis} hide />
                             {commonTooltip}
                             <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
-                            <Line type="monotone" dataKey="odd" stroke="#ec4899" strokeWidth={2} dot={false} name="Odd Nums" isAnimationActive={false} />
-                            <Line type="monotone" dataKey="even" stroke="#3b82f6" strokeWidth={2} dot={false} name="Even Nums" isAnimationActive={false} />
+                            <Line type="monotone" dataKey="odd" stroke="#ec4899" strokeWidth={2} dot={false} name={t('trendLines.oddNums')} isAnimationActive={false} />
+                            <Line type="monotone" dataKey="even" stroke="#3b82f6" strokeWidth={2} dot={false} name={t('trendLines.evenNums')} isAnimationActive={false} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
@@ -133,11 +135,11 @@ const TrendLines = ({ rawHistory, isLightMode, activeZone, isSeparate, PICK = 6,
             {/* Chart 3: High / Low Balance */}
             <div className="bg-slate-900/30 light:bg-slate-50/50 rounded-xl p-4 border border-white/5 light:border-slate-200 lg:col-span-2">
                 <div className="flex justify-between items-center mb-4">
-                    <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase tracking-wider">High / Low Distribution</h4>
+                    <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase tracking-wider">{t('trendLines.highLowDistribution')}</h4>
                     <span className="text-[10px] font-mono text-slate-500 bg-slate-800 light:bg-slate-200 px-2 py-0.5 rounded">
                         {(() => {
                             const mid = Math.ceil((maxNumber + 1) / 2);
-                            return `Low (1-${mid - 1}) vs High (${mid}-${maxNumber})`;
+                            return t('trendLines.rangeLabel', { lowMax: mid - 1, highMin: mid, maxNumber });
                         })()}
                     </span>
                 </div>
@@ -149,8 +151,8 @@ const TrendLines = ({ rawHistory, isLightMode, activeZone, isSeparate, PICK = 6,
                             <YAxis domain={[0, 'auto']} {...commonAxis} hide />
                             {commonTooltip}
                             <Legend wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
-                            <Line type="monotone" dataKey="high" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} name="High Nums" isAnimationActive={false} />
-                            <Line type="monotone" dataKey="low" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} name="Low Nums" isAnimationActive={false} />
+                            <Line type="monotone" dataKey="high" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} name={t('trendLines.highNums')} isAnimationActive={false} />
+                            <Line type="monotone" dataKey="low" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} name={t('trendLines.lowNums')} isAnimationActive={false} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>

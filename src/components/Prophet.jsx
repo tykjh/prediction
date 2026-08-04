@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getSecureRandomNumber } from '../utils/secureRandom';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
+    const { t } = useLanguage();
     const [range, setRange] = useState(100);
     const [similarityWindow, setSimilarityWindow] = useState(3);
     const [predictors, setPredictors] = useState(null);
@@ -185,35 +187,35 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             🔮 The Prophet <span className="text-xs bg-indigo-900/50 light:bg-indigo-100 text-indigo-300 light:text-indigo-700 px-2 py-0.5 rounded border border-indigo-700/50 light:border-indigo-200">EXP-04</span>
                         </h2>
                         <p className="text-xs text-slate-400 light:text-slate-500 mt-1">
-                            Ensemble AI Model: k-NN, Markov Chains, and Linear Regression.
+                            {t('prophet.subtitle')}
                         </p>
                     </div>
 
                     <div className="flex items-center gap-4">
                         {/* Controls */}
                         <div className="flex flex-col">
-                            <label className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">Ref Data</label>
+                            <label className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">{t('prophet.refData')}</label>
                             <select
                                 value={range}
                                 onChange={(e) => setRange(Number(e.target.value))}
                                 className="bg-slate-900 light:bg-slate-100 text-white light:text-slate-900 text-xs font-bold rounded-lg px-3 py-2 border border-slate-700 light:border-slate-300 outline-none focus:border-indigo-500 cursor-pointer"
                             >
                                 {Array.from({ length: Math.ceil(history.length / 10) }, (_, i) => (i + 1) * 10).map(val => (
-                                    <option key={val} value={val}>Last {val}</option>
+                                    <option key={val} value={val}>{t('prophet.lastN', { n: val })}</option>
                                 ))}
-                                <option value={history.length}>All ({history.length})</option>
+                                <option value={history.length}>{t('prophet.allN', { n: history.length })}</option>
                             </select>
                         </div>
 
                         <div className="flex flex-col border-l border-slate-700 pl-4">
-                            <label className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">Pattern Size</label>
+                            <label className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">{t('prophet.patternSize')}</label>
                             <select
                                 value={similarityWindow}
                                 onChange={(e) => setSimilarityWindow(Number(e.target.value))}
                                 className="bg-slate-900 light:bg-slate-100 text-white light:text-slate-900 text-xs font-bold rounded-lg px-3 py-2 border border-slate-700 light:border-slate-300 outline-none focus:border-indigo-500 cursor-pointer"
                             >
                                 {[1, 2, 3, 5, 10, 20].map(val => (
-                                    <option key={val} value={val}>{val} Draws</option>
+                                    <option key={val} value={val}>{t('prophet.drawsN', { n: val })}</option>
                                 ))}
                             </select>
                         </div>
@@ -222,7 +224,7 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             onClick={runProphet}
                             className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg shadow-indigo-500/30 transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-indigo-500/50 hover:ring-2 hover:ring-white/20 ml-2"
                         >
-                            Summon Prophet
+                            {t('prophet.summon')}
                         </button>
                     </div>
                 </div>
@@ -233,12 +235,12 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         {/* 1. Time Traveler */}
                         <div className="bg-slate-800/50 light:bg-slate-50 p-4 rounded-xl border border-slate-700 light:border-slate-200 relative group/card shadow-sm">
                             <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-xs font-bold text-blue-400 light:text-blue-600 uppercase tracking-wider">🕰️ Time Traveler</h3>
+                                <h3 className="text-xs font-bold text-blue-400 light:text-blue-600 uppercase tracking-wider">🕰️ {t('prophet.timeTraveler')}</h3>
                                 {onSave && predictors.knn?.numbers.length > 0 && (
                                     <button
                                         onClick={() => onSave(predictors.knn.numbers, 'Time Traveler')}
                                         className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-300 flex items-center justify-center hover:bg-white hover:text-blue-600 transition-all"
-                                        title="Save"
+                                        title={t('prophet.save')}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
@@ -249,16 +251,16 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             <div className="flex flex-wrap gap-2 justify-center">
                                 {predictors.knn?.numbers.length > 0 ? predictors.knn.numbers.map(n => (
                                     <span key={n} className="w-8 h-8 rounded-full bg-slate-700 light:bg-slate-200 flex items-center justify-center text-sm font-bold text-white light:text-slate-800 shadow-inner">{n}</span>
-                                )) : <span className="text-xs text-slate-500 italic">No historical match found</span>}
+                                )) : <span className="text-xs text-slate-500 italic">{t('prophet.noMatch')}</span>}
                             </div>
                             <div className="text-[10px] text-slate-500 mt-2 text-center flex flex-col gap-1">
                                 {predictors.knn?.match ? (
                                     <>
-                                        <span className="text-slate-400">Match: <span className="text-blue-300">{predictors.knn.match.start}...{predictors.knn.match.end}</span></span>
-                                        <span className="text-slate-400">Source: <span className="text-white font-bold text-xs">{predictors.knn.match.source}</span></span>
+                                        <span className="text-slate-400">{t('prophet.matchLabel')} <span className="text-blue-300">{predictors.knn.match.start}...{predictors.knn.match.end}</span></span>
+                                        <span className="text-slate-400">{t('prophet.sourceLabel')} <span className="text-white font-bold text-xs">{predictors.knn.match.source}</span></span>
                                     </>
                                 ) : (
-                                    'Based on Similarity Search'
+                                    t('prophet.basedOnSimilarity')
                                 )}
                             </div>
                         </div>
@@ -266,12 +268,12 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         {/* 2. Chain Master */}
                         <div className="bg-slate-800/50 light:bg-slate-50 p-4 rounded-xl border border-slate-700 light:border-slate-200 relative group/card shadow-sm">
                             <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-xs font-bold text-green-400 light:text-green-600 uppercase tracking-wider">🔗 Chain Master</h3>
+                                <h3 className="text-xs font-bold text-green-400 light:text-green-600 uppercase tracking-wider">🔗 {t('prophet.chainMaster')}</h3>
                                 {onSave && predictors.markov.length > 0 && (
                                     <button
                                         onClick={() => onSave(predictors.markov, 'Chain Master')}
                                         className="w-6 h-6 rounded-full bg-green-500/10 text-green-300 flex items-center justify-center hover:bg-white hover:text-green-600 transition-all"
-                                        title="Save"
+                                        title={t('prophet.save')}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
@@ -284,18 +286,18 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                     <span key={n} className="w-8 h-8 rounded-full bg-slate-700 light:bg-slate-200 flex items-center justify-center text-sm font-bold text-white light:text-slate-800 shadow-inner">{n}</span>
                                 ))}
                             </div>
-                            <div className="text-[10px] text-slate-500 mt-2 text-center">Based on Markov Transition</div>
+                            <div className="text-[10px] text-slate-500 mt-2 text-center">{t('prophet.basedOnMarkov')}</div>
                         </div>
 
                         {/* 3. Trend Setter */}
                         <div className="bg-slate-800/50 light:bg-slate-50 p-4 rounded-xl border border-slate-700 light:border-slate-200 relative group/card shadow-sm">
                             <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-xs font-bold text-orange-400 light:text-orange-600 uppercase tracking-wider">📈 Trend Setter</h3>
+                                <h3 className="text-xs font-bold text-orange-400 light:text-orange-600 uppercase tracking-wider">📈 {t('prophet.trendSetter')}</h3>
                                 {onSave && predictors.reg.length > 0 && (
                                     <button
                                         onClick={() => onSave(predictors.reg, 'Trend Setter')}
                                         className="w-6 h-6 rounded-full bg-orange-500/10 text-orange-300 flex items-center justify-center hover:bg-white hover:text-orange-600 transition-all"
-                                        title="Save"
+                                        title={t('prophet.save')}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
@@ -308,7 +310,7 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                     <span key={n} className="w-8 h-8 rounded-full bg-slate-700 light:bg-slate-200 flex items-center justify-center text-sm font-bold text-white light:text-slate-800 shadow-inner">{n}</span>
                                 ))}
                             </div>
-                            <div className="text-[10px] text-slate-500 mt-2 text-center">Based on Regression</div>
+                            <div className="text-[10px] text-slate-500 mt-2 text-center">{t('prophet.basedOnRegression')}</div>
                         </div>
 
                         {/* 4. THE VERDICT */}
@@ -318,21 +320,21 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             <div className="relative z-10 flex justify-between items-start">
                                 <div>
                                     <h3 className="text-xs font-bold text-indigo-300 light:text-indigo-800 uppercase tracking-wider mb-2 flex items-center gap-2">
-                                        ⚖️ The Verdict
+                                        ⚖️ {t('prophet.verdict')}
                                     </h3>
                                     <div className="flex flex-wrap gap-2 justify-center">
                                         {predictors.consensus.map(n => (
                                             <span key={n} className="w-8 h-8 rounded-full bg-white light:bg-indigo-600 flex items-center justify-center text-sm font-bold text-indigo-900 light:text-white shadow-lg shadow-indigo-500/50">{n}</span>
                                         ))}
                                     </div>
-                                    <div className="text-[10px] text-indigo-300/70 mt-2 text-center">Ensemble Consensus</div>
+                                    <div className="text-[10px] text-indigo-300/70 mt-2 text-center">{t('prophet.ensembleConsensus')}</div>
                                 </div>
 
                                 {onSave && (
                                     <button
                                         onClick={() => onSave(predictors.consensus, 'Prophet Verdict')}
                                         className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center hover:bg-white hover:text-indigo-600 transition-all shadow-lg hover:shadow-indigo-500/50"
-                                        title="Save to Vault"
+                                        title={t('prophet.saveToVault')}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />

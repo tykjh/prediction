@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
+    const { t } = useLanguage();
     const [selectedNumber, setSelectedNumber] = useState(null);
     const [range, setRange] = useState(50); // Default to Recent 50
 
@@ -104,20 +106,20 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
             <div className="flex justify-between items-start mb-6 gap-4">
                 <div>
                     <h2 className="text-xl font-bold text-white light:text-slate-800 flex items-center gap-2">
-                        📊 Correlation Matrix
+                        📊 {t('matrixGrid.title')}
                         {selectedNumber && (
                             <button
                                 onClick={(e) => { e.stopPropagation(); setSelectedNumber(null); }}
                                 className="text-xs bg-slate-700 light:bg-slate-200 px-2 py-1 rounded text-slate-300 light:text-slate-600 hover:bg-slate-600 light:hover:bg-slate-300 ml-2"
                             >
-                                Clear Selection ✕
+                                {t('matrixGrid.clearSelection')} ✕
                             </button>
                         )}
                     </h2>
                     <p className="text-xs text-slate-400 light:text-slate-500 mt-1">
                         {selectedNumber
-                            ? `Showing affinity with Number ${selectedNumber}. Values = Pair Frequency.`
-                            : "Heatmap mode. Click a number to see its 'Best Friends'."}
+                            ? t('matrixGrid.affinityDesc', { num: selectedNumber })
+                            : t('matrixGrid.heatmapDesc')}
                     </p>
                 </div>
 
@@ -128,17 +130,17 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
                         className="bg-slate-900 light:bg-slate-100 text-white light:text-slate-900 text-xs font-bold rounded-lg px-3 py-2 border border-slate-700 light:border-slate-300 outline-none focus:border-indigo-500 cursor-pointer"
                     >
                         {rangeOptions.map(opt => (
-                            <option key={opt} value={opt}>Last {opt} Draws</option>
+                            <option key={opt} value={opt}>{t('matrixGrid.lastDraws', { n: opt })}</option>
                         ))}
-                        <option value="ALL">All History</option>
+                        <option value="ALL">{t('matrixGrid.allHistory')}</option>
                     </select>
 
                     {/* Legend */}
                     {!selectedNumber && (
                         <div className="flex items-center gap-1 text-[9px] text-slate-500 light:text-slate-500 mt-2">
-                            <span>Cold</span>
+                            <span>{t('matrixGrid.cold')}</span>
                             <div className="w-16 h-2 rounded bg-gradient-to-r from-slate-800 via-teal-500 to-amber-400 light:from-slate-200"></div>
-                            <span>Hot</span>
+                            <span>{t('matrixGrid.hot')}</span>
                         </div>
                     )}
                 </div>
@@ -174,7 +176,7 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
             </div>
 
             <div className="mt-4 text-[10px] text-slate-600 text-center font-mono">
-                Analyzed {history.length} draws • Pairwise Co-occurrence Analysis
+                {t('matrixGrid.footer', { n: history.length })}
             </div>
         </div>
     );

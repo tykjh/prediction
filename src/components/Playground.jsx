@@ -4,16 +4,18 @@ import NeonSynth from './playground/NeonSynth';
 import AlchemyLab from './playground/AlchemyLab';
 import DreamCatcher from './playground/DreamCatcher';
 import SlotMachine from './playground/SlotMachine';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const TOPICS = [
-    { id: 'chaos', name: 'Chaos Lab', icon: '🪐', description: 'Particle physics & Pendulums' },
-    { id: 'synth', name: 'Neon Synth', icon: '🎹', description: 'Sequencer & Audio Visualizer' },
-    { id: 'alchemy', name: 'Alchemy Lab', icon: '⚗️', description: 'Falling Sand & Chemistry' },
-    { id: 'dream', name: 'Dream Catcher', icon: '🕸️', description: 'Generative Mandala Art' },
-    { id: 'slots', name: 'Slot Machine', icon: '🎰', description: 'Classic 3-Reel Slots' },
+    { id: 'chaos', icon: '🪐' },
+    { id: 'synth', icon: '🎹' },
+    { id: 'alchemy', icon: '⚗️' },
+    { id: 'dream', icon: '🕸️' },
+    { id: 'slots', icon: '🎰' },
 ];
 
 const Playground = () => {
+    const { t } = useLanguage();
     const [activeTopic, setActiveTopic] = useState('chaos'); // Default to Chaos Lab
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
@@ -48,10 +50,10 @@ const Playground = () => {
                             <span className="text-6xl">🎡</span>
                         </div>
                         <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                            Playground Hub
+                            {t('playground.hubTitle')}
                         </h2>
                         <p className="text-slate-400 max-w-md mx-auto">
-                            Select a module from the menu above to begin your creative session.
+                            {t('playground.hubDescription')}
                         </p>
                     </div>
                 );
@@ -69,7 +71,7 @@ const Playground = () => {
             <div className="relative z-20 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-slate-900/50 backdrop-blur-md">
                 <div className="flex items-center gap-3">
                     <span className="text-2xl">🎡</span>
-                    <h1 className="text-xl font-bold tracking-tight text-white/90">Playground</h1>
+                    <h1 className="text-xl font-bold tracking-tight text-white/90">{t('playground.title')}</h1>
                 </div>
 
                 {/* Topic Selector Dropdown */}
@@ -80,8 +82,8 @@ const Playground = () => {
                     >
                         <span className="text-xl group-hover:scale-110 transition-transform">{activeTopicData.icon}</span>
                         <div className="text-left hidden sm:block">
-                            <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Current Module</div>
-                            <div className="text-sm font-bold text-white leading-tight">{activeTopicData.name}</div>
+                            <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('playground.currentModule')}</div>
+                            <div className="text-sm font-bold text-white leading-tight">{t(`playground.topics.${activeTopicData.id}.name`)}</div>
                         </div>
                         <svg className={`w-4 h-4 text-slate-400 transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -91,7 +93,7 @@ const Playground = () => {
                     {/* Dropdown Menu */}
                     {isMenuOpen && (
                         <div className="absolute right-0 top-full mt-2 w-72 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-50 animate-in slide-in-from-top-2 duration-200">
-                            <div className="text-xs font-bold text-slate-500 px-3 py-2 uppercase tracking-widest">Select Module</div>
+                            <div className="text-xs font-bold text-slate-500 px-3 py-2 uppercase tracking-widest">{t('playground.selectModule')}</div>
                             <div className="space-y-1">
                                 {TOPICS.map(topic => (
                                     <button
@@ -101,8 +103,8 @@ const Playground = () => {
                                     >
                                         <span className="text-2xl mt-0.5">{topic.icon}</span>
                                         <div className="text-left">
-                                            <div className={`font-bold ${activeTopic === topic.id ? 'text-indigo-400' : 'text-white'}`}>{topic.name}</div>
-                                            <div className="text-xs text-slate-400">{topic.description}</div>
+                                            <div className={`font-bold ${activeTopic === topic.id ? 'text-indigo-400' : 'text-white'}`}>{t(`playground.topics.${topic.id}.name`)}</div>
+                                            <div className="text-xs text-slate-400">{t(`playground.topics.${topic.id}.description`)}</div>
                                         </div>
                                         {activeTopic === topic.id && (
                                             <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>

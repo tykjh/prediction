@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MoneyRain from '../MoneyRain';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 /*
  * 5-REEL VIDEO SLOT MACHINE
@@ -82,6 +83,7 @@ const Confetti = () => {
 };
 
 const SlotMachine = () => {
+    const { t } = useLanguage();
     // Economy (BigInt Support)
     const [credits, setCredits] = useState(100n);
     const [bet, setBet] = useState(5n);
@@ -98,7 +100,7 @@ const SlotMachine = () => {
 
     // Win / Gamble State
     const [winAmount, setWinAmount] = useState(0n);
-    const [message, setMessage] = useState("Good Luck!");
+    const [message, setMessage] = useState({ key: 'goodLuck' });
     const [gambleOpen, setGambleOpen] = useState(false);
 
     // Win Effects
@@ -116,7 +118,7 @@ const SlotMachine = () => {
 
     const spin = () => {
         if (credits < bet) {
-            setMessage("Insufficient Credits!");
+            setMessage({ key: 'insufficientCredits' });
             return;
         }
         if (spinning) return;
@@ -127,7 +129,7 @@ const SlotMachine = () => {
         setWinAmount(0n);
         setLastNetWin(null); // Clear previous result
         setEffectTier('none'); // Reset effects
-        setMessage("Spinning...");
+        setMessage({ key: 'spinning' });
         setSpinning(true);
         setCanHold(false);
 
@@ -209,15 +211,15 @@ const SlotMachine = () => {
         }
 
         let win = 0n;
-        let msg = "Try Again";
+        let msgKey = 'tryAgain';
 
         if (count >= 3) { // Min 3 match
             const multiplier = PAYOUT_MULTIPLIERS[count];
             win = matchSymbol.value * multiplier * bet;
 
-            if (count === 5) msg = "JACKPOT! 5 of a Kind!";
-            else if (count === 4) msg = "Big Win! 4 of a Kind!";
-            else msg = "Nice Win!";
+            if (count === 5) msgKey = 'jackpot5';
+            else if (count === 4) msgKey = 'bigWin4';
+            else msgKey = 'niceWin';
         } else {
             // Check Scatters? (e.g. Cherry anywhere)
             // Let's stick to the Classic "Cherry Logic" if simple line fails?
@@ -227,13 +229,13 @@ const SlotMachine = () => {
                 if (cherryCount === 2) win = bet * 2n;
                 if (cherryCount === 3) win = bet * 5n;
                 if (cherryCount >= 4) win = bet * 10n;
-                if (win > 0n) msg = "Cherry Picked!";
+                if (win > 0n) msgKey = 'cherryPicked';
             }
         }
 
         if (win > 0n) {
             setWinAmount(win);
-            setMessage(msg);
+            setMessage({ key: msgKey });
 
             // Determine Effect Tier
             // Use simple division for BigInt logic
@@ -246,7 +248,7 @@ const SlotMachine = () => {
             setGambleOpen(true);
             setCoinResult(null);
         } else {
-            setMessage("Try Again");
+            setMessage({ key: 'tryAgain' });
             setLastNetWin(-bet); // Settled Loss
         }
     };
@@ -278,12 +280,12 @@ const SlotMachine = () => {
                 if (isWin) {
                     const doubled = winAmount * 2n;
                     setWinAmount(doubled);
-                    setMessage(`DOUBLED! ${doubled.toString()} Credits!`);
+                    setMessage({ key: 'doubled', vars: { amount: doubled.toString() } });
                 } else {
                     setWinAmount(0n);
                     setLastNetWin(-bet); // Gambled and lost everything -> Net Loss = Bet
                     // Credits were never added, so just clearing winAmount is sufficient.
-                    setMessage(`Too bad...`);
+                    setMessage({ key: 'tooBad' });
                     setTimeout(() => setGambleOpen(false), 2000);
                 }
             }, 600);
@@ -296,7 +298,7 @@ const SlotMachine = () => {
         setWinAmount(0n);
         setGambleOpen(false);
         setCanHold(true);
-        setMessage("Collected!");
+        setMessage({ key: 'collected' });
     };
 
     return (
@@ -309,7 +311,7 @@ const SlotMachine = () => {
                 <div className="absolute inset-0 z-50 flex items-center justify-center -m-4">
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-none sm:rounded-[3rem]"></div>
                     <div className="relative bg-slate-900 border-2 border-yellow-500 p-8 rounded-2xl text-center space-y-6 shadow-2xl animate-in zoom-in w-full max-w-sm mx-4">
-                        <h3 className="text-2xl font-bold text-yellow-400 uppercase tracking-widest">Double or Nothing</h3>
+                        <h3 className="text-2xl font-bold text-yellow-400 uppercase tracking-widest">{t('slotMachine.doubleOrNothing')}</h3>
                         <div className="text-4xl font-black text-white">{winAmount.toString()}</div>
                         <div className="h-48 flex items-center justify-center">
                             <Coin result={coinResult} flipping={coinFlipping} />
@@ -321,7 +323,7 @@ const SlotMachine = () => {
                                 className="w-32 py-4 bg-yellow-600 rounded-xl border-4 border-yellow-400/50 shadow-lg flex flex-col items-center justify-center gap-1 hover:scale-105 transition-transform disabled:opacity-50"
                             >
                                 <span className="text-2xl">👑</span>
-                                <span className="font-bold text-white uppercase text-sm">Heads</span>
+                                <span className="font-bold text-white uppercase text-sm">{t('slotMachine.heads')}</span>
                             </button>
                             <button
                                 onClick={() => handleGamble('tails')}
@@ -329,16 +331,16 @@ const SlotMachine = () => {
                                 className="w-32 py-4 bg-slate-600 rounded-xl border-4 border-slate-400/50 shadow-lg flex flex-col items-center justify-center gap-1 hover:scale-105 transition-transform disabled:opacity-50"
                             >
                                 <span className="text-2xl">1️⃣</span>
-                                <span className="font-bold text-white uppercase text-sm">Tails</span>
+                                <span className="font-bold text-white uppercase text-sm">{t('slotMachine.tails')}</span>
                             </button>
                         </div>
                         {!coinFlipping && !coinResult && (
-                            <button onClick={collectWin} className="w-full py-3 bg-green-600 rounded-xl font-bold text-white uppercase tracking-wider hover:bg-green-500 shadow-lg">Collect</button>
+                            <button onClick={collectWin} className="w-full py-3 bg-green-600 rounded-xl font-bold text-white uppercase tracking-wider hover:bg-green-500 shadow-lg">{t('slotMachine.collect')}</button>
                         )}
                         {coinResult && winAmount > 0n && (
-                            <button onClick={() => setCoinResult(null)} className="w-full py-3 bg-indigo-600 rounded-xl font-bold text-white uppercase tracking-wider hover:bg-indigo-500 shadow-lg animate-pulse">Double Again?</button>
+                            <button onClick={() => setCoinResult(null)} className="w-full py-3 bg-indigo-600 rounded-xl font-bold text-white uppercase tracking-wider hover:bg-indigo-500 shadow-lg animate-pulse">{t('slotMachine.doubleAgain')}</button>
                         )}
-                        {coinResult && winAmount > 0n && (<div className="mt-2"><button onClick={collectWin} className="text-xs text-slate-400 underline hover:text-white">Collect {winAmount.toString()}</button></div>)}
+                        {coinResult && winAmount > 0n && (<div className="mt-2"><button onClick={collectWin} className="text-xs text-slate-400 underline hover:text-white">{t('slotMachine.collectAmount', { amount: winAmount.toString() })}</button></div>)}
                     </div>
                 </div>
             )}
@@ -347,18 +349,18 @@ const SlotMachine = () => {
             {/* Widen container for 5 reels */}
             <div className="relative z-20 bg-gradient-to-br from-yellow-600 via-yellow-400 to-yellow-700 p-8 rounded-t-[4rem] rounded-b-3xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] border-4 border-yellow-800 w-full max-w-3xl">
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-red-800 text-white px-8 py-2 rounded-xl border-2 border-yellow-400 font-bold uppercase tracking-widest shadow-lg text-sm whitespace-nowrap z-30 flex gap-2">
-                    <span>👑</span> Grand Jackpot <span>👑</span>
+                    <span>👑</span> {t('slotMachine.grandJackpot')} <span>👑</span>
                 </div>
 
                 <div className="mb-4 flex justify-between items-center text-yellow-100 font-mono text-xs border border-yellow-600/30 bg-black/40 p-2 rounded-lg">
                     <div className="flex flex-col relative">
-                        <span className="text-yellow-500 uppercase text-[10px]">Credits</span>
+                        <span className="text-yellow-500 uppercase text-[10px]">{t('slotMachine.credits')}</span>
                         <div className="flex items-center gap-2">
                             <span className="text-xl font-bold">{credits.toString()}</span>
                             <button
                                 onClick={() => setShowRecharge(!showRecharge)}
                                 className="w-5 h-5 rounded-full bg-slate-700/50 hover:bg-green-600 text-white flex items-center justify-center text-[10px] transition-colors"
-                                title="Recharge"
+                                title={t('slotMachine.recharge')}
                             >
                                 +
                             </button>
@@ -382,13 +384,13 @@ const SlotMachine = () => {
                                     }}
                                     className="bg-green-600 hover:bg-green-500 text-white text-[10px] px-2 rounded font-bold"
                                 >
-                                    ADD
+                                    {t('slotMachine.add')}
                                 </button>
                             </div>
                         )}
                     </div>
                     <div className="flex flex-col items-end">
-                        <span className="text-yellow-500 uppercase text-[10px]">Net Win</span>
+                        <span className="text-yellow-500 uppercase text-[10px]">{t('slotMachine.netWin')}</span>
                         <span className={`text-xl font-bold ${winAmount > 0n ? 'text-green-400 animate-pulse' : (lastNetWin !== null && lastNetWin < 0n) ? 'text-red-400' : 'text-slate-300'}`}>
                             {winAmount > 0n ? (winAmount - bet).toString() : (lastNetWin !== null ? lastNetWin.toString() : '0')}
                         </span>
@@ -412,7 +414,7 @@ const SlotMachine = () => {
                                     ${canHold && !heldReels[i] ? 'hover:bg-red-200' : ''}
                                     disabled:opacity-50`}
                                 >
-                                    {heldReels[i] ? 'HELD' : 'HOLD'}
+                                    {heldReels[i] ? t('slotMachine.held') : t('slotMachine.hold')}
                                 </button>
                             </div>
                         ))}
@@ -434,7 +436,7 @@ const SlotMachine = () => {
                         ))}
                         {/* Custom Bet Input */}
                         <div className="flex items-center ml-2 border-l border-slate-600 pl-2">
-                            <span className="text-[10px] text-slate-500 mr-1">BET</span>
+                            <span className="text-[10px] text-slate-500 mr-1">{t('slotMachine.bet')}</span>
                             <input
                                 type="number"
                                 value={bet.toString()}
@@ -454,7 +456,7 @@ const SlotMachine = () => {
                         disabled={spinning || gambleOpen}
                         className="bg-red-600 px-8 h-10 rounded-lg text-sm font-bold shadow-lg active:scale-95 disabled:grayscale border-b-4 border-red-800"
                     >
-                        SPIN
+                        {t('slotMachine.spin')}
                     </button>
                 </div>
 
@@ -466,20 +468,20 @@ const SlotMachine = () => {
                 </div>
             </div>
 
-            <div className={`text-2xl font-bold font-mono tracking-tight h-8 ${winAmount > 0 ? 'text-yellow-400 animate-bounce' : 'text-slate-500'}`}>{message}</div>
+            <div className={`text-2xl font-bold font-mono tracking-tight h-8 ${winAmount > 0 ? 'text-yellow-400 animate-bounce' : 'text-slate-500'}`}>{t(`slotMachine.messages.${message.key}`, message.vars)}</div>
 
             {/* Paytable (Enhanced) */}
             <div className="bg-slate-900/80 p-4 rounded-xl border border-white/10 text-xs w-full max-w-3xl">
                 <div className="flex justify-between items-center mb-4">
-                    <h4 className="text-slate-500 uppercase font-bold">5-Reel Paytable (Multipliers)</h4>
-                    <span className="text-[10px] text-indigo-400">Match 3, 4, or 5 consecutive symbols from Left to Right!</span>
+                    <h4 className="text-slate-500 uppercase font-bold">{t('slotMachine.paytableTitle')}</h4>
+                    <span className="text-[10px] text-indigo-400">{t('slotMachine.paytableHint')}</span>
                 </div>
                 <div className="grid grid-cols-3 sm:grid-cols-7 gap-2 text-center text-slate-300 font-mono text-[10px]">
-                    <div className="text-left font-sans text-slate-500 font-bold col-span-1">Symbol</div>
-                    <div className="text-indigo-400">Value</div>
-                    <div className="text-slate-500">3x Match</div>
-                    <div className="text-slate-400">4x Match</div>
-                    <div className="text-yellow-400 font-bold col-span-3">5x JACKPOT</div>
+                    <div className="text-left font-sans text-slate-500 font-bold col-span-1">{t('slotMachine.symbol')}</div>
+                    <div className="text-indigo-400">{t('slotMachine.value')}</div>
+                    <div className="text-slate-500">{t('slotMachine.match3')}</div>
+                    <div className="text-slate-400">{t('slotMachine.match4')}</div>
+                    <div className="text-yellow-400 font-bold col-span-3">{t('slotMachine.jackpotCol')}</div>
 
                     {SYMBOLS.map(s => (
                         <React.Fragment key={s.id}>

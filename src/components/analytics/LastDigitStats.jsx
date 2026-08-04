@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const LastDigitStats = ({ data, isLightMode }) => {
+    const { t } = useLanguage();
 
     const digitData = useMemo(() => {
         // Init 0-9
@@ -27,7 +29,7 @@ const LastDigitStats = ({ data, isLightMode }) => {
 
     return (
         <div className="h-full w-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-500">
-            <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-2 uppercase tracking-wider">Trailing Digit Analysis (0-9)</h4>
+            <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-2 uppercase tracking-wider">{t('lastDigitStats.heading')}</h4>
             <div className="h-56 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={digitData} margin={{ top: 5, right: 0, left: -25, bottom: 5 }} layout="vertical">

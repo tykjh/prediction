@@ -1,6 +1,8 @@
 import React from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const TopBar = ({ currentView, onViewChange, onLogoClick, isLightMode, onToggleLightMode, activeGameID, onToggleGame, activeGameLogo }) => {
+    const { lang, toggleLang, t } = useLanguage();
     return (
         <div className="bg-slate-950/80 light:bg-slate-100/80 backdrop-blur-xl border-b border-white/5 light:border-black/5 sticky top-0 z-50 supports-[backdrop-filter]:bg-slate-950/60 light:supports-[backdrop-filter]:bg-slate-100/60 transition-colors duration-500">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -37,7 +39,7 @@ const TopBar = ({ currentView, onViewChange, onLogoClick, isLightMode, onToggleL
                                 }`}
                         >
                             <span className="text-base">🛠️</span>
-                            Workspace
+                            {t('topbar.workspace')}
                         </button>
                         <button
                             onClick={() => onViewChange('test-area')}
@@ -47,7 +49,7 @@ const TopBar = ({ currentView, onViewChange, onLogoClick, isLightMode, onToggleL
                                 }`}
                         >
                             <span className="text-base">🧪</span>
-                            Labs
+                            {t('topbar.labs')}
                         </button>
                         <button
                             onClick={() => onViewChange('backtest')}
@@ -57,7 +59,7 @@ const TopBar = ({ currentView, onViewChange, onLogoClick, isLightMode, onToggleL
                                 }`}
                         >
                             <span className="text-base">🎯</span>
-                            Quality
+                            {t('topbar.quality')}
                         </button>
                     </div>
 
@@ -70,7 +72,7 @@ const TopBar = ({ currentView, onViewChange, onLogoClick, isLightMode, onToggleL
                                 ? 'bg-emerald-600 border-emerald-500 text-white shadow-emerald-900/40'
                                 : 'bg-slate-900 light:bg-white/80 border-white/10 light:border-black/5 text-emerald-400 light:text-emerald-600 hover:bg-slate-800 light:hover:bg-white'
                                 }`}
-                            title="Go to Playground"
+                            title={t('topbar.playground')}
                         >
                             <span className="text-xl">🎡</span>
                         </button>
@@ -83,13 +85,13 @@ const TopBar = ({ currentView, onViewChange, onLogoClick, isLightMode, onToggleL
                                     ? 'bg-emerald-600/20 border-emerald-500/30 text-emerald-400 hover:bg-emerald-600 hover:text-white hover:border-emerald-500 shadow-emerald-900/20 light:bg-emerald-100 light:text-emerald-700 light:border-emerald-300 light:hover:bg-emerald-600 light:hover:text-white'
                                     : 'bg-cyan-600/20 border-cyan-500/30 text-cyan-400 hover:bg-cyan-600 hover:text-white hover:border-cyan-500 shadow-cyan-900/20 light:bg-cyan-100 light:text-cyan-700 light:border-cyan-300 light:hover:bg-cyan-600 light:hover:text-white'
                                 }`}
-                            title="Click to Switch Game"
+                            title={t('topbar.switchGame')}
                         >
                             <span className="text-lg group-hover:rotate-12 transition-transform duration-300">
                                 {activeGameLogo || '🎱'}
                             </span>
                             <span className="text-xs uppercase tracking-wider">
-                                {activeGameID === 'SUPERLOTTO' ? 'Super Lotto' : (activeGameID === '539' ? 'Jin Cai 539' : 'Lotto 6/49')}
+                                {activeGameID === 'SUPERLOTTO' ? t('topbar.superLotto') : (activeGameID === '539' ? t('topbar.jinCai539') : t('topbar.lotto649'))}
                             </span>
                         </button>
 
@@ -97,9 +99,18 @@ const TopBar = ({ currentView, onViewChange, onLogoClick, isLightMode, onToggleL
                         <button
                             onClick={onToggleLightMode}
                             className="bg-slate-900 light:bg-white/80 border border-white/10 light:border-black/5 p-2 rounded-xl transition-all duration-300 hover:scale-110 shadow-lg text-xl hover:bg-slate-800 light:hover:bg-white"
-                            title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+                            title={isLightMode ? t('topbar.darkMode') : t('topbar.lightMode')}
                         >
                             {isLightMode ? '🌙' : '☀️'}
+                        </button>
+
+                        {/* Language Toggle Button */}
+                        <button
+                            onClick={toggleLang}
+                            className="bg-slate-900 light:bg-white/80 border border-white/10 light:border-black/5 w-10 h-10 rounded-xl transition-all duration-300 hover:scale-110 shadow-lg text-xs font-black uppercase tracking-wider text-slate-300 light:text-slate-700 hover:bg-slate-800 light:hover:bg-white flex items-center justify-center"
+                            title={t('topbar.language')}
+                        >
+                            {lang === 'zh' ? 'EN' : '中'}
                         </button>
                     </div>
                 </div>

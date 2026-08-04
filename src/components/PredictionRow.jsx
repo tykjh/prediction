@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const PredictionRow = ({
     title,
@@ -17,6 +18,7 @@ const PredictionRow = ({
     onSave,
     pickCount = 6
 }) => {
+    const { t } = useLanguage();
 
     // Helper to generate style map for hybrid numbers
     const getHybridStyle = (num) => {
@@ -45,7 +47,7 @@ const PredictionRow = ({
                         ) : (
                             <>
                                 <span className="text-2xl leading-none filter drop-shadow-md group-hover/btn:scale-125 transition-transform duration-300">{icon}</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest opacity-80 group-hover/btn:opacity-100">Run</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest opacity-80 group-hover/btn:opacity-100">{t('predictionRow.run')}</span>
                             </>
                         )}
                         {/* Shine Effect */}
@@ -109,7 +111,7 @@ const PredictionRow = ({
                     <button
                         onClick={onSave}
                         className="ml-auto w-10 h-10 rounded-full bg-white/5 light:bg-slate-200 border border-white/10 light:border-slate-300 text-white/40 light:text-slate-500 hover:text-white hover:bg-emerald-500 hover:border-emerald-400 hover:shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all duration-300 flex items-center justify-center group/save"
-                        title="Save to Vault"
+                        title={t('predictionRow.saveToVault')}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 transition-transform group-hover/save:scale-110">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
@@ -124,11 +126,11 @@ const PredictionRow = ({
                     <div className="mt-3 pt-3 border-t border-slate-800/50 light:border-slate-200 text-[10px]">
                         <div className="flex flex-wrap gap-4 justify-center bg-slate-950/30 light:bg-slate-50 p-2 rounded border border-slate-800/30 light:border-slate-200">
                             <div className="flex gap-2 items-center">
-                                <span className="text-red-400 font-bold">🔥 Hot:</span>
+                                <span className="text-red-400 font-bold">🔥 {t('predictionRow.hotLabel')}</span>
                                 <span className="text-slate-500">{meta.hot && meta.hot.sort((a, b) => a - b).map(n => (n < 10 ? `0${n}` : n)).join(' ')}</span>
                             </div>
                             <div className="flex gap-2 items-center border-l border-slate-800 light:border-slate-300 pl-4">
-                                <span className="text-blue-400 font-bold">❄️ Cold:</span>
+                                <span className="text-blue-400 font-bold">❄️ {t('predictionRow.coldLabel')}</span>
                                 <span className="text-slate-500">{meta.cold && meta.cold.sort((a, b) => a - b).map(n => (n < 10 ? `0${n}` : n)).join(' ')}</span>
                             </div>
                         </div>

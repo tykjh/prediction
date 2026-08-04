@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 // Helper to calc hot/cold from previous data
 const analyzePriorStats = (priorHistory, includeSpecial, gameConfig, limit) => {
@@ -53,6 +54,7 @@ const HistoryList = ({
     analysisDepth,
     setAnalysisDepth
 }) => {
+    const { t } = useLanguage();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedYear, setSelectedYear] = useState('All');
     const [analyzeIncludeSpecial, setAnalyzeIncludeSpecial] = useState(true);
@@ -191,7 +193,7 @@ const HistoryList = ({
             <div className="flex flex-col gap-6 mb-6">
                 <div className="flex flex-col xl:flex-row justify-between items-center gap-6">
                     <h2 className="text-xl font-bold text-slate-200 light:text-slate-900 flex items-center gap-3">
-                        <span className="text-2xl">📜</span> Draw History
+                        <span className="text-2xl">📜</span> {t('historyList.title')}
                         <span className="text-xs font-black text-slate-900 light:text-slate-600 bg-white light:bg-slate-200 px-2 py-0.5 rounded-full shadow-lg shadow-white/20 light:shadow-none border light:border-slate-300">
                             {filteredHistory.length}
                         </span>
@@ -200,7 +202,7 @@ const HistoryList = ({
                     <div className="flex flex-wrap justify-center items-center gap-4 bg-slate-950/30 light:bg-slate-100/50 p-2 rounded-2xl border border-white/5 light:border-slate-200">
                         {/* 1. Highlight Qty */}
                         <div className="flex items-center gap-2 px-2">
-                            <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">HL Qty:</span>
+                            <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">{t('historyList.hlQty')}</span>
                             <input
                                 type="range"
                                 min="3"
@@ -215,7 +217,7 @@ const HistoryList = ({
 
                         {/* 2. Analysis Depth (N) */}
                         <div className="flex items-center gap-2 px-2 border-l border-white/10 light:border-slate-300">
-                            <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">Lookback N:</span>
+                            <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">{t('historyList.lookbackN')}</span>
                             <input
                                 type="range"
                                 min="10"
@@ -226,13 +228,13 @@ const HistoryList = ({
                                 className="w-16 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                             />
                             <span className="text-xs font-mono font-bold text-emerald-400 light:text-emerald-600 w-8 text-right">
-                                {analysisDepth === 0 ? "ALL" : analysisDepth}
+                                {analysisDepth === 0 ? t('historyList.all') : analysisDepth}
                             </span>
                         </div>
 
                         {/* 3. Analysis Rows (Displayed) */}
                         <div className="flex items-center gap-2 px-2 border-l border-white/10 light:border-slate-300">
-                            <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">Viz Rows:</span>
+                            <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">{t('historyList.vizRows')}</span>
                             <input
                                 type="range"
                                 min="5"
@@ -247,7 +249,7 @@ const HistoryList = ({
 
                         {/* 3. Replay / Time Travel */}
                         <div className="flex items-center gap-2 px-2 border-l border-white/10 light:border-slate-300">
-                            <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">Replay:</span>
+                            <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">{t('historyList.replay')}</span>
                             <input
                                 type="range"
                                 min="0"
@@ -260,7 +262,7 @@ const HistoryList = ({
                             />
                             <div className="flex flex-col leading-none">
                                 <span className="text-[10px] font-mono font-bold text-amber-400 light:text-amber-600">
-                                    {historyOffset === 0 ? "LATEST" : `-${historyOffset}`}
+                                    {historyOffset === 0 ? t('historyList.latest') : `-${historyOffset}`}
                                 </span>
                             </div>
                         </div>
@@ -273,7 +275,7 @@ const HistoryList = ({
                                 onChange={(e) => setAnalyzeIncludeSpecial(e.target.checked)}
                                 className="w-4 h-4 text-blue-500 rounded focus:ring-blue-600 bg-slate-700 border-gray-600 light:bg-slate-200 light:border-slate-400"
                             />
-                            <span className="text-[10px] font-bold text-slate-400 light:text-slate-700 select-none uppercase">Include SP</span>
+                            <span className="text-[10px] font-bold text-slate-400 light:text-slate-700 select-none uppercase">{t('historyList.includeSp')}</span>
                         </label>
 
                         {/* Reset Button */}
@@ -286,7 +288,7 @@ const HistoryList = ({
                                 setAnalyzeIncludeSpecial(true);
                             }}
                             className="bg-slate-700 hover:bg-slate-600 light:bg-slate-200 light:hover:bg-slate-300 text-white light:text-slate-700 rounded-full w-8 h-8 flex items-center justify-center transition-colors shadow-sm ml-1"
-                            title="Reset to Defaults"
+                            title={t('historyList.resetDefaults')}
                         >
                             ↺
                         </button>
@@ -297,11 +299,11 @@ const HistoryList = ({
                 <div className="flex justify-end gap-3 text-xs -mt-2">
                     <div className="flex items-center gap-1">
                         <span className="w-2 h-2 rounded-full bg-red-600"></span>
-                        <span className="text-red-300 light:text-red-700 font-bold">Hot (Top {highlightCount})</span>
+                        <span className="text-red-300 light:text-red-700 font-bold">{t('historyList.hotTop', { n: highlightCount })}</span>
                     </div>
                     <div className="flex items-center gap-1">
                         <span className="w-2 h-2 rounded-full bg-blue-600"></span>
-                        <span className="text-blue-300 light:text-blue-700 font-bold">Cold (Bot {highlightCount})</span>
+                        <span className="text-blue-300 light:text-blue-700 font-bold">{t('historyList.coldBot', { n: highlightCount })}</span>
                     </div>
                 </div>
 
@@ -312,8 +314,8 @@ const HistoryList = ({
                         <div className="flex items-center gap-2 mr-2">
                             <span className="text-base">🧠</span>
                             <div className="flex flex-col leading-none">
-                                <span className="font-black text-slate-300 light:text-slate-700 uppercase tracking-wide">Contextual AI</span>
-                                <span className="text-[9px] text-slate-500 font-bold">Trend (Last {contextualStats.trendLimit})</span>
+                                <span className="font-black text-slate-300 light:text-slate-700 uppercase tracking-wide">{t('historyList.contextualAi')}</span>
+                                <span className="text-[9px] text-slate-500 font-bold">{t('historyList.trendLast', { n: contextualStats.trendLimit })}</span>
                             </div>
                         </div>
 
@@ -321,15 +323,15 @@ const HistoryList = ({
                         <div className="flex items-center gap-4 border-l border-white/10 light:border-slate-300 pl-4">
                             <div className="flex flex-col items-center">
                                 <span className="font-black text-red-400 light:text-red-600">{contextualStats.avgHot}</span>
-                                <span className="text-[9px] uppercase text-slate-500 font-bold">Hot Avg</span>
+                                <span className="text-[9px] uppercase text-slate-500 font-bold">{t('historyList.hotAvg')}</span>
                             </div>
                             <div className="flex flex-col items-center">
                                 <span className="font-black text-slate-400 light:text-slate-600">{contextualStats.avgNeutral}</span>
-                                <span className="text-[9px] uppercase text-slate-500 font-bold">Neu Avg</span>
+                                <span className="text-[9px] uppercase text-slate-500 font-bold">{t('historyList.neuAvg')}</span>
                             </div>
                             <div className="flex flex-col items-center">
                                 <span className="font-black text-blue-400 light:text-blue-600">{contextualStats.avgCold}</span>
-                                <span className="text-[9px] uppercase text-slate-500 font-bold">Cold Avg</span>
+                                <span className="text-[9px] uppercase text-slate-500 font-bold">{t('historyList.coldAvg')}</span>
                             </div>
                         </div>
 
@@ -338,7 +340,7 @@ const HistoryList = ({
 
                             {/* Hot List */}
                             <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar pb-1">
-                                <span className="text-[9px] font-bold text-red-500 light:text-red-700 uppercase whitespace-nowrap">Hot:</span>
+                                <span className="text-[9px] font-bold text-red-500 light:text-red-700 uppercase whitespace-nowrap">{t('historyList.hotLabel')}</span>
                                 <div className="flex gap-1">
                                     {contextualStats.currentHot.map(n => (
                                         <span key={n} className="w-5 h-5 flex items-center justify-center rounded bg-red-500/20 light:bg-red-100 text-red-300 light:text-red-800 text-[10px] font-bold border border-red-500/30">{n}</span>
@@ -348,7 +350,7 @@ const HistoryList = ({
 
                             {/* Cold List */}
                             <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar pb-1">
-                                <span className="text-[9px] font-bold text-blue-500 light:text-blue-700 uppercase whitespace-nowrap">Cold:</span>
+                                <span className="text-[9px] font-bold text-blue-500 light:text-blue-700 uppercase whitespace-nowrap">{t('historyList.coldLabel')}</span>
                                 <div className="flex gap-1">
                                     {contextualStats.currentCold.map(n => (
                                         <span key={n} className="w-5 h-5 flex items-center justify-center rounded bg-blue-500/20 light:bg-blue-100 text-blue-300 light:text-blue-800 text-[10px] font-bold border border-blue-500/30">{n}</span>
@@ -364,7 +366,7 @@ const HistoryList = ({
                 <div className="relative w-full">
                     <input
                         type="text"
-                        placeholder="Search..."
+                        placeholder={t('historyList.searchPlaceholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full bg-slate-950/50 light:bg-white backdrop-blur rounded-xl border border-white/10 light:border-slate-400 text-white light:text-slate-900 font-bold placeholder-slate-500 light:placeholder-slate-400 pl-4 pr-10 py-2.5 focus:border-indigo-500 light:focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all text-sm shadow-inner light:shadow-sm"
@@ -380,7 +382,7 @@ const HistoryList = ({
                             : 'bg-transparent text-slate-500 hover:text-slate-300 light:text-slate-500 light:hover:text-slate-800 hover:bg-white/5 light:hover:bg-slate-200/50'
                             }`}
                     >
-                        All
+                        {t('historyList.yearAll')}
                     </button>
                     {availableYears.map(year => (
                         <button
@@ -391,7 +393,7 @@ const HistoryList = ({
                                 : 'bg-transparent text-slate-500 hover:text-slate-300 light:text-slate-500 light:hover:text-slate-900 hover:bg-white/5 light:hover:bg-slate-100'
                                 }`}
                         >
-                            Year {year}
+                            {t('historyList.year', { year })}
                         </button>
                     ))}
                 </div>
@@ -401,10 +403,10 @@ const HistoryList = ({
                 <table className="w-full text-left text-sm text-slate-400 light:text-slate-700">
                     <thead className="text-[10px] uppercase font-black bg-slate-950/80 light:bg-slate-100 text-slate-500 light:text-slate-900 sticky top-0 z-10 backdrop-blur-md shadow-sm border-b light:border-slate-200">
                         <tr>
-                            <th className="px-6 py-4">Period</th>
-                            <th className="px-6 py-4">Date</th>
-                            <th className="px-6 py-4">Numbers</th>
-                            {hasSpecial && <th className="px-6 py-4 text-center">Special</th>}
+                            <th className="px-6 py-4">{t('historyList.colPeriod')}</th>
+                            <th className="px-6 py-4">{t('historyList.colDate')}</th>
+                            <th className="px-6 py-4">{t('historyList.colNumbers')}</th>
+                            {hasSpecial && <th className="px-6 py-4 text-center">{t('historyList.colSpecial')}</th>}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-700 light:divide-slate-200">
@@ -419,7 +421,7 @@ const HistoryList = ({
                                 <tr key={index} className={`transition-colors ${hasStats ? 'bg-slate-700/20 light:bg-orange-50' : 'hover:bg-slate-700/30 light:hover:bg-slate-50'}`}>
                                     <td className="px-4 py-3 font-mono font-bold text-white light:text-slate-950">
                                         {draw.period}
-                                        {hasStats && index < highlightCount && <span className="ml-2 text-[10px] bg-slate-600 text-slate-300 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">Analyzed</span>}
+                                        {hasStats && index < highlightCount && <span className="ml-2 text-[10px] bg-slate-600 text-slate-300 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">{t('historyList.analyzedBadge')}</span>}
                                     </td>
                                     <td className="px-4 py-3">{draw.date || '-'}</td>
                                     <td className="px-4 py-3">

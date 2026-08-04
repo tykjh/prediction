@@ -12,8 +12,10 @@ import { GAME_TYPES, DEFAULT_GAME } from './config/games';
 import initialHistoryLotto649 from './data/history.json';
 import initialHistorySuperLotto from './data/history_superlotto.json';
 import initialHistory539 from './data/history_539.json';
+import { useLanguage } from './i18n/LanguageContext';
 
 function App() {
+  const { t } = useLanguage();
   const [activeGameID, setActiveGameID] = useState(DEFAULT_GAME);
   const activeGameConfig = GAME_TYPES[activeGameID];
 
@@ -109,7 +111,7 @@ function App() {
 
   // Clear all predictions
   const handleClearVault = () => {
-    if (window.confirm('WARNING: This will permanently delete ALL saved predictions in The Vault. Are you sure?')) {
+    if (window.confirm(t('app.confirmClearVault'))) {
       setSavedPredictions([]);
     }
   };
@@ -125,13 +127,13 @@ function App() {
           const newItems = data.filter(p => !existingIds.has(p.id));
           return [...newItems, ...prev];
         });
-        alert(`Successfully imported ${data.length} entries.`);
+        alert(t('app.importSuccess', { n: data.length }));
       } else {
-        alert('Invalid data format.');
+        alert(t('app.importInvalidFormat'));
       }
     } catch (e) {
       console.error("Import failed", e);
-      alert('Import failed: ' + e.message);
+      alert(t('app.importFailed', { message: e.message }));
     }
   };
 
@@ -144,7 +146,7 @@ function App() {
   const handleCheckVault = () => {
     // 1. Identify which predictions can be checked
     if (!completeHistory || completeHistory.length === 0) {
-      alert("No history data available for verification.");
+      alert(t('app.noHistoryForVerification'));
       return;
     }
 
@@ -228,13 +230,13 @@ function App() {
     if (updatedPredictions.some(p => p.gameID === activeGameID)) {
       if (winCount > 0) {
         if (playSound) playSound('win');
-        alert(`Verified! You have ${winCount} winning tickets in ${activeGameConfig.name}!`);
+        alert(t('app.verifiedWinners', { n: winCount, game: activeGameConfig.name }));
       } else {
         if (playSound) playSound('click');
-        alert(`Verified. No winners found in this batch.`);
+        alert(t('app.verifiedNoWinners'));
       }
     } else {
-      alert(`No tickets found for ${activeGameConfig.name}. Switch game to verifiy others.`);
+      alert(t('app.noTicketsForGame', { game: activeGameConfig.name }));
     }
   };
 
@@ -608,7 +610,7 @@ function App() {
         <button
           onClick={() => changeView('prev')}
           className="w-10 h-10 rounded-full bg-white/5 light:bg-slate-200 backdrop-blur-md border border-white/10 light:border-slate-300 text-white/40 light:text-slate-500 shadow-lg hover:bg-white/10 light:hover:bg-slate-300 hover:text-white light:hover:text-slate-800 hover:scale-110 hover:border-white/30 active:scale-95 transition-all duration-300 flex items-center justify-center"
-          title="Previous View"
+          title={t('app.previousView')}
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -626,7 +628,7 @@ function App() {
         <button
           onClick={() => changeView('next')}
           className="w-10 h-10 rounded-full bg-white/5 light:bg-slate-200 backdrop-blur-md border border-white/10 light:border-slate-300 text-white/40 light:text-slate-500 shadow-lg hover:bg-white/10 light:hover:bg-slate-300 hover:text-white light:hover:text-slate-800 hover:scale-110 hover:border-white/30 active:scale-95 transition-all duration-300 flex items-center justify-center"
-          title="Next View"
+          title={t('app.nextView')}
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />

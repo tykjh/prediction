@@ -1,0 +1,26 @@
+export const app = {
+    en: {
+        confirmClearVault: 'WARNING: This will permanently delete ALL saved predictions in The Vault. Are you sure?',
+        importSuccess: 'Successfully imported {n} entries.',
+        importInvalidFormat: 'Invalid data format.',
+        importFailed: 'Import failed: {message}',
+        noHistoryForVerification: 'No history data available for verification.',
+        verifiedWinners: 'Verified! You have {n} winning tickets in {game}!',
+        verifiedNoWinners: 'Verified. No winners found in this batch.',
+        noTicketsForGame: 'No tickets found for {game}. Switch game to verify others.',
+        previousView: 'Previous View',
+        nextView: 'Next View',
+    },
+    zh: {
+        confirmClearVault: '警告：這將永久刪除保險庫中所有已儲存的預測。確定要繼續嗎？',
+        importSuccess: '已成功匯入 {n} 筆資料。',
+        importInvalidFormat: '資料格式無效。',
+        importFailed: '匯入失敗：{message}',
+        noHistoryForVerification: '目前沒有可供核對的歷史開獎資料。',
+        verifiedWinners: '核對完成！你在《{game}》中有 {n} 張中獎彩券！',
+        verifiedNoWinners: '核對完成，這批彩券中沒有中獎紀錄。',
+        noTicketsForGame: '找不到《{game}》的彩券紀錄，請切換遊戲後再核對其他彩券。',
+        previousView: '上一個畫面',
+        nextView: '下一個畫面',
+    },
+};

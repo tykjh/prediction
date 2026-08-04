@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const HeatmapGrid = ({ data, isLightMode }) => {
+    const { t } = useLanguage();
     // data is expected to be array of objects: { number: 1, score: 10 }
 
     // 1. Find Max Score for normalization
@@ -47,7 +49,7 @@ const HeatmapGrid = ({ data, isLightMode }) => {
 
     if (!data || data.length === 0) return (
         <div className="h-64 flex items-center justify-center text-slate-500">
-            No data available.
+            {t('heatmapGrid.noData')}
         </div>
     );
 
@@ -66,7 +68,7 @@ const HeatmapGrid = ({ data, isLightMode }) => {
 
                         {/* Tooltip */}
                         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-black text-white text-[10px] rounded whitespace-nowrap z-20 pointer-events-none">
-                            Count: {cell.score.toFixed(1)}
+                            {t('heatmapGrid.countTooltip', { n: cell.score.toFixed(1) })}
                         </div>
                     </div>
                 ))}
@@ -74,9 +76,9 @@ const HeatmapGrid = ({ data, isLightMode }) => {
 
             {/* Legend */}
             <div className="flex gap-4 mt-6 text-[10px] text-slate-400 font-medium">
-                <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-slate-800 light:bg-slate-200"></div> Cold</div>
-                <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-purple-600/60 light:bg-orange-300"></div> Warm</div>
-                <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-red-500"></div> Hot</div>
+                <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-slate-800 light:bg-slate-200"></div> {t('heatmapGrid.cold')}</div>
+                <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-purple-600/60 light:bg-orange-300"></div> {t('heatmapGrid.warm')}</div>
+                <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-red-500"></div> {t('heatmapGrid.hot')}</div>
             </div>
         </div>
     );

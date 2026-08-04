@@ -2,8 +2,10 @@ import React, { useMemo, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import ZoneTwoHybrid from './ZoneTwoHybrid';
 import { calculateHybridPrediction } from '../utils/prediction';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
+    const { t } = useLanguage();
     // Determine number range (Usually 1-8 for Super Lotto Zone 2)
     const MAX_ZONE_2 = activeGameConfig?.settings?.specialNumber?.max || 8;
     const POOL = Array.from({ length: MAX_ZONE_2 }, (_, i) => i + 1);
@@ -118,12 +120,12 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
         const normPct = 100 - hotPct - coldPct;
 
         return {
-            oddBias: odds > (analysisCount / 2) ? 'Odd' : odds < (analysisCount / 2) ? 'Even' : 'Balanced',
-            bigBias: bigs > (analysisCount / 2) ? 'Big' : bigs < (analysisCount / 2) ? 'Small' : 'Balanced',
+            oddBias: odds > (analysisCount / 2) ? 'biasOdd' : odds < (analysisCount / 2) ? 'biasEven' : 'biasBalanced',
+            bigBias: bigs > (analysisCount / 2) ? 'biasBig' : bigs < (analysisCount / 2) ? 'biasSmall' : 'biasBalanced',
             oddCount: odds,
             bigCount: bigs,
             primeCount: primes,
-            primeBias: primes > (analysisCount / 2) ? 'Prime' : primes < (analysisCount / 2) ? 'Composite' : 'Balanced',
+            primeBias: primes > (analysisCount / 2) ? 'biasPrime' : primes < (analysisCount / 2) ? 'biasComposite' : 'biasBalanced',
             roads: [road0, road1, road2],
             avgSpan,
             direction: { up: upPct, down: downPct, same: samePct },
@@ -281,12 +283,12 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
     // Model Config Helper
     const MODEL_CONFIG = [
-        { key: 'markov', label: 'Markov', color: 'bg-blue-500' },
-        { key: 'knn', label: 'KNN', color: 'bg-indigo-500' },
-        { key: 'reg', label: 'Regression', color: 'bg-emerald-500' },
-        { key: 'monte', label: 'Monte Carlo', color: 'bg-amber-500' },
-        { key: 'quantum', label: 'Quantum', color: 'bg-purple-500' },
-        { key: 'hybrid', label: 'Hybrid', color: 'bg-cyan-500' }
+        { key: 'markov', label: t('zoneTwoLab.cfgMarkov'), color: 'bg-blue-500' },
+        { key: 'knn', label: t('zoneTwoLab.cfgKnn'), color: 'bg-indigo-500' },
+        { key: 'reg', label: t('zoneTwoLab.cfgReg'), color: 'bg-emerald-500' },
+        { key: 'monte', label: t('zoneTwoLab.cfgMonte'), color: 'bg-amber-500' },
+        { key: 'quantum', label: t('zoneTwoLab.cfgQuantum'), color: 'bg-purple-500' },
+        { key: 'hybrid', label: t('zoneTwoLab.cfgHybrid'), color: 'bg-cyan-500' }
     ];
     const [evolution, setEvolution] = useState({
         isEvolving: false,
@@ -424,7 +426,7 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
             const BACKTEST_DEPTH = 50;
 
             if (zoneData.length < BACKTEST_DEPTH + 20) {
-                alert("Insufficient history for Genetic Evolution (Need at least 70 draws).");
+                alert(t('zoneTwoLab.insufficientHistory'));
                 setEvolution(prev => ({ ...prev, isEvolving: false }));
                 return;
             }
@@ -435,7 +437,7 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                 .map(([key]) => key);
 
             if (activeKeys.length === 0) {
-                alert("Please select at least one model.");
+                alert(t('zoneTwoLab.selectModel'));
                 setEvolution(prev => ({ ...prev, isEvolving: false }));
                 return;
             }
@@ -552,7 +554,7 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
         } catch (error) {
             console.error("Hybrid Evolution Error:", error);
             setEvolution(prev => ({ ...prev, isEvolving: false }));
-            alert("Evolution failed: " + error.message);
+            alert(t('zoneTwoLab.evolutionFailed', { msg: error.message }));
         }
     };
 
@@ -566,16 +568,16 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 relative z-10 gap-4">
                     <div>
                         <h2 className="text-xl font-black text-rose-400 light:text-rose-600 flex items-center gap-2">
-                            ⚡ Zone 2 Lab
+                            ⚡ {t('zoneTwoLab.title')}
                         </h2>
                         <p className="text-sm text-slate-400 light:text-slate-500 mt-1">
-                            Deep analysis for the single-number Power Zone (1-{MAX_ZONE_2}).
+                            {t('zoneTwoLab.subtitle', { max: MAX_ZONE_2 })}
                         </p>
                     </div>
 
                     {/* Global Analysis Window Selector */}
                     <div className="bg-slate-950 light:bg-slate-100 p-1 rounded-lg border border-slate-800 light:border-slate-300 flex items-center gap-2 px-3">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 whitespace-nowrap">Analysis Window:</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-500 whitespace-nowrap">{t('zoneTwoLab.analysisWindow')}</span>
                         <input
                             type="number"
                             min="5"
@@ -584,7 +586,7 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             onChange={(e) => setAnalysisCount(Number(e.target.value))}
                             className="w-16 bg-slate-800 light:bg-white text-white light:text-slate-900 text-xs font-bold rounded px-2 py-1 border border-slate-700 light:border-slate-300 focus:outline-none focus:border-rose-500 text-center"
                         />
-                        <span className="text-[10px] text-slate-600">draws</span>
+                        <span className="text-[10px] text-slate-600">{t('zoneTwoLab.draws')}</span>
                     </div>
                 </div>
 
@@ -597,46 +599,46 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-blue-400">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z" />
                             </svg>
-                            Pattern Balance (Last {analysisCount})
+                            {t('zoneTwoLab.patternBalance', { n: analysisCount })}
                         </h3>
                         <div className="flex flex-col gap-3">
                             {/* Odd/Even */}
                             <div className="bg-slate-900 light:bg-slate-100 rounded-lg p-2.5">
                                 <div className="flex justify-between text-[9px] text-slate-500 font-bold uppercase mb-1">
-                                    <span>Odd</span>
-                                    <span>Even</span>
+                                    <span>{t('zoneTwoLab.odd')}</span>
+                                    <span>{t('zoneTwoLab.even')}</span>
                                 </div>
                                 <div className="h-1.5 bg-slate-800 light:bg-slate-300 rounded-full overflow-hidden flex">
                                     <div style={{ width: `${(patterns.oddCount / analysisCount) * 100}%` }} className="bg-rose-500 h-full transition-all duration-500"></div>
                                 </div>
                                 <div className="mt-1 text-[10px] font-bold text-center text-slate-400">
-                                    {patterns.oddBias} ({patterns.oddCount})
+                                    {t(`zoneTwoLab.${patterns.oddBias}`)} ({patterns.oddCount})
                                 </div>
                             </div>
                             {/* Big/Small */}
                             <div className="bg-slate-900 light:bg-slate-100 rounded-lg p-2.5">
                                 <div className="flex justify-between text-[9px] text-slate-500 font-bold uppercase mb-1">
-                                    <span>Big (5-8)</span>
-                                    <span>Small (1-4)</span>
+                                    <span>{t('zoneTwoLab.big')}</span>
+                                    <span>{t('zoneTwoLab.small')}</span>
                                 </div>
                                 <div className="h-1.5 bg-slate-800 light:bg-slate-300 rounded-full overflow-hidden flex">
                                     <div style={{ width: `${(patterns.bigCount / analysisCount) * 100}%` }} className="bg-purple-500 h-full transition-all duration-500"></div>
                                 </div>
                                 <div className="mt-1 text-[10px] font-bold text-center text-slate-400">
-                                    {patterns.bigBias} ({patterns.bigCount})
+                                    {t(`zoneTwoLab.${patterns.bigBias}`)} ({patterns.bigCount})
                                 </div>
                             </div>
                             {/* Prime/Composite */}
                             <div className="bg-slate-900 light:bg-slate-100 rounded-lg p-2.5">
                                 <div className="flex justify-between text-[9px] text-slate-500 font-bold uppercase mb-1">
-                                    <span>Prime (2,3,5,7)</span>
-                                    <span>Comp (1,4,6,8)</span>
+                                    <span>{t('zoneTwoLab.prime')}</span>
+                                    <span>{t('zoneTwoLab.comp')}</span>
                                 </div>
                                 <div className="h-1.5 bg-slate-800 light:bg-slate-300 rounded-full overflow-hidden flex">
                                     <div style={{ width: `${(patterns.primeCount / analysisCount) * 100}%` }} className="bg-amber-500 h-full transition-all duration-500"></div>
                                 </div>
                                 <div className="mt-1 text-[10px] font-bold text-center text-slate-400">
-                                    {patterns.primeBias} ({patterns.primeCount})
+                                    {t(`zoneTwoLab.${patterns.primeBias}`)} ({patterns.primeCount})
                                 </div>
                             </div>
                         </div>
@@ -648,13 +650,13 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-emerald-400">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
                             </svg>
-                            Metrics (Last {analysisCount})
+                            {t('zoneTwoLab.metrics', { n: analysisCount })}
                         </h3>
 
                         {/* Directional Bias */}
                         <div className="bg-slate-900 light:bg-slate-100 rounded-lg p-3">
                             <div className="flex justify-between items-end mb-2">
-                                <div className="text-[9px] text-slate-500 font-bold uppercase">Directional Context</div>
+                                <div className="text-[9px] text-slate-500 font-bold uppercase">{t('zoneTwoLab.directionalContext')}</div>
                                 <div className="text-[10px] font-bold text-slate-300">
                                     <span className="text-rose-400">{patterns.direction.up}%</span> /
                                     <span className="text-slate-400"> {patterns.direction.same}%</span> /
@@ -662,21 +664,21 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                 </div>
                             </div>
                             <div className="h-3 w-full flex rounded-full overflow-hidden">
-                                <div style={{ width: `${patterns.direction.up}%` }} className="h-full bg-rose-500 transition-all" title="Higher"></div>
-                                <div style={{ width: `${patterns.direction.same}%` }} className="h-full bg-slate-600 transition-all" title="Same"></div>
-                                <div style={{ width: `${patterns.direction.down}%` }} className="h-full bg-emerald-500 transition-all" title="Lower"></div>
+                                <div style={{ width: `${patterns.direction.up}%` }} className="h-full bg-rose-500 transition-all" title={t('zoneTwoLab.higher')}></div>
+                                <div style={{ width: `${patterns.direction.same}%` }} className="h-full bg-slate-600 transition-all" title={t('zoneTwoLab.same')}></div>
+                                <div style={{ width: `${patterns.direction.down}%` }} className="h-full bg-emerald-500 transition-all" title={t('zoneTwoLab.lower')}></div>
                             </div>
                             <div className="flex justify-between text-[8px] text-slate-500 mt-1 uppercase font-bold px-1">
-                                <span>Up</span>
-                                <span>Same</span>
-                                <span>Down</span>
+                                <span>{t('zoneTwoLab.up')}</span>
+                                <span>{t('zoneTwoLab.same')}</span>
+                                <span>{t('zoneTwoLab.down')}</span>
                             </div>
                         </div>
 
                         {/* Recent History Trend (Hot/Cold) */}
                         <div className="bg-slate-900 light:bg-slate-100 rounded-lg p-3">
                             <div className="flex justify-between items-end mb-2">
-                                <div className="text-[9px] text-slate-500 font-bold uppercase">Recent History Trend</div>
+                                <div className="text-[9px] text-slate-500 font-bold uppercase">{t('zoneTwoLab.recentHistoryTrend')}</div>
                                 <div className="text-[10px] font-bold text-slate-300">
                                     🔥 {patterns.history.hot}% /
                                     <span className="text-slate-400"> {patterns.history.normal}%</span> /
@@ -684,21 +686,21 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                 </div>
                             </div>
                             <div className="h-3 w-full flex rounded-full overflow-hidden">
-                                <div style={{ width: `${patterns.history.hot}%` }} className="h-full bg-rose-500 transition-all" title="Hot (Repeat)"></div>
-                                <div style={{ width: `${patterns.history.normal}%` }} className="h-full bg-slate-700 light:bg-slate-300 transition-all" title="Normal"></div>
-                                <div style={{ width: `${patterns.history.cold}%` }} className="h-full bg-blue-500 transition-all" title="Cold (Overdue)"></div>
+                                <div style={{ width: `${patterns.history.hot}%` }} className="h-full bg-rose-500 transition-all" title={t('zoneTwoLab.hotRepeat')}></div>
+                                <div style={{ width: `${patterns.history.normal}%` }} className="h-full bg-slate-700 light:bg-slate-300 transition-all" title={t('zoneTwoLab.normal')}></div>
+                                <div style={{ width: `${patterns.history.cold}%` }} className="h-full bg-blue-500 transition-all" title={t('zoneTwoLab.coldOverdue')}></div>
                             </div>
                             <div className="flex justify-between text-[8px] text-slate-500 mt-1 uppercase font-bold px-1">
-                                <span>Hot</span>
-                                <span>Normal</span>
-                                <span>Cold</span>
+                                <span>{t('zoneTwoLab.hot')}</span>
+                                <span>{t('zoneTwoLab.normal')}</span>
+                                <span>{t('zoneTwoLab.cold')}</span>
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-4 flex-1">
                             {/* 012 Road */}
                             <div className="flex-1">
-                                <div className="text-[9px] text-slate-500 font-bold uppercase mb-2 text-center">012 Road (Modulo 3)</div>
+                                <div className="text-[9px] text-slate-500 font-bold uppercase mb-2 text-center">{t('zoneTwoLab.road012')}</div>
                                 <div className="flex gap-1 h-10 w-full">
                                     <div style={{ flex: patterns.roads[0] || 1 }} className="bg-cyan-500/20 border-b-2 border-cyan-500 flex flex-col items-center justify-end pb-1 text-[10px] font-bold text-cyan-400 transition-all">
                                         R0 <span className="text-[9px] opacity-70">({patterns.roads[0]})</span>
@@ -714,7 +716,7 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
                             {/* Volatility Index */}
                             <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 border-t border-slate-800 pt-2">
-                                <span>AVG JUMP (SPAN)</span>
+                                <span>{t('zoneTwoLab.avgJump')}</span>
                                 <span className={patterns.avgSpan > 4 ? 'text-rose-400' : 'text-emerald-400'}>{patterns.avgSpan}</span>
                             </div>
                         </div>
@@ -726,12 +728,12 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-amber-400">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                             </svg>
-                            Gap Alerts
+                            {t('zoneTwoLab.gapAlerts')}
                         </h3>
                         <div className="flex flex-col gap-2 h-full overflow-y-auto max-h-[140px] scrollbar-thin scrollbar-thumb-slate-700">
                             {POOL.filter(n => missingCounts[n] > 8).length === 0 ? (
                                 <div className="w-full h-full flex items-center justify-center text-xs text-slate-500 italic">
-                                    No critical gaps detected.
+                                    {t('zoneTwoLab.noCriticalGaps')}
                                 </div>
                             ) : (
                                 POOL.filter(n => missingCounts[n] > 8).sort((a, b) => missingCounts[b] - missingCounts[a]).map(n => (
@@ -742,11 +744,11 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                                 {n}
                                             </span>
                                             <span className="text-xs font-bold text-slate-300 light:text-slate-700">
-                                                Zone 2 #{n}
+                                                {t('zoneTwoLab.zone2Num', { n })}
                                             </span>
                                         </div>
                                         <span className="text-[10px] text-slate-400 light:text-slate-500">
-                                            <strong className="text-white light:text-slate-900 text-xs">{missingCounts[n]}</strong> draws ago
+                                            <strong className="text-white light:text-slate-900 text-xs">{missingCounts[n]}</strong> {t('zoneTwoLab.drawsAgo')}
                                         </span>
                                     </div>
                                 ))
@@ -761,9 +763,9 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     {/* Model 1: Markov */}
                     <div className="bg-slate-950/40 light:bg-slate-50 rounded-xl p-4 border border-white/5 light:border-slate-200 flex flex-col gap-4 group hover:border-rose-500/30 transition-colors">
                         <div className="flex justify-between items-center">
-                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">Markov Chain</h3>
+                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">{t('zoneTwoLab.markovChain')}</h3>
                             <button onClick={runMarkov} className="bg-rose-500/20 text-rose-300 light:text-rose-700 hover:bg-rose-500 hover:text-white px-3 py-1 rounded text-[10px] font-bold transition-all">
-                                Run
+                                {t('zoneTwoLab.run')}
                             </button>
                         </div>
                         <div className="flex-1 flex flex-col items-center justify-center min-h-[100px]">
@@ -776,11 +778,11 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                         onClick={() => onSave([markovResult], 'Zone 2 Markov')}
                                         className="text-[10px] text-slate-500 hover:text-white transition-colors"
                                     >
-                                        Save Result
+                                        {t('zoneTwoLab.saveResult')}
                                     </button>
                                 </div>
                             ) : (
-                                <span className="text-slate-600 text-xs italic">Transition Logic</span>
+                                <span className="text-slate-600 text-xs italic">{t('zoneTwoLab.transitionLogic')}</span>
                             )}
                         </div>
                     </div>
@@ -788,9 +790,9 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     {/* Model 2: Time Traveler */}
                     <div className="bg-slate-950/40 light:bg-slate-50 rounded-xl p-4 border border-white/5 light:border-slate-200 flex flex-col gap-4 group hover:border-indigo-500/30 transition-colors">
                         <div className="flex justify-between items-center">
-                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">Time Traveler</h3>
+                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">{t('zoneTwoLab.timeTraveler')}</h3>
                             <button onClick={() => runKNN(3)} className="bg-indigo-500/20 text-indigo-300 light:text-indigo-700 hover:bg-indigo-500 hover:text-white px-3 py-1 rounded text-[10px] font-bold transition-all">
-                                Run
+                                {t('zoneTwoLab.run')}
                             </button>
                         </div>
                         <div className="flex-1 flex flex-col items-center justify-center min-h-[100px]">
@@ -803,11 +805,11 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                         onClick={() => onSave([knnResult], 'Zone 2 k-NN')}
                                         className="text-[10px] text-slate-500 hover:text-white transition-colors"
                                     >
-                                        Save Result
+                                        {t('zoneTwoLab.saveResult')}
                                     </button>
                                 </div>
                             ) : (
-                                <span className="text-slate-600 text-xs italic">Pattern Match</span>
+                                <span className="text-slate-600 text-xs italic">{t('zoneTwoLab.patternMatch')}</span>
                             )}
                         </div>
                     </div>
@@ -815,9 +817,9 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     {/* Model 3: Regression */}
                     <div className="bg-slate-950/40 light:bg-slate-50 rounded-xl p-4 border border-white/5 light:border-slate-200 flex flex-col gap-4 group hover:border-emerald-500/30 transition-colors">
                         <div className="flex justify-between items-center">
-                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">Regression</h3>
+                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">{t('zoneTwoLab.regression')}</h3>
                             <button onClick={runRegression} className="bg-emerald-500/20 text-emerald-300 light:text-emerald-700 hover:bg-emerald-500 hover:text-white px-3 py-1 rounded text-[10px] font-bold transition-all">
-                                Run
+                                {t('zoneTwoLab.run')}
                             </button>
                         </div>
                         <div className="flex-1 flex flex-col items-center justify-center min-h-[100px]">
@@ -830,11 +832,11 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                         onClick={() => onSave([regResult], 'Zone 2 Regression')}
                                         className="text-[10px] text-slate-500 hover:text-white transition-colors"
                                     >
-                                        Save Result
+                                        {t('zoneTwoLab.saveResult')}
                                     </button>
                                 </div>
                             ) : (
-                                <span className="text-slate-600 text-xs italic">Linear Trend</span>
+                                <span className="text-slate-600 text-xs italic">{t('zoneTwoLab.linearTrend')}</span>
                             )}
                         </div>
                     </div>
@@ -842,9 +844,9 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     {/* Model 4: Monte Carlo */}
                     <div className="bg-slate-950/40 light:bg-slate-50 rounded-xl p-4 border border-white/5 light:border-slate-200 flex flex-col gap-4 group hover:border-amber-500/30 transition-colors">
                         <div className="flex justify-between items-center">
-                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">Monte Carlo</h3>
+                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">{t('zoneTwoLab.monteCarlo')}</h3>
                             <button onClick={runMonteCarlo} className="bg-amber-500/20 text-amber-300 light:text-amber-700 hover:bg-amber-500 hover:text-white px-3 py-1 rounded text-[10px] font-bold transition-all">
-                                Run
+                                {t('zoneTwoLab.run')}
                             </button>
                         </div>
                         <div className="flex-1 flex flex-col items-center justify-center min-h-[100px]">
@@ -857,11 +859,11 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                         onClick={() => onSave([monteResult], 'Zone 2 Monte Carlo')}
                                         className="text-[10px] text-slate-500 hover:text-white transition-colors"
                                     >
-                                        Save Result
+                                        {t('zoneTwoLab.saveResult')}
                                     </button>
                                 </div>
                             ) : (
-                                <span className="text-slate-600 text-xs italic">Weighted Sim</span>
+                                <span className="text-slate-600 text-xs italic">{t('zoneTwoLab.weightedSim')}</span>
                             )}
                         </div>
                     </div>
@@ -869,9 +871,9 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     {/* Model 5: Quantum Chaos */}
                     <div className="bg-slate-950/40 light:bg-slate-50 rounded-xl p-4 border border-white/5 light:border-slate-200 flex flex-col gap-4 group hover:border-purple-500/30 transition-colors">
                         <div className="flex justify-between items-center">
-                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">Quantum</h3>
+                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">{t('zoneTwoLab.quantum')}</h3>
                             <button onClick={runQuantum} className="bg-purple-500/20 text-purple-300 light:text-purple-700 hover:bg-purple-500 hover:text-white px-3 py-1 rounded text-[10px] font-bold transition-all">
-                                Run
+                                {t('zoneTwoLab.run')}
                             </button>
                         </div>
                         <div className="flex-1 flex flex-col items-center justify-center min-h-[100px]">
@@ -884,11 +886,11 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                         onClick={() => onSave([quantumResult], 'Zone 2 Quantum')}
                                         className="text-[10px] text-slate-500 hover:text-white transition-colors"
                                     >
-                                        Save Result
+                                        {t('zoneTwoLab.saveResult')}
                                     </button>
                                 </div>
                             ) : (
-                                <span className="text-slate-600 text-xs italic">Pure Chaos</span>
+                                <span className="text-slate-600 text-xs italic">{t('zoneTwoLab.pureChaos')}</span>
                             )}
                         </div>
                     </div>
@@ -896,9 +898,9 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     {/* Model 6: Hybrid */}
                     <div className="bg-slate-950/40 light:bg-slate-50 rounded-xl p-4 border border-white/5 light:border-slate-200 flex flex-col gap-4 group hover:border-cyan-500/30 transition-colors">
                         <div className="flex justify-between items-center">
-                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">Hybrid</h3>
+                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase">{t('zoneTwoLab.hybrid')}</h3>
                             <button onClick={runHybrid} className="bg-cyan-500/20 text-cyan-300 light:text-cyan-700 hover:bg-cyan-500 hover:text-white px-3 py-1 rounded text-[10px] font-bold transition-all">
-                                Run
+                                {t('zoneTwoLab.run')}
                             </button>
                         </div>
                         <div className="flex-1 flex flex-col items-center justify-center min-h-[100px]">
@@ -911,11 +913,11 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                         onClick={() => onSave([hybridResult], 'Zone 2 Hybrid')}
                                         className="text-[10px] text-slate-500 hover:text-white transition-colors"
                                     >
-                                        Save Result
+                                        {t('zoneTwoLab.saveResult')}
                                     </button>
                                 </div>
                             ) : (
-                                <span className="text-slate-600 text-xs italic">Smart Weighting</span>
+                                <span className="text-slate-600 text-xs italic">{t('zoneTwoLab.smartWeighting')}</span>
                             )}
                         </div>
                     </div>
@@ -926,7 +928,7 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
                     {/* 1. Missing Matrix (Bar Chart) */}
                     <div className="bg-slate-950/50 light:bg-slate-50/50 rounded-xl p-4 border border-white/5 light:border-slate-200">
-                        <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase tracking-wider mb-4">Missing Counts (Gaps)</h3>
+                        <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase tracking-wider mb-4">{t('zoneTwoLab.missingCounts')}</h3>
                         <div className="h-48 w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={POOL.map(n => ({ n, missing: missingCounts[n] }))}>
@@ -954,7 +956,7 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     {/* 2. Heat Thermometer + Prediction */}
                     <div className="flex flex-col gap-4">
                         <div className="bg-slate-950/50 light:bg-slate-50/50 rounded-xl p-4 border border-white/5 light:border-slate-200 flex-1">
-                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase tracking-wider mb-4">Heat Map (Last 50)</h3>
+                            <h3 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase tracking-wider mb-4">{t('zoneTwoLab.heatMap')}</h3>
                             <div className="grid grid-cols-4 gap-2">
                                 {POOL.map(n => {
                                     const heat = heatMap[n];
@@ -983,10 +985,10 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     {/* 1. Number History Strip */}
                     <div>
                         <div className="flex justify-between items-center mb-3">
-                            <h3 className="text-xs font-bold text-slate-500 uppercase">Recent History (Last {analysisCount})</h3>
+                            <h3 className="text-xs font-bold text-slate-500 uppercase">{t('zoneTwoLab.recentHistory', { n: analysisCount })}</h3>
                             <div className="flex gap-4 text-[10px] font-bold uppercase text-slate-500">
-                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span> Hot (in prev 3)</span>
-                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Cold (missed 12+)</span>
+                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span> {t('zoneTwoLab.legendHot')}</span>
+                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> {t('zoneTwoLab.legendCold')}</span>
                             </div>
                         </div>
                         <div className="flex flex-wrap gap-2 justify-center">
@@ -1020,7 +1022,7 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                         </div>
                                         <span className="text-[9px] text-slate-600 light:text-slate-400 font-mono group-hover:text-slate-300 transition-colors">{d.period.slice(-3)}</span>
                                         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-2 py-1 bg-slate-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20">
-                                            {isHot ? 'Repeat Hit (Hot)' : isCold ? 'Long Awaited (Cold)' : 'Normal'}
+                                            {isHot ? t('zoneTwoLab.repeatHit') : isCold ? t('zoneTwoLab.longAwaited') : t('zoneTwoLab.normal')}
                                         </div>
                                     </div>
                                 );
@@ -1031,11 +1033,11 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     {/* 2. Directional Flow Strip */}
                     <div>
                         <div className="flex justify-between items-center mb-3">
-                            <h3 className="text-xs font-bold text-slate-500 uppercase">Directional Context (Vs Previous)</h3>
+                            <h3 className="text-xs font-bold text-slate-500 uppercase">{t('zoneTwoLab.directionalFlow')}</h3>
                             <div className="flex gap-4 text-[10px] font-bold uppercase text-slate-500">
-                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Up ({'>'})</span>
-                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Down ({'<'})</span>
-                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-500"></span> Same (=)</span>
+                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span> {t('zoneTwoLab.legendUp')} ({'>'})</span>
+                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> {t('zoneTwoLab.legendDown')} ({'<'})</span>
+                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-500"></span> {t('zoneTwoLab.legendSame')} (=)</span>
                             </div>
                         </div>
                         <div className="flex flex-wrap gap-2 justify-center">
@@ -1065,7 +1067,7 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                         </div>
                                         {/* Optional: Show delta on hover */}
                                         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-2 py-1 bg-slate-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20">
-                                            {d.val} vs {prevVal} ({d.val - prevVal > 0 ? '+' : ''}{d.val - prevVal})
+                                            {d.val} {t('zoneTwoLab.vsLabel')} {prevVal} ({d.val - prevVal > 0 ? '+' : ''}{d.val - prevVal})
                                         </div>
                                     </div>
                                 );
@@ -1085,16 +1087,15 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
                             <div>
                                 <h2 className="text-xl font-black text-rose-400 light:text-rose-600 flex items-center gap-2">
-                                    🧬 Genetic Evolution Lab
+                                    🧬 {t('zoneTwoLab.geneticLabTitle')}
                                 </h2>
                                 <p className="text-sm text-slate-400 light:text-slate-500 mt-1 max-w-lg">
-                                    Uses a Genetic Algorithm to satisfy the "Survival of the Fittest" principle.
-                                    Breeds {genCount} generations of weight combinations to find the optimal model mix.
+                                    {t('zoneTwoLab.geneticDesc', { n: genCount })}
                                 </p>
                             </div>
                             <div className="flex flex-col items-end gap-2">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <label className="text-[10px] text-slate-500 font-bold uppercase">Generations:</label>
+                                    <label className="text-[10px] text-slate-500 font-bold uppercase">{t('zoneTwoLab.generations')}</label>
                                     <input
                                         type="number"
                                         min="10"
@@ -1133,17 +1134,17 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                             </svg>
-                                            Evolving Gen {evolution.generation}/{genCount}...
+                                            {t('zoneTwoLab.evolvingGen', { gen: evolution.generation, total: genCount })}
                                         </>
                                     ) : (
                                         <>
-                                            🚀 Start Evolution
+                                            🚀 {t('zoneTwoLab.startEvolution')}
                                         </>
                                     )}
                                 </button>
                                 {evolution.bestResult && (
                                     <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">
-                                        Evolution Complete
+                                        {t('zoneTwoLab.evolutionComplete')}
                                     </span>
                                 )}
                             </div>
@@ -1167,8 +1168,8 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                     {/* DNA Bar (Weights) */}
                                     <div className="bg-slate-950/50 light:bg-white p-4 rounded-xl border border-white/5 light:border-slate-200">
                                         <h3 className="text-xs font-bold text-slate-500 uppercase mb-4 flex justify-between">
-                                            <span>Best Genome (Weights)</span>
-                                            <span>Fit: {evolution.bestGenome?.fitness.toFixed(1)}%</span>
+                                            <span>{t('zoneTwoLab.bestGenome')}</span>
+                                            <span>{t('zoneTwoLab.fitLabel', { pct: evolution.bestGenome?.fitness.toFixed(1) })}</span>
                                         </h3>
                                         <div className="space-y-3">
                                             <div className="space-y-3">
@@ -1195,7 +1196,7 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
                                     {/* Result Card */}
                                     <div className="flex flex-col items-center justify-center p-6 bg-slate-950/50 light:bg-white rounded-xl border border-white/5 light:border-slate-200">
-                                        <h3 className="text-xs font-bold text-slate-500 uppercase mb-2">Alpha Prediction</h3>
+                                        <h3 className="text-xs font-bold text-slate-500 uppercase mb-2">{t('zoneTwoLab.alphaPrediction')}</h3>
                                         {evolution.bestResult ? (
                                             <div className="text-center animate-in zoom-in duration-300">
                                                 <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 light:from-slate-100 light:to-white shadow-2xl flex items-center justify-center border-4 border-rose-500/50 relative mb-4">
@@ -1203,18 +1204,18 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                                         {evolution.bestResult}
                                                     </div>
                                                     <div className="absolute -bottom-2 px-3 py-1 bg-rose-500 text-white text-[10px] font-bold rounded-full shadow-lg">
-                                                        EVOLVED
+                                                        {t('zoneTwoLab.evolved')}
                                                     </div>
                                                 </div>
                                                 <button
                                                     onClick={() => onSave([evolution.bestResult], `Zone 2 Hybrid (Gen ${evolution.generation})`)}
                                                     className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
                                                 >
-                                                    Save Result
+                                                    {t('zoneTwoLab.saveResult')}
                                                 </button>
                                             </div>
                                         ) : (
-                                            <div className="text-slate-600 text-sm italic">Evolving...</div>
+                                            <div className="text-slate-600 text-sm italic">{t('zoneTwoLab.evolvingPlaceholder')}</div>
                                         )}
                                     </div>
                                 </div>

@@ -3,9 +3,20 @@ import { calculatePrediction, calculateHybridPrediction } from '../utils/predict
 import { predictProphet, predictChainReactor, predictMonteCarlo } from '../utils/advancedAlgorithms';
 
 import MultiBetCell from './MultiBetCell';
+import { useLanguage } from '../i18n/LanguageContext';
 
+const MODEL_LABEL_KEYS = {
+    standard: 'colStandard',
+    weighted: 'colWeighted',
+    hybrid: 'colHybrid',
+    prophet: 'colProphet',
+    reactor: 'colReactor',
+    monteCarlo: 'colMonteCarlo',
+    random: 'colRandom',
+};
 
 const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
+    const { t } = useLanguage();
     // Range Selection
     const [startPeriod, setStartPeriod] = useState(0); // Index in historyData (0 is newest)
 
@@ -240,14 +251,14 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                             🔬
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-white light:text-slate-800 tracking-tight">Prediction Quality Assessment</h2>
-                            <p className="text-indigo-200/60 light:text-indigo-800/60 text-sm font-medium tracking-wide">Backtest Lab • Rolling Simulation</p>
+                            <h2 className="text-3xl font-black text-white light:text-slate-800 tracking-tight">{t('backtestLab.title')}</h2>
+                            <p className="text-indigo-200/60 light:text-indigo-800/60 text-sm font-medium tracking-wide">{t('backtestLab.subtitle')}</p>
                         </div>
                     </div>
 
                     <div className="flex flex-wrap items-end gap-6">
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Ref Depth</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.refDepth')}</label>
                             <input
                                 type="number"
                                 min="10"
@@ -268,12 +279,12 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                                 disabled={isRunning}
                             />
                             <label htmlFor="accToggle" className="text-xs font-bold text-slate-300 light:text-slate-600 cursor-pointer select-none">
-                                Accumulate
+                                {t('backtestLab.accumulate')}
                             </label>
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Test Range (Start Period)</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.testRangeStart')}</label>
                             <select
                                 className="bg-slate-900 light:bg-slate-100 border border-slate-700 light:border-slate-300 text-white light:text-slate-900 px-4 py-2 rounded-lg text-sm"
                                 value={startPeriod}
@@ -287,7 +298,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
                         <div className="text-slate-600 font-bold text-xl">→</div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Hybrid Bets</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.hybridBets')}</label>
                             <input
                                 type="number"
                                 min="1"
@@ -302,7 +313,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Monte Carlo Bets</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.monteCarloBets')}</label>
                             <input
                                 type="number"
                                 min="1"
@@ -317,7 +328,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Random Bets</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.randomBets')}</label>
                             <input
                                 type="number"
                                 min="1"
@@ -332,7 +343,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">End Period</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.endPeriod')}</label>
                             <select
                                 className="bg-slate-900 light:bg-slate-100 border border-slate-700 light:border-slate-300 text-white light:text-slate-900 px-4 py-2 rounded-lg text-sm"
                                 value={endPeriod}
@@ -350,18 +361,18 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                             disabled={!isValid || isRunning}
                             className={`px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs shadow-xl transition-all ml-auto relative overflow-hidden group/btn ${isValid && !isRunning ? 'bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-indigo-500/40 hover:-translate-y-0.5' : 'bg-slate-800/50 light:bg-slate-200 text-slate-500 light:text-slate-400 cursor-not-allowed border border-white/5 light:border-slate-300'}`}
                         >
-                            <span className="relative z-10">{isRunning ? `Simulating ${progress}%...` : 'Start Backtest'}</span>
+                            <span className="relative z-10">{isRunning ? t('backtestLab.simulating', { progress }) : t('backtestLab.startBacktest')}</span>
                             {isValid && !isRunning && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>}
                         </button>
                     </div>
                     {!isValid && (
                         <div className="text-red-400 text-xs mt-2 space-y-1">
-                            {(startPeriod - endPeriod + 1) < 10 && <p>* Range must be at least 10 draws.</p>}
-                            {referenceSize < 10 && <p>* Ref Depth must be at least 10.</p>}
-                            {(startPeriod + referenceSize) >= historyData.length && <p>* Ref Depth exceeds available history for the selected Start Period.</p>}
-                            {(!Number(hybridBetCount) || Number(hybridBetCount) < 1) && <p>* Hybrid Bets must be at least 1.</p>}
-                            {(!Number(monteCarloBetCount) || Number(monteCarloBetCount) < 1) && <p>* Monte Carlo Bets must be at least 1.</p>}
-                            {(!Number(randomBetCount) || Number(randomBetCount) < 1) && <p>* Random Bets must be at least 1.</p>}
+                            {(startPeriod - endPeriod + 1) < 10 && <p>{t('backtestLab.errorRange')}</p>}
+                            {referenceSize < 10 && <p>{t('backtestLab.errorRefDepth')}</p>}
+                            {(startPeriod + referenceSize) >= historyData.length && <p>{t('backtestLab.errorRefExceeds')}</p>}
+                            {(!Number(hybridBetCount) || Number(hybridBetCount) < 1) && <p>{t('backtestLab.errorHybridBets')}</p>}
+                            {(!Number(monteCarloBetCount) || Number(monteCarloBetCount) < 1) && <p>{t('backtestLab.errorMonteCarloBets')}</p>}
+                            {(!Number(randomBetCount) || Number(randomBetCount) < 1) && <p>{t('backtestLab.errorRandomBets')}</p>}
                         </div>
                     )}
                 </div>
@@ -371,9 +382,9 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                     <div className="grid grid-cols-2 md:grid-cols-7 gap-4 p-6 bg-slate-900/50 light:bg-white border-b border-slate-800 light:border-slate-200">
                         {Object.entries(summary.avgs).map(([key, val]) => (
                             <div key={key} className="bg-slate-800/40 light:bg-slate-50 p-4 rounded-xl border border-slate-700 light:border-slate-200 text-center shadow-sm">
-                                <div className="text-[10px] uppercase font-bold text-slate-500 light:text-slate-500 mb-1">{key}</div>
+                                <div className="text-[10px] uppercase font-bold text-slate-500 light:text-slate-500 mb-1">{t(`backtestLab.${MODEL_LABEL_KEYS[key]}`)}</div>
                                 <div className={`text-xl font-black ${Number(val) > 1.5 ? 'text-emerald-400 light:text-emerald-600' : 'text-white light:text-slate-900'}`}>{val}</div>
-                                <div className="text-[10px] text-slate-600 light:text-slate-400">hits/draw</div>
+                                <div className="text-[10px] text-slate-600 light:text-slate-400">{t('backtestLab.hitsPerDraw')}</div>
                                 <div className="text-xs font-bold text-yellow-500 light:text-yellow-600 mt-1">{summary.wins[key]}%</div>
                             </div>
                         ))}
@@ -385,15 +396,15 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-slate-900 light:bg-slate-100 sticky top-0 z-50 shadow-lg border-b border-white/10 light:border-slate-200">
                             <tr>
-                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">Period</th>
-                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">Actual</th>
-                                <th className="p-4 text-xs font-bold text-blue-400 light:text-blue-600 uppercase border-b border-slate-800 light:border-slate-200">Standard</th>
-                                <th className="p-4 text-xs font-bold text-purple-400 light:text-purple-600 uppercase border-b border-slate-800 light:border-slate-200">Weighted</th>
-                                <th className="p-4 text-xs font-bold text-amber-400 light:text-amber-600 uppercase border-b border-slate-800 light:border-slate-200">Hybrid</th>
-                                <th className="p-4 text-xs font-bold text-indigo-400 light:text-indigo-600 uppercase border-b border-slate-800 light:border-slate-200">Prophet</th>
-                                <th className="p-4 text-xs font-bold text-rose-400 light:text-rose-600 uppercase border-b border-slate-800 light:border-slate-200">Reactor</th>
-                                <th className="p-4 text-xs font-bold text-emerald-400 light:text-emerald-600 uppercase border-b border-slate-800 light:border-slate-200">Monte Carlo</th>
-                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">Random</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colPeriod')}</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colActual')}</th>
+                                <th className="p-4 text-xs font-bold text-blue-400 light:text-blue-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colStandard')}</th>
+                                <th className="p-4 text-xs font-bold text-purple-400 light:text-purple-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colWeighted')}</th>
+                                <th className="p-4 text-xs font-bold text-amber-400 light:text-amber-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colHybrid')}</th>
+                                <th className="p-4 text-xs font-bold text-indigo-400 light:text-indigo-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colProphet')}</th>
+                                <th className="p-4 text-xs font-bold text-rose-400 light:text-rose-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colReactor')}</th>
+                                <th className="p-4 text-xs font-bold text-emerald-400 light:text-emerald-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colMonteCarlo')}</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colRandom')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50">

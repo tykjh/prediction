@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const ChainReactor = ({ history, isLightMode, activeGameConfig }) => {
+    const { t } = useLanguage();
     const [range, setRange] = useState(100);
     const [analysis, setAnalysis] = useState(null);
 
@@ -152,22 +154,22 @@ const ChainReactor = ({ history, isLightMode, activeGameConfig }) => {
                             ⛓️ The Chain Reactor <span className="text-xs bg-rose-900/50 light:bg-rose-100 text-rose-300 light:text-rose-700 px-2 py-0.5 rounded border border-rose-700/50 light:border-rose-200">EXP-05</span>
                         </h2>
                         <p className="text-xs text-slate-400 light:text-slate-500 mt-1">
-                            Analyzes consecutive number patterns (2-Link, 3-Link, 4-Link) probability.
+                            {t('chainReactor.subtitle')}
                         </p>
                     </div>
 
                     <div className="flex items-center gap-4">
                         <div className="flex flex-col">
-                            <label className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">Ref Data</label>
+                            <label className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">{t('chainReactor.refData')}</label>
                             <select
                                 value={range}
                                 onChange={(e) => setRange(Number(e.target.value))}
                                 className="bg-slate-900 light:bg-slate-100 text-white light:text-slate-900 text-xs font-bold rounded-lg px-3 py-2 border border-slate-700 light:border-slate-300 outline-none focus:border-indigo-500 cursor-pointer"
                             >
                                 {Array.from({ length: Math.ceil(history.length / 10) }, (_, i) => (i + 1) * 10).map(val => (
-                                    <option key={val} value={val}>Last {val}</option>
+                                    <option key={val} value={val}>{t('chainReactor.lastN', { n: val })}</option>
                                 ))}
-                                <option value={history.length}>All ({history.length})</option>
+                                <option value={history.length}>{t('chainReactor.allN', { n: history.length })}</option>
                             </select>
                         </div>
 
@@ -175,7 +177,7 @@ const ChainReactor = ({ history, isLightMode, activeGameConfig }) => {
                             onClick={ignite}
                             className="bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg shadow-rose-500/30 transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-rose-500/50 hover:ring-2 hover:ring-white/20 ml-2"
                         >
-                            Ignite Reactor
+                            {t('chainReactor.ignite')}
                         </button>
                     </div>
                 </div>
@@ -187,8 +189,8 @@ const ChainReactor = ({ history, isLightMode, activeGameConfig }) => {
                         {/* 2-Link Card */}
                         <div className="bg-slate-800/50 light:bg-slate-50 p-5 rounded-xl border border-slate-700 light:border-slate-200 relative overflow-hidden shadow-sm">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-sm font-bold text-slate-300 light:text-slate-700 uppercase tracking-wider">2-Link Candidates</h3>
-                                <span className="text-xs font-mono text-emerald-400 light:text-emerald-700 bg-emerald-900/30 light:bg-emerald-100 px-2 py-1 rounded">{analysis.globalProbs.prob2.toFixed(0)}% Hit Rate</span>
+                                <h3 className="text-sm font-bold text-slate-300 light:text-slate-700 uppercase tracking-wider">{t('chainReactor.link2')}</h3>
+                                <span className="text-xs font-mono text-emerald-400 light:text-emerald-700 bg-emerald-900/30 light:bg-emerald-100 px-2 py-1 rounded">{t('chainReactor.hitRate', { pct: analysis.globalProbs.prob2.toFixed(0) })}</span>
                             </div>
 
                             <div className="space-y-3">
@@ -201,8 +203,8 @@ const ChainReactor = ({ history, isLightMode, activeGameConfig }) => {
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between text-[10px] text-slate-400 light:text-slate-500 mb-1">
-                                                <span>Strength</span>
-                                                <span className="text-emerald-300 light:text-emerald-600">Hot:{cand.avgHeat}%</span>
+                                                <span>{t('chainReactor.strength')}</span>
+                                                <span className="text-emerald-300 light:text-emerald-600">{t('chainReactor.hot', { pct: cand.avgHeat })}</span>
                                             </div>
                                             <div className="w-full bg-slate-700 light:bg-slate-200 h-1.5 rounded-full overflow-hidden">
                                                 <div className="bg-emerald-500 h-full" style={{ width: `${Math.min(cand.score / 2, 100)}%` }}></div>
@@ -216,8 +218,8 @@ const ChainReactor = ({ history, isLightMode, activeGameConfig }) => {
                         {/* 3-Link Card */}
                         <div className="bg-slate-800/50 light:bg-slate-50 p-5 rounded-xl border border-slate-700 light:border-slate-200 relative overflow-hidden shadow-sm">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-sm font-bold text-slate-300 light:text-slate-700 uppercase tracking-wider">3-Link Candidates</h3>
-                                <span className="text-xs font-mono text-amber-400 light:text-amber-700 bg-amber-900/30 light:bg-amber-100 px-2 py-1 rounded">{analysis.globalProbs.prob3.toFixed(0)}% Hit Rate</span>
+                                <h3 className="text-sm font-bold text-slate-300 light:text-slate-700 uppercase tracking-wider">{t('chainReactor.link3')}</h3>
+                                <span className="text-xs font-mono text-amber-400 light:text-amber-700 bg-amber-900/30 light:bg-amber-100 px-2 py-1 rounded">{t('chainReactor.hitRate', { pct: analysis.globalProbs.prob3.toFixed(0) })}</span>
                             </div>
 
                             <div className="space-y-3">
@@ -230,23 +232,23 @@ const ChainReactor = ({ history, isLightMode, activeGameConfig }) => {
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between text-[10px] text-slate-400 light:text-slate-500 mb-1">
-                                                <span>Strength</span>
-                                                <span className="text-amber-300 light:text-amber-600">Hot:{cand.avgHeat}%</span>
+                                                <span>{t('chainReactor.strength')}</span>
+                                                <span className="text-amber-300 light:text-amber-600">{t('chainReactor.hot', { pct: cand.avgHeat })}</span>
                                             </div>
                                             <div className="w-full bg-slate-700 light:bg-slate-200 h-1.5 rounded-full overflow-hidden">
                                                 <div className="bg-amber-500 h-full" style={{ width: `${Math.min(cand.score / 2, 100)}%` }}></div>
                                             </div>
                                         </div>
                                     </div>
-                                )) : <div className="text-xs text-slate-500 text-center py-4">No strong candidates</div>}
+                                )) : <div className="text-xs text-slate-500 text-center py-4">{t('chainReactor.noCandidates')}</div>}
                             </div>
                         </div>
 
                         {/* 4-Link Card */}
                         <div className="bg-slate-800/50 light:bg-slate-50 p-5 rounded-xl border border-slate-700 light:border-slate-200 relative overflow-hidden shadow-sm">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-sm font-bold text-slate-300 light:text-slate-700 uppercase tracking-wider">4-Link Candidates</h3>
-                                <span className="text-xs font-mono text-rose-400 light:text-rose-700 bg-rose-900/30 light:bg-rose-100 px-2 py-1 rounded">{analysis.globalProbs.prob4.toFixed(0)}% Hit Rate</span>
+                                <h3 className="text-sm font-bold text-slate-300 light:text-slate-700 uppercase tracking-wider">{t('chainReactor.link4')}</h3>
+                                <span className="text-xs font-mono text-rose-400 light:text-rose-700 bg-rose-900/30 light:bg-rose-100 px-2 py-1 rounded">{t('chainReactor.hitRate', { pct: analysis.globalProbs.prob4.toFixed(0) })}</span>
                             </div>
 
                             <div className="space-y-3">
@@ -259,8 +261,8 @@ const ChainReactor = ({ history, isLightMode, activeGameConfig }) => {
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between text-[10px] text-slate-400 light:text-slate-500 mb-1">
-                                                <span>Strength</span>
-                                                <span className="text-rose-300 light:text-rose-600">Hot:{cand.avgHeat}%</span>
+                                                <span>{t('chainReactor.strength')}</span>
+                                                <span className="text-rose-300 light:text-rose-600">{t('chainReactor.hot', { pct: cand.avgHeat })}</span>
                                             </div>
                                             <div className="w-full bg-slate-700 light:bg-slate-200 h-1.5 rounded-full overflow-hidden">
                                                 <div className="bg-rose-500 h-full" style={{ width: `${Math.min(cand.score / 2, 100)}%` }}></div>

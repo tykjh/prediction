@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useLanguage } from '../../i18n/LanguageContext';
 
-/* 
+/*
  * ALECHIMY LAB
  * A Falling Sand Cellular Automata Engine
  * Optimized with Uint8Array and direct pixel manipulation
@@ -37,6 +38,7 @@ const HEIGHT = 150;
 const SIZE = WIDTH * HEIGHT;
 
 const AlchemyLab = () => {
+    const { t } = useLanguage();
     const canvasRef = useRef(null);
     const [selectedElement, setSelectedElement] = useState(SAND);
     const [brushSize, setBrushSize] = useState(3);
@@ -274,14 +276,14 @@ const AlchemyLab = () => {
             <div className="bg-slate-900/90 backdrop-blur border border-white/10 p-4 rounded-xl flex flex-wrap gap-4 items-center justify-between shadow-xl">
                 <div className="flex gap-2 bg-slate-800 p-1 rounded-lg overflow-x-auto max-w-full">
                     {[
-                        { id: SAND, label: 'Sand', color: 'bg-yellow-500' },
-                        { id: WATER, label: 'Water', color: 'bg-blue-500' },
-                        { id: STONE, label: 'Stone', color: 'bg-slate-500' },
-                        { id: WOOD, label: 'Wood', color: 'bg-amber-800' },
-                        { id: FIRE, label: 'Fire', color: 'bg-red-500' },
-                        { id: GUNPOWDER, label: 'Gunpwdr', color: 'bg-slate-900 border border-slate-600' },
-                        { id: ACID, label: 'Acid', color: 'bg-green-500' },
-                        { id: EMPTY, label: 'Eraser', color: 'bg-slate-700' },
+                        { id: SAND, key: 'sand', color: 'bg-yellow-500' },
+                        { id: WATER, key: 'water', color: 'bg-blue-500' },
+                        { id: STONE, key: 'stone', color: 'bg-slate-500' },
+                        { id: WOOD, key: 'wood', color: 'bg-amber-800' },
+                        { id: FIRE, key: 'fire', color: 'bg-red-500' },
+                        { id: GUNPOWDER, key: 'gunpowder', color: 'bg-slate-900 border border-slate-600' },
+                        { id: ACID, key: 'acid', color: 'bg-green-500' },
+                        { id: EMPTY, key: 'eraser', color: 'bg-slate-700' },
                     ].map(el => (
                         <button
                             key={el.id}
@@ -290,14 +292,14 @@ const AlchemyLab = () => {
                             ${selectedElement === el.id ? 'bg-white text-slate-900 shadow-lg scale-105' : 'text-slate-300 hover:bg-slate-700'}`}
                         >
                             <div className={`w-3 h-3 rounded-full ${el.color}`}></div>
-                            {el.label}
+                            {t(`alchemyLab.elements.${el.key}`)}
                         </button>
                     ))}
                 </div>
 
                 <div className="flex items-center gap-4 border-l border-white/10 pl-4">
                     <div className="flex flex-col gap-1">
-                        <span className="text-[10px] uppercase font-bold text-slate-500">Brush Size</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-500">{t('alchemyLab.brushSize')}</span>
                         <input type="range" min="1" max="10" value={brushSize} onChange={e => setBrushSize(Number(e.target.value))} className="w-24 accent-indigo-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
                     </div>
                     <button
@@ -310,7 +312,7 @@ const AlchemyLab = () => {
                         onClick={() => gridRef.current.fill(EMPTY)}
                         className="text-xs font-bold text-red-400 hover:text-red-300 uppercase"
                     >
-                        Clear
+                        {t('alchemyLab.clear')}
                     </button>
                 </div>
             </div>
@@ -330,8 +332,8 @@ const AlchemyLab = () => {
                 />
                 <div className="absolute top-4 left-4 pointer-events-none opacity-50">
                     <div className="text-[10px] text-slate-500 font-mono">
-                        SIMULATION RUNNING @ 60FPS<br />
-                        GRID: 200x150
+                        {t('alchemyLab.simulationRunning')}<br />
+                        {t('alchemyLab.gridInfo')}
                     </div>
                 </div>
             </div>

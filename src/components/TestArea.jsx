@@ -6,6 +6,7 @@ import ChaosHunter from './ChaosHunter';
 import Prophet from './Prophet';
 import ChainReactor from './ChainReactor';
 import ZoneTwoLab from './ZoneTwoLab';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const ExperimentHeader = ({ icon, title, subtitle, badge }) => (
     <div className="flex items-center gap-5 mb-8 pb-6 border-b border-white/5 relative group">
@@ -36,13 +37,14 @@ const ExperimentHeader = ({ icon, title, subtitle, badge }) => (
 );
 
 const TestArea = ({ historyData, bgTheme, onSavePrediction, isLightMode, reducedMotion, activeGameConfig }) => {
+    const { t } = useLanguage();
     return (
         <div className="mx-auto space-y-6">
 
             {/* Main Header */}
             <MagicHeader
-                title="Advanced Analytics Lab"
-                subtitle="Experimental prediction models and deep analysis."
+                title={t('testArea.title')}
+                subtitle={t('testArea.subtitle')}
                 icon="🧪"
                 themeIndex={bgTheme}
                 isLightMode={isLightMode}
