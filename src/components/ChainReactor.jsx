@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const ChainReactor = ({ history, isLightMode, activeGameConfig }) => {
@@ -179,6 +180,8 @@ const ChainReactor = ({ history, isLightMode, activeGameConfig }) => {
                         >
                             {t('chainReactor.ignite')}
                         </button>
+
+                        <HelpIcon title={t('chainReactor.help.title')} body={t('chainReactor.help.body')} />
                     </div>
                 </div>
 

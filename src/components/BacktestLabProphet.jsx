@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { predictProphet, predictKNN, predictMarkov, predictRegression } from '../utils/advancedAlgorithms';
 import { getSecureRandomSet } from '../utils/secureRandom';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const PROPHET_MODEL_LABEL_KEYS = {
@@ -180,14 +181,17 @@ const BacktestLabProphet = ({ historyData, isLightMode, activeGameConfig }) => {
 
                 {/* Header */}
                 <div className="p-8 bg-gradient-to-r from-white/[0.03] light:from-slate-100/50 to-transparent border-b border-white/5 light:border-slate-200 relative z-10">
-                    <div className="flex items-center gap-5 mb-8">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-slate-800/50 light:from-purple-100 light:to-white border border-purple-500/30 light:border-purple-100 flex items-center justify-center text-3xl text-purple-400 light:text-purple-600 shadow-lg shadow-purple-500/10 backdrop-blur-sm">
-                            🔮
+                    <div className="flex items-center justify-between gap-5 mb-8">
+                        <div className="flex items-center gap-5">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-slate-800/50 light:from-purple-100 light:to-white border border-purple-500/30 light:border-purple-100 flex items-center justify-center text-3xl text-purple-400 light:text-purple-600 shadow-lg shadow-purple-500/10 backdrop-blur-sm">
+                                🔮
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-white light:text-slate-800 tracking-tight">{t('backtestLabProphet.title')}</h2>
+                                <p className="text-purple-200/60 light:text-purple-800/60 text-sm font-medium tracking-wide">{t('backtestLabProphet.subtitle')}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-3xl font-black text-white light:text-slate-800 tracking-tight">{t('backtestLabProphet.title')}</h2>
-                            <p className="text-purple-200/60 light:text-purple-800/60 text-sm font-medium tracking-wide">{t('backtestLabProphet.subtitle')}</p>
-                        </div>
+                        <HelpIcon title={t('backtestLabProphet.help.title')} body={t('backtestLabProphet.help.body')} />
                     </div>
 
                     <div className="flex flex-wrap items-end gap-6">

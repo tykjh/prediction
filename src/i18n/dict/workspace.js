@@ -22,6 +22,24 @@ export const workspace = {
         aiUnweightedTitle: 'AI Deep Learning (Unweighted)',
         aiUnweightedSubtitle: 'LSTM Model trained on Pure History',
         footer: 'Lottery Prediction System • {year}',
+        help: {
+            predictionEngine: {
+                title: 'Prediction Engine',
+                body: 'Five generators, one per row: Standard (all-time frequency), Weighted (recent trends), Hybrid AI (two-stage group→number pick), and two LSTM AI models (weighted / unweighted). Pick an Analysis Range, click "Generate" on any row, then "Save" to store the result in your Vault.',
+            },
+            statisticalAnalysis: {
+                title: 'Statistical Analysis',
+                body: 'A dashboard of charts (frequency, heatmap, trend lines, zone radar, last-digit stats) for exploring how numbers have historically behaved. Switch tabs to change chart type; use it to spot hot/cold numbers before generating a prediction.',
+            },
+            historicalData: {
+                title: 'Historical Data',
+                body: 'Browse every past draw. Adjust "Highlight Count" to mark the top hot/cold numbers, "Trend Depth" to control how many recent draws are visualized, and "Lookback N" to set how much history the Contextual AI engine uses.',
+            },
+            dataManagement: {
+                title: 'Data Management',
+                body: 'Manually add a new draw result (period + numbers) once it is announced, so it becomes part of the history used by every prediction and analysis tool.',
+            },
+        },
     },
     zh: {
         headerTitle: '作業工作台',
@@ -46,5 +64,23 @@ export const workspace = {
         aiUnweightedTitle: 'AI 深度學習（未加權）',
         aiUnweightedSubtitle: '以完整歷史資料訓練的 LSTM 模型',
         footer: '樂透預測系統 • {year}',
+        help: {
+            predictionEngine: {
+                title: '預測引擎',
+                body: '五種產生器，每列一種：標準預測（歷史高頻）、加權預測（近期趨勢）、混合式 AI（兩階段先選組別再選號碼），以及兩種 LSTM AI 模型（加權／未加權）。選擇分析範圍後，點擊任一列的「產生」按鈕，再點擊「儲存」即可存入保險庫。',
+            },
+            statisticalAnalysis: {
+                title: '統計分析',
+                body: '整合多種圖表（出現頻率、熱力圖、趨勢線、區塊雷達圖、尾數統計）的儀表板，用於探索號碼的歷史規律。切換分頁可查看不同圖表類型；可在產生預測前先觀察冷熱號趨勢。',
+            },
+            historicalData: {
+                title: '歷史資料',
+                body: '瀏覽所有歷史開獎紀錄。調整「標記數量」以標示冷熱門號碼、「趨勢深度」控制近期趨勢視覺化的期數，並可調整「回溯期數 N」設定情境式 AI 引擎所使用的歷史範圍。',
+            },
+            dataManagement: {
+                title: '資料管理',
+                body: '開獎公布後，手動新增一筆開獎結果（期別＋號碼），使其納入所有預測與分析工具所使用的歷史資料中。',
+            },
+        },
     },
 };

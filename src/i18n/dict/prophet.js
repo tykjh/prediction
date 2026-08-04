@@ -20,6 +20,10 @@ export const prophet = {
         basedOnMarkov: 'Based on Markov Transition',
         basedOnRegression: 'Based on Regression',
         ensembleConsensus: 'Ensemble Consensus',
+        help: {
+            title: 'The Prophet (EXP-04)',
+            body: 'An ensemble of three models — Time Traveler (k-NN similarity search), Chain Master (Markov transition), and Trend Setter (linear regression). Choose a Ref Data range and Pattern Size, click "Summon Prophet", then compare each model\'s pick against the combined "Verdict". Save any result to your Vault.',
+        },
     },
     zh: {
         subtitle: '整合式 AI 模型:k-近鄰、馬可夫鏈與線性迴歸。',
@@ -42,5 +46,9 @@ export const prophet = {
         basedOnMarkov: '基於馬可夫轉移',
         basedOnRegression: '基於迴歸分析',
         ensembleConsensus: '整合共識',
+        help: {
+            title: '先知 (EXP-04)',
+            body: '整合三種模型：時空旅人（k-近鄰相似度搜尋）、鎖鏈大師（馬可夫轉移）、趨勢先鋒（線性迴歸）。選擇參考資料範圍與型態大小，點擊「召喚先知」，即可比較各模型的預測與整合後的「最終裁決」。可將任一結果儲存至保險庫。',
+        },
     },
 };

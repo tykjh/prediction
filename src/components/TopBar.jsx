@@ -1,31 +1,44 @@
 import React from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 
-const TopBar = ({ currentView, onViewChange, onLogoClick, isLightMode, onToggleLightMode, activeGameID, onToggleGame, activeGameLogo }) => {
+const TopBar = ({ currentView, onViewChange, onLogoClick, onOpenManual, isLightMode, onToggleLightMode, activeGameID, onToggleGame, activeGameLogo }) => {
     const { lang, toggleLang, t } = useLanguage();
     return (
         <div className="bg-slate-950/80 light:bg-slate-100/80 backdrop-blur-xl border-b border-white/5 light:border-black/5 sticky top-0 z-50 supports-[backdrop-filter]:bg-slate-950/60 light:supports-[backdrop-filter]:bg-slate-100/60 transition-colors duration-500">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20 relative">
 
-                    {/* Logo Area */}
-                    <div
-                        className="flex items-center gap-4 group cursor-pointer z-10"
-                        onClick={onLogoClick}
-                    >
-                        <div className="relative w-10 h-10 flex items-center justify-center">
-                            <div className="absolute inset-0 bg-indigo-500 rounded-xl rotate-6 group-hover:rotate-12 transition-transform duration-500 opacity-20 blur-md"></div>
-                            <div className="relative w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-indigo-500/30 border border-white/10 group-hover:scale-105 transition-transform duration-300">
-                                L
+                    {/* Left Side: Manual + Logo */}
+                    <div className="flex items-center gap-3 z-10">
+                        {/* Operation Manual Button */}
+                        <button
+                            onClick={onOpenManual}
+                            className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-900 light:bg-white/80 border border-white/10 light:border-black/5 text-indigo-400 light:text-indigo-600 transition-all duration-300 hover:scale-110 shadow-lg hover:bg-slate-800 light:hover:bg-white"
+                            title={t('manual.openLabel')}
+                            aria-label={t('manual.openLabel')}
+                        >
+                            <span className="text-lg">📖</span>
+                        </button>
+
+                        {/* Logo Area */}
+                        <div
+                            className="flex items-center gap-4 group cursor-pointer"
+                            onClick={onLogoClick}
+                        >
+                            <div className="relative w-10 h-10 flex items-center justify-center">
+                                <div className="absolute inset-0 bg-indigo-500 rounded-xl rotate-6 group-hover:rotate-12 transition-transform duration-500 opacity-20 blur-md"></div>
+                                <div className="relative w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-indigo-500/30 border border-white/10 group-hover:scale-105 transition-transform duration-300">
+                                    L
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-xl font-black tracking-tight text-white light:text-slate-900 transition-colors">
-                                LottoOS
-                            </span>
-                            <span className="text-[10px] uppercase font-bold text-indigo-400/80 light:text-indigo-600/80 tracking-widest leading-none">
-                                System v2.0
-                            </span>
+                            <div className="flex flex-col">
+                                <span className="text-xl font-black tracking-tight text-white light:text-slate-900 transition-colors">
+                                    LottoOS
+                                </span>
+                                <span className="text-[10px] uppercase font-bold text-indigo-400/80 light:text-indigo-600/80 tracking-widest leading-none">
+                                    System v2.0
+                                </span>
+                            </div>
                         </div>
                     </div>
 

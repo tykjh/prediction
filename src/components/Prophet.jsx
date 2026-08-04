@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getSecureRandomNumber } from '../utils/secureRandom';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
@@ -226,6 +227,8 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         >
                             {t('prophet.summon')}
                         </button>
+
+                        <HelpIcon title={t('prophet.help.title')} body={t('prophet.help.body')} />
                     </div>
                 </div>
 

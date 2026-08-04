@@ -8,6 +8,7 @@ import FloatingMenu from './components/FloatingMenu';
 import Sidebar from './components/Sidebar';
 import MoneyRain from './components/MoneyRain';
 import Playground from './components/Playground';
+import ManualModal from './components/ManualModal';
 import { GAME_TYPES, DEFAULT_GAME } from './config/games';
 import initialHistoryLotto649 from './data/history.json';
 import initialHistorySuperLotto from './data/history_superlotto.json';
@@ -27,6 +28,7 @@ function App() {
   const [isRaining, setIsRaining] = useState(false);
   const [rainKey, setRainKey] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isManualOpen, setIsManualOpen] = useState(false);
   const [isLightMode, setIsLightMode] = useState(false);
 
   // 1. User Entries State (Persisted)
@@ -505,6 +507,7 @@ function App() {
           currentView={currentView}
           onViewChange={setCurrentView}
           onLogoClick={() => setIsSidebarOpen(true)}
+          onOpenManual={() => setIsManualOpen(true)}
           isLightMode={isLightMode}
           onToggleLightMode={() => setIsLightMode(!isLightMode)}
           activeGameID={activeGameID}
@@ -638,6 +641,9 @@ function App() {
 
       {/* Modal */}
       {quickPickOpen && <QuickPickModal onClose={() => setQuickPickOpen(false)} activeGameConfig={activeGameConfig} />}
+
+      {/* Operation Manual */}
+      {isManualOpen && <ManualModal onClose={() => setIsManualOpen(false)} />}
 
       {/* Money Rain Effect */}
       {isRaining && (

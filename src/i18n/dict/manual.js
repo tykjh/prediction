@@ -1,0 +1,26 @@
+export const manual = {
+    en: {
+        openLabel: 'Operation Manual',
+        title: 'Operation Manual',
+        subtitle: 'A quick guide to every tool in LottoOS. Pick a topic below, or click the ? icon inside any panel for instructions on the spot.',
+        groupWorkspace: 'Workspace',
+        groupLabs: 'Labs',
+        groupQuality: 'Quality',
+        groupPlayground: 'Playground',
+        groupCommand: 'Command Center',
+        commandHint: 'Open via the logo (top-left) to access the Vault, Oracle Room and System Config.',
+        closeLabel: 'Close manual',
+    },
+    zh: {
+        openLabel: '操作說明書',
+        title: '操作說明書',
+        subtitle: 'LottoOS 各項功能的快速指南。點選下方主題,或直接點擊任一功能區塊右上角的 ? 圖示,即可查看該區塊的操作說明。',
+        groupWorkspace: '工作區',
+        groupLabs: '實驗室',
+        groupQuality: '品質測試',
+        groupPlayground: '遊樂場',
+        groupCommand: '指揮中心',
+        commandHint: '點擊左上角的 Logo 即可開啟保險庫、神諭室與系統設定。',
+        closeLabel: '關閉說明書',
+    },
+};

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getSecureRandomNumber } from '../utils/secureRandom';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
@@ -156,6 +157,8 @@ const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     >
                         {isRunning ? t('monteCarlo.running') : t('monteCarlo.run')}
                     </button>
+
+                    <HelpIcon title={t('monteCarlo.help.title')} body={t('monteCarlo.help.body')} />
                 </div>
 
                 {/* Progress Bar */}

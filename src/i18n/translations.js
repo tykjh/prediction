@@ -18,6 +18,7 @@ import { historyList } from './dict/historyList';
 import { inputSection } from './dict/inputSection';
 import { lastDigitStats } from './dict/lastDigitStats';
 import { magicHeader } from './dict/magicHeader';
+import { manual } from './dict/manual';
 import { matrixGrid } from './dict/matrixGrid';
 import { moneyRain } from './dict/moneyRain';
 import { monteCarlo } from './dict/monteCarlo';
@@ -58,6 +59,7 @@ export const translations = {
         inputSection: inputSection.en,
         lastDigitStats: lastDigitStats.en,
         magicHeader: magicHeader.en,
+        manual: manual.en,
         matrixGrid: matrixGrid.en,
         moneyRain: moneyRain.en,
         monteCarlo: monteCarlo.en,
@@ -97,6 +99,7 @@ export const translations = {
         inputSection: inputSection.zh,
         lastDigitStats: lastDigitStats.zh,
         magicHeader: magicHeader.zh,
+        manual: manual.zh,
         matrixGrid: matrixGrid.zh,
         moneyRain: moneyRain.zh,
         monteCarlo: monteCarlo.zh,

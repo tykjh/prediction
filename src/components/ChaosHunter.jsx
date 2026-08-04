@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getSecureRandomSet } from '../utils/secureRandom';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
@@ -140,6 +141,7 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             {t('chaosHunter.resetTarget')}
                         </button>
                     )}
+                    <HelpIcon title={t('chaosHunter.help.title')} body={t('chaosHunter.help.body')} />
                 </div>
             </div>
 

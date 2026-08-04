@@ -27,6 +27,10 @@ export const backtestLab = {
         colReactor: 'Reactor',
         colMonteCarlo: 'Monte Carlo',
         colRandom: 'Random',
+        help: {
+            title: 'Prediction Quality Assessment',
+            body: 'Rolling backtest: replays a chosen period range period-by-period, generating Standard/Weighted/Hybrid/Prophet/Reactor/Monte Carlo/Random picks for each and comparing them to the actual draw. Set Ref Depth, the Start/End Period range and bet counts, then click "Start Backtest" to see hits/draw for every strategy.',
+        },
     },
     zh: {
         title: '預測品質評估',
@@ -56,5 +60,9 @@ export const backtestLab = {
         colReactor: '連鎖反應',
         colMonteCarlo: '蒙地卡羅',
         colRandom: '隨機',
+        help: {
+            title: '預測品質評估',
+            body: '滾動式回測：逐期重播所選的期別範圍，為每一期產生標準／加權／混合／先知／連鎖反應／蒙地卡羅／隨機預測，並與實際開獎結果比對。設定參考深度、起訖期別與注數後，點擊「開始回測」即可查看各策略的命中/期表現。',
+        },
     },
 };

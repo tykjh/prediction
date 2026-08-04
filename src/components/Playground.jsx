@@ -4,6 +4,7 @@ import NeonSynth from './playground/NeonSynth';
 import AlchemyLab from './playground/AlchemyLab';
 import DreamCatcher from './playground/DreamCatcher';
 import SlotMachine from './playground/SlotMachine';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const TOPICS = [
@@ -74,6 +75,11 @@ const Playground = () => {
                     <h1 className="text-xl font-bold tracking-tight text-white/90">{t('playground.title')}</h1>
                 </div>
 
+                <div className="flex items-center gap-3">
+                <HelpIcon
+                    title={t(`playground.topics.${activeTopicData.id}.name`)}
+                    body={t(`playground.topics.${activeTopicData.id}.description`)}
+                />
                 {/* Topic Selector Dropdown */}
                 <div className="relative" ref={menuRef}>
                     <button
@@ -114,6 +120,7 @@ const Playground = () => {
                             </div>
                         </div>
                     )}
+                </div>
                 </div>
             </div>
 

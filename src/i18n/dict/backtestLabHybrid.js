@@ -30,6 +30,10 @@ export const backtestLabHybrid = {
         win: 'win',
         colPeriod: 'Period',
         colActual: 'Actual',
+        help: {
+            title: 'Hybrid Evolution Lab',
+            body: 'Configure up to 5 independent Hybrid strategy columns — each with its own Hot/Cold Pool Size, Trend Depth and Weight Strategy (Standard/Aggressive/Flat) — then run a backtest to compare their win rates side by side and tune the best-performing configuration.',
+        },
     },
     zh: {
         errorRefMin: '參考深度至少需要 20。',
@@ -62,5 +66,9 @@ export const backtestLabHybrid = {
         win: '中獎',
         colPeriod: '期別',
         colActual: '實際開獎',
+        help: {
+            title: '混合演化實驗室',
+            body: '可設定最多 5 組獨立的混合策略欄位，各自擁有專屬的熱／冷池大小、趨勢深度與權重策略（標準／積極／平坦），執行回測後即可並排比較各組勝率，找出表現最佳的參數配置。',
+        },
     },
 };

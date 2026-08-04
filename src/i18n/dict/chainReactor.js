@@ -12,6 +12,10 @@ export const chainReactor = {
         strength: 'Strength',
         hot: 'Hot:{pct}%',
         noCandidates: 'No strong candidates',
+        help: {
+            title: 'The Chain Reactor (EXP-05)',
+            body: 'Finds numbers that tend to be drawn together in consecutive runs (2-Link, 3-Link, 4-Link). Pick a Ref Data range and click "Ignite Reactor" — each candidate shows its historical hit rate; higher "Strength"/"Hot %" means a stronger repeating pattern.',
+        },
     },
     zh: {
         subtitle: '分析連續號碼型態(二連號、三連號、四連號)出現的機率。',
@@ -26,5 +30,9 @@ export const chainReactor = {
         strength: '強度',
         hot: '熱度:{pct}%',
         noCandidates: '暫無強力候選組合',
+        help: {
+            title: '連鎖反應爐 (EXP-05)',
+            body: '尋找容易連續出現的號碼組合（二連號、三連號、四連號）。選擇參考資料範圍後點擊「啟動反應爐」，每組候選都會顯示歷史命中率；「強度」／「熱度」越高，代表重複型態越明顯。',
+        },
     },
 };

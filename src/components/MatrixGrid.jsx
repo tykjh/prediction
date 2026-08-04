@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
@@ -123,6 +124,7 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
                     </p>
                 </div>
 
+                <div className="flex items-start gap-2">
                 <div className="flex flex-col items-end">
                     <select
                         value={range}
@@ -143,6 +145,8 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
                             <span>{t('matrixGrid.hot')}</span>
                         </div>
                     )}
+                </div>
+                <HelpIcon title={t('matrixGrid.help.title')} body={t('matrixGrid.help.body')} />
                 </div>
             </div>
 

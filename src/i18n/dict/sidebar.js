@@ -147,6 +147,21 @@ export const sidebar = {
                 item1Desc: 'Glassmorphism UI, Weighted Recency Algorithm, and core History/Stats components.',
             },
         },
+
+        help: {
+            vault: {
+                title: 'The Vault',
+                body: 'Every prediction you saved, grouped by game (and Fortune Poems). Click "Verify All" after new results are announced to auto-check hits/prizes. Use the share icon to export a ticket image, the trash icon to delete, and the Config screen to back up or restore the whole vault.',
+            },
+            oracle: {
+                title: 'Oracle Room',
+                body: 'Divination tools based on classic Chinese fortune-poem temples. Draw a poem, read its verdict, and optionally save the poem\'s associated numbers as a prediction, just like the number-based tools.',
+            },
+            config: {
+                title: 'System Config',
+                body: 'Switch the active lottery game, toggle visual/audio/haptic settings, adjust the Reality Distortion slider, export or restore a Vault backup, purge all saved data, and review the changelog.',
+            },
+        },
     },
     zh: {
         statusMenu: '系統服務運作中',
@@ -294,6 +309,21 @@ export const sidebar = {
                 date: '2026年1月9日〔起源〕',
                 item1Label: '專案上線',
                 item1Desc: '毛玻璃介面設計、加權近期演算法，以及核心歷史紀錄／統計元件。',
+            },
+        },
+
+        help: {
+            vault: {
+                title: '保險庫',
+                body: '存放你所有已儲存的預測，依遊戲別（以及籤詩）分組顯示。開獎後點擊「全部驗證」即可自動核對命中與獎項。可用分享圖示匯出票券圖片、垃圾桶圖示刪除紀錄，並可在系統設定頁備份或還原整個保險庫。',
+            },
+            oracle: {
+                title: '神諭室',
+                body: '以傳統廟宇籤詩為基礎的占卜工具。抽取籤詩、閱讀籤詩解讀，也可以像號碼類工具一樣，將籤詩對應的號碼儲存為預測。',
+            },
+            config: {
+                title: '系統設定',
+                body: '可切換目前使用的樂透遊戲、調整視覺／音效／震動等設定、調整「現實扭曲」滑桿、匯出或還原保險庫備份、清除所有已儲存資料，並查看更新日誌。',
             },
         },
     },

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import MultiBetCell from './MultiBetCell';
 import { calculateHybridPrediction } from '../utils/prediction';
 import { getSecureRandomSet } from '../utils/secureRandom';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 // Default Config Template
@@ -270,14 +271,17 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
 
                 {/* Header Section */}
                 <div className="p-8 border-b border-white/5 light:border-slate-200 bg-gradient-to-r from-slate-900/50 to-transparent light:from-slate-50/50">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 flex items-center justify-center text-2xl shadow-inner">
-                            🧬
+                    <div className="flex items-center justify-between gap-4 mb-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 flex items-center justify-center text-2xl shadow-inner">
+                                🧬
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-black text-white light:text-slate-800">{t('backtestLabHybrid.title')}</h2>
+                                <p className="text-xs text-slate-400 light:text-slate-500 font-medium">{t('backtestLabHybrid.subtitle')}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-2xl font-black text-white light:text-slate-800">{t('backtestLabHybrid.title')}</h2>
-                            <p className="text-xs text-slate-400 light:text-slate-500 font-medium">{t('backtestLabHybrid.subtitle')}</p>
-                        </div>
+                        <HelpIcon title={t('backtestLabHybrid.help.title')} body={t('backtestLabHybrid.help.body')} />
                     </div>
 
                     {/* Global Simulation Controls */}

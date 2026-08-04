@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import ZoneTwoHybrid from './ZoneTwoHybrid';
 import { calculateHybridPrediction } from '../utils/prediction';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
@@ -588,6 +589,8 @@ const ZoneTwoLab = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         />
                         <span className="text-[10px] text-slate-600">{t('zoneTwoLab.draws')}</span>
                     </div>
+
+                    <HelpIcon title={t('zoneTwoLab.help.title')} body={t('zoneTwoLab.help.body')} />
                 </div>
 
                 {/* Technical Intelligence Dashboard */}

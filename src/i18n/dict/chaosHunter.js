@@ -15,6 +15,10 @@ export const chaosHunter = {
         clickToReset: 'Click to RESET',
         saveToVault: 'Save to Vault',
         targetHint: 'Target a zone and CLICK to generate...',
+        help: {
+            title: 'The Chaos Hunter',
+            body: 'Geometric reverse-engineering: the grid plots every historical draw by its Sum (total) and Span (spread). Click anywhere on the grid to target that Sum/Span zone — the tool generates a fresh number combination matching those coordinates. Adjust "History Depth" to change how many past draws are plotted.',
+        },
     },
     zh: {
         title: '渾沌獵人',
@@ -32,5 +36,9 @@ export const chaosHunter = {
         clickToReset: '點擊重設',
         saveToVault: '儲存至保險庫',
         targetHint: '瞄準一個區域並點擊以生成...',
+        help: {
+            title: '渾沌獵人',
+            body: '幾何反推引擎：座標圖以「總和」與「跨度」標示每一期歷史開獎結果。點擊圖上任一位置即可鎖定該總和／跨度區域，系統會依座標生成一組符合條件的新號碼。可調整「歷史深度」來改變納入分析的期數。',
+        },
     },
 };

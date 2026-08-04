@@ -2,6 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import DivinationRoom from './DivinationRoom';
 import html2canvas from 'html2canvas';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onDeletePrediction, onClearVault, onImportVault, onCheckVault, systemSettings, onUpdateSettings, playSound, historyData = [], isLightMode, activeGameID, activeGameConfig, onSwitchGame, gameTypes }) => {
@@ -118,24 +119,27 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
 
     const renderOracle = () => (
         <div className="h-full overflow-y-auto p-8 space-y-10 custom-scrollbar animate-in fade-in slide-in-from-right-8 duration-500">
-            <div className="flex items-center gap-4 px-2">
-                <button
-                    onClick={() => {
-                        if (playSound) playSound('click');
-                        setCurrentView('menu');
-                    }}
-                    className="group w-10 h-10 rounded-2xl bg-slate-800/80 light:bg-white text-slate-400 light:text-slate-600 flex items-center justify-center hover:bg-fuchsia-500 hover:text-white transition-all active:scale-90 border border-white/10 light:border-slate-200 shadow-xl"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
-                </button>
-                <div>
-                    <h3 className="text-2xl font-black text-white light:text-slate-900 tracking-tight flex items-center gap-3">
-                        <span className="p-2 bg-fuchsia-500/20 rounded-xl border border-fuchsia-500/30 text-xl shadow-inner">🔮</span> Oracle Room
-                    </h3>
-                    <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-1 ml-1">Divination Nexus</p>
+            <div className="flex items-center justify-between gap-4 px-2">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => {
+                            if (playSound) playSound('click');
+                            setCurrentView('menu');
+                        }}
+                        className="group w-10 h-10 rounded-2xl bg-slate-800/80 light:bg-white text-slate-400 light:text-slate-600 flex items-center justify-center hover:bg-fuchsia-500 hover:text-white transition-all active:scale-90 border border-white/10 light:border-slate-200 shadow-xl"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div>
+                        <h3 className="text-2xl font-black text-white light:text-slate-900 tracking-tight flex items-center gap-3">
+                            <span className="p-2 bg-fuchsia-500/20 rounded-xl border border-fuchsia-500/30 text-xl shadow-inner">🔮</span> Oracle Room
+                        </h3>
+                        <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-1 ml-1">Divination Nexus</p>
+                    </div>
                 </div>
+                <HelpIcon title={t('sidebar.help.oracle.title')} body={t('sidebar.help.oracle.body')} />
             </div>
             {/* Embed Divination Room logic here visually */}
             <div className="relative rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl">
@@ -249,6 +253,7 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                             </svg>
                             <span className="text-[10px] font-black uppercase tracking-widest">Verify All</span>
                         </button>
+                        <HelpIcon title={t('sidebar.help.vault.title')} body={t('sidebar.help.vault.body')} />
                     </div>
                 </div>
 
@@ -417,24 +422,27 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
 
     const renderConfig = () => (
         <div className="h-full overflow-y-auto p-8 space-y-10 custom-scrollbar animate-in fade-in slide-in-from-right-8 duration-500">
-            <div className="flex items-center gap-4 px-2">
-                <button
-                    onClick={() => {
-                        if (playSound) playSound('click');
-                        setCurrentView('menu');
-                    }}
-                    className="group w-10 h-10 rounded-2xl bg-slate-800/80 light:bg-white text-slate-400 light:text-slate-600 flex items-center justify-center hover:bg-slate-700 hover:text-white transition-all active:scale-90 border border-white/10 light:border-slate-200 shadow-xl"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
-                </button>
-                <div>
-                    <h3 className="text-2xl font-black text-white light:text-slate-900 tracking-tight flex items-center gap-3">
-                        <span className="p-2 bg-slate-500/20 rounded-xl border border-white/10 text-xl shadow-inner">⚙️</span> System Config
-                    </h3>
-                    <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-1 ml-1">Kernel Configuration</p>
+            <div className="flex items-center justify-between gap-4 px-2">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => {
+                            if (playSound) playSound('click');
+                            setCurrentView('menu');
+                        }}
+                        className="group w-10 h-10 rounded-2xl bg-slate-800/80 light:bg-white text-slate-400 light:text-slate-600 flex items-center justify-center hover:bg-slate-700 hover:text-white transition-all active:scale-90 border border-white/10 light:border-slate-200 shadow-xl"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div>
+                        <h3 className="text-2xl font-black text-white light:text-slate-900 tracking-tight flex items-center gap-3">
+                            <span className="p-2 bg-slate-500/20 rounded-xl border border-white/10 text-xl shadow-inner">⚙️</span> System Config
+                        </h3>
+                        <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-1 ml-1">Kernel Configuration</p>
+                    </div>
                 </div>
+                <HelpIcon title={t('sidebar.help.config.title')} body={t('sidebar.help.config.body')} />
             </div>
 
             <div className="space-y-6">

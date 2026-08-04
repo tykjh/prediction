@@ -19,6 +19,10 @@ export const backtestLabProphet = {
         colRegression: 'Regression',
         colProphet: 'Prophet',
         colRandom: 'Random',
+        help: {
+            title: 'Prophet Breakdown Analysis',
+            body: 'Isolates the Prophet\'s three sub-models — k-NN, Markov, Regression — and backtests each separately against the combined Prophet pick and a Random baseline over a chosen period range, so you can see which sub-model performs best.',
+        },
     },
     zh: {
         title: '先知模型拆解分析',
@@ -40,5 +44,9 @@ export const backtestLabProphet = {
         colRegression: '迴歸',
         colProphet: '先知',
         colRandom: '隨機',
+        help: {
+            title: '先知模型拆解分析',
+            body: '將先知的三個子模型——k-近鄰、馬可夫、迴歸——分開回測，並與整合後的先知預測及隨機基準線比較，協助你了解在所選期別範圍中哪個子模型表現最佳。',
+        },
     },
 };

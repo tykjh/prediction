@@ -3,6 +3,7 @@ import { calculatePrediction, calculateHybridPrediction } from '../utils/predict
 import { predictProphet, predictChainReactor, predictMonteCarlo } from '../utils/advancedAlgorithms';
 
 import MultiBetCell from './MultiBetCell';
+import HelpIcon from './HelpIcon';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const MODEL_LABEL_KEYS = {
@@ -246,14 +247,17 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
 
                 {/* Header */}
                 <div className="p-8 bg-gradient-to-r from-white/[0.03] light:from-slate-100/50 to-transparent border-b border-white/5 light:border-slate-200 relative z-10">
-                    <div className="flex items-center gap-5 mb-8">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-slate-800/50 light:from-indigo-100 light:to-white border border-indigo-500/30 light:border-indigo-100 flex items-center justify-center text-3xl text-indigo-400 light:text-indigo-600 shadow-lg shadow-indigo-500/10 backdrop-blur-sm">
-                            🔬
+                    <div className="flex items-center justify-between gap-5 mb-8">
+                        <div className="flex items-center gap-5">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-slate-800/50 light:from-indigo-100 light:to-white border border-indigo-500/30 light:border-indigo-100 flex items-center justify-center text-3xl text-indigo-400 light:text-indigo-600 shadow-lg shadow-indigo-500/10 backdrop-blur-sm">
+                                🔬
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-white light:text-slate-800 tracking-tight">{t('backtestLab.title')}</h2>
+                                <p className="text-indigo-200/60 light:text-indigo-800/60 text-sm font-medium tracking-wide">{t('backtestLab.subtitle')}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-3xl font-black text-white light:text-slate-800 tracking-tight">{t('backtestLab.title')}</h2>
-                            <p className="text-indigo-200/60 light:text-indigo-800/60 text-sm font-medium tracking-wide">{t('backtestLab.subtitle')}</p>
-                        </div>
+                        <HelpIcon title={t('backtestLab.help.title')} body={t('backtestLab.help.body')} />
                     </div>
 
                     <div className="flex flex-wrap items-end gap-6">

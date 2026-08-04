@@ -4,13 +4,14 @@ import InputSection from './InputSection';
 import PredictionRow from './PredictionRow';
 import HistoryList from './HistoryList';
 import AdvancedStatsHub from './analytics/AdvancedStatsHub';
+import HelpIcon from './HelpIcon';
 import { calculatePrediction, calculateHybridPrediction } from '../utils/prediction';
 import { trainAndPredict } from '../utils/lstmModel';
 import initialHistory from '../data/history.json';
 import { useLanguage } from '../i18n/LanguageContext';
 
 // Reusable Section Component (Moved from App.jsx)
-const CollapsibleSection = ({ title, children, defaultOpen = true, icon = "📊", playSound }) => {
+const CollapsibleSection = ({ title, children, defaultOpen = true, icon = "📊", playSound, helpTitle, helpBody }) => {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
     const toggle = () => {
@@ -31,10 +32,13 @@ const CollapsibleSection = ({ title, children, defaultOpen = true, icon = "📊"
                         {isOpen && <div className="h-0.5 w-12 bg-indigo-500/50 light:bg-indigo-500/50 rounded-full mt-1 group-hover:w-full transition-all duration-700"></div>}
                     </div>
                 </div>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-white/5 light:bg-slate-100 border border-white/10 light:border-slate-200 text-slate-400 light:text-slate-400 group-hover:bg-white/10 light:group-hover:bg-slate-200 group-hover:text-white light:group-hover:text-slate-600 transition-all duration-300 ${isOpen ? 'rotate-180 bg-indigo-500/20 light:bg-indigo-50 text-indigo-200 light:text-indigo-500 border-indigo-500/30' : ''}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
+                <div className="flex items-center gap-3">
+                    {helpTitle && <HelpIcon title={helpTitle} body={helpBody} />}
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-white/5 light:bg-slate-100 border border-white/10 light:border-slate-200 text-slate-400 light:text-slate-400 group-hover:bg-white/10 light:group-hover:bg-slate-200 group-hover:text-white light:group-hover:text-slate-600 transition-all duration-300 ${isOpen ? 'rotate-180 bg-indigo-500/20 light:bg-indigo-50 text-indigo-200 light:text-indigo-500 border-indigo-500/30' : ''}`}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </div>
                 </div>
             </div>
 
@@ -220,7 +224,13 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
             />
 
             {/* --- 1. Prediction Engine (Collapsible) --- */}
-            <CollapsibleSection title={t('workspace.sectionPredictionEngine')} icon="✨" defaultOpen={true}>
+            <CollapsibleSection
+                title={t('workspace.sectionPredictionEngine')}
+                icon="✨"
+                defaultOpen={true}
+                helpTitle={t('workspace.help.predictionEngine.title')}
+                helpBody={t('workspace.help.predictionEngine.body')}
+            >
                 <div className="relative">
                     {/* Global Settings for Engine */}
                     <div className="flex flex-wrap justify-end items-center gap-4 mb-6 border-b border-slate-800/50 light:border-slate-200 pb-4">
@@ -336,12 +346,24 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
             </CollapsibleSection>
 
             {/* --- 2. Charts (Collapsible) --- */}
-            <CollapsibleSection title={t('workspace.sectionStatisticalAnalysis')} icon="📈" defaultOpen={true}>
+            <CollapsibleSection
+                title={t('workspace.sectionStatisticalAnalysis')}
+                icon="📈"
+                defaultOpen={true}
+                helpTitle={t('workspace.help.statisticalAnalysis.title')}
+                helpBody={t('workspace.help.statisticalAnalysis.body')}
+            >
                 <AdvancedStatsHub historyData={historyData} isLightMode={isLightMode} activeGameConfig={activeGameConfig} />
             </CollapsibleSection>
 
             {/* --- 3. History (Collapsible) --- */}
-            <CollapsibleSection title={t('workspace.sectionHistoricalData')} icon="📜" defaultOpen={true}>
+            <CollapsibleSection
+                title={t('workspace.sectionHistoricalData')}
+                icon="📜"
+                defaultOpen={true}
+                helpTitle={t('workspace.help.historicalData.title')}
+                helpBody={t('workspace.help.historicalData.body')}
+            >
                 <HistoryList
                     historyData={historyData}
                     activeGameConfig={activeGameConfig}
@@ -356,7 +378,13 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
             </CollapsibleSection>
 
             {/* --- 4. Input (Collapsible) --- */}
-            <CollapsibleSection title={t('workspace.sectionDataManagement')} icon="📝" defaultOpen={true}>
+            <CollapsibleSection
+                title={t('workspace.sectionDataManagement')}
+                icon="📝"
+                defaultOpen={true}
+                helpTitle={t('workspace.help.dataManagement.title')}
+                helpBody={t('workspace.help.dataManagement.body')}
+            >
                 <InputSection
                     onAddEntry={onAddEntry}
                     existingPeriods={existingPeriods}

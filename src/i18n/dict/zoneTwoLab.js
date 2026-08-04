@@ -83,6 +83,10 @@ export const zoneTwoLab = {
         cfgMonte: 'Monte Carlo',
         cfgQuantum: 'Quantum',
         cfgHybrid: 'Hybrid',
+        help: {
+            title: 'Zone 2 Lab',
+            body: 'Deep-dive tools for Super Lotto\'s single second-zone number: pattern balance (odd/even, big/small, prime), gap alerts for overdue numbers, and multiple prediction models (Markov, k-NN, Regression, Monte Carlo, Quantum, Hybrid) you can Run individually. The Genetic Evolution Lab breeds generations of model-weight combinations to find the best mix — set Generations and click "Start Evolution".',
+        },
     },
     zh: {
         title: 'Zone 2 實驗室',
@@ -168,5 +172,9 @@ export const zoneTwoLab = {
         cfgMonte: '蒙地卡羅',
         cfgQuantum: '量子',
         cfgHybrid: '混合',
+        help: {
+            title: 'Zone 2 實驗室',
+            body: '針對威力彩第二區單一號碼的深度分析工具：型態平衡（奇偶、大小、質合）、遺漏警示（提醒久未開出的號碼），以及多種可個別執行的預測模型（馬可夫、k-近鄰、迴歸、蒙地卡羅、量子亂數、混合模型）。「基因演化實驗室」會培育多個世代的權重組合以找出最佳配置：設定世代數後點擊「啟動演化」。',
+        },
     },
 };
