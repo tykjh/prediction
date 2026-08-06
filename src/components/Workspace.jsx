@@ -23,18 +23,18 @@ const CollapsibleSection = ({ title, children, defaultOpen = true, icon = "📊"
         <section className={`rounded-3xl border border-white/10 light:border-slate-200/60 overflow-hidden transition-all duration-500 shadow-2xl light:shadow-xl backdrop-blur-xl ${isOpen ? 'bg-slate-900/40 light:bg-gradient-to-br light:from-white light:to-slate-100 ring-1 ring-white/10 light:ring-black/5 shadow-indigo-500/10 light:shadow-indigo-500/5' : 'bg-slate-900/20 hover:bg-slate-900/30 light:bg-white/40 light:hover:bg-white/60'}`}>
             <div
                 onClick={toggle}
-                className="flex items-center justify-between p-6 cursor-pointer bg-gradient-to-r from-white/5 via-white/[0.02] to-transparent light:from-slate-50/50 light:to-transparent hover:from-white/10 light:hover:from-slate-100/50 transition-all select-none group border-b border-white/5 light:border-slate-100"
+                className="flex items-center justify-between gap-3 p-4 sm:p-6 cursor-pointer bg-gradient-to-r from-white/5 via-white/[0.02] to-transparent light:from-slate-50/50 light:to-transparent hover:from-white/10 light:hover:from-slate-100/50 transition-all select-none group border-b border-white/5 light:border-slate-100"
             >
-                <div className="flex items-center gap-5">
-                    <span className="text-3xl filter drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300">{icon}</span>
-                    <div>
-                        <h2 className="text-lg font-black text-white light:text-slate-800 uppercase tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 light:from-slate-800 light:to-slate-600 group-hover:to-white light:group-hover:to-slate-900 transition-all">{title}</h2>
+                <div className="flex items-center gap-3 sm:gap-5 min-w-0">
+                    <span className="text-2xl sm:text-3xl shrink-0 filter drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300">{icon}</span>
+                    <div className="min-w-0">
+                        <h2 className="text-sm sm:text-lg font-black text-white light:text-slate-800 uppercase tracking-wide sm:tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 light:from-slate-800 light:to-slate-600 group-hover:to-white light:group-hover:to-slate-900 transition-all">{title}</h2>
                         {isOpen && <div className="h-0.5 w-12 bg-indigo-500/50 light:bg-indigo-500/50 rounded-full mt-1 group-hover:w-full transition-all duration-700"></div>}
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                     {helpTitle && <HelpIcon title={helpTitle} body={helpBody} />}
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-white/5 light:bg-slate-100 border border-white/10 light:border-slate-200 text-slate-400 light:text-slate-400 group-hover:bg-white/10 light:group-hover:bg-slate-200 group-hover:text-white light:group-hover:text-slate-600 transition-all duration-300 ${isOpen ? 'rotate-180 bg-indigo-500/20 light:bg-indigo-50 text-indigo-200 light:text-indigo-500 border-indigo-500/30' : ''}`}>
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-white/5 light:bg-slate-100 border border-white/10 light:border-slate-200 text-slate-400 light:text-slate-400 group-hover:bg-white/10 light:group-hover:bg-slate-200 group-hover:text-white light:group-hover:text-slate-600 transition-all duration-300 ${isOpen ? 'rotate-180 bg-indigo-500/20 light:bg-indigo-50 text-indigo-200 light:text-indigo-500 border-indigo-500/30' : ''}`}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                         </svg>
@@ -43,7 +43,7 @@ const CollapsibleSection = ({ title, children, defaultOpen = true, icon = "📊"
             </div>
 
             <div className={`transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${isOpen ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-                <div className="p-6 md:p-8 bg-black/20 light:bg-slate-100/50">
+                <div className="p-4 sm:p-6 md:p-8 bg-black/20 light:bg-slate-100/50">
                     {children}
                 </div>
             </div>

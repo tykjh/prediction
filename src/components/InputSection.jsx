@@ -200,7 +200,7 @@ const InputSection = ({ onAddEntry, existingPeriods, nextPeriod, activeGameConfi
                         </span>
                     </div>
 
-                    <div className="flex gap-2 justify-between">
+                    <div className="flex gap-1 sm:gap-2 justify-between">
                         {/* Regular Numbers */}
                         {numbers.slice(0, PICK).map((num, idx) => (
                             <input
@@ -210,7 +210,7 @@ const InputSection = ({ onAddEntry, existingPeriods, nextPeriod, activeGameConfi
                                 value={num}
                                 onChange={(e) => handleNumberChange(idx, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(idx, e)}
-                                className="w-full aspect-square text-center bg-slate-950/50 light:bg-slate-50 border border-slate-700/50 light:border-slate-300 rounded-xl text-white light:text-slate-900 font-black text-2xl focus:border-blue-500 light:focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all placeholder:text-slate-700 light:placeholder:text-slate-300 hover:border-slate-600 light:hover:border-slate-400"
+                                className="w-full aspect-square text-center bg-slate-950/50 light:bg-slate-50 border border-slate-700/50 light:border-slate-300 rounded-xl text-white light:text-slate-900 font-black text-base sm:text-2xl focus:border-blue-500 light:focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all placeholder:text-slate-700 light:placeholder:text-slate-300 hover:border-slate-600 light:hover:border-slate-400"
                                 placeholder="#"
                             />
                         ))}
@@ -218,7 +218,7 @@ const InputSection = ({ onAddEntry, existingPeriods, nextPeriod, activeGameConfi
                         {/* Special Number (Conditional) */}
                         {HAS_SPECIAL && (
                             <>
-                                <div className="w-px bg-slate-700 mx-1"></div>
+                                <div className="w-px bg-slate-700 mx-0.5 sm:mx-1"></div>
                                 <div className="relative">
                                     <input
                                         ref={el => inputRefs.current[PICK] = el}
@@ -226,7 +226,7 @@ const InputSection = ({ onAddEntry, existingPeriods, nextPeriod, activeGameConfi
                                         value={numbers[PICK]}
                                         onChange={(e) => handleNumberChange(PICK, e.target.value)}
                                         onKeyDown={(e) => handleKeyDown(PICK, e)}
-                                        className="w-full aspect-square text-center bg-slate-950/50 light:bg-slate-50 border-2 border-orange-500/30 light:border-orange-400/30 rounded-xl text-orange-400 light:text-orange-500 font-bold text-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/20 transition-all placeholder:text-orange-900/50 light:placeholder:text-orange-200"
+                                        className="w-full aspect-square text-center bg-slate-950/50 light:bg-slate-50 border-2 border-orange-500/30 light:border-orange-400/30 rounded-xl text-orange-400 light:text-orange-500 font-bold text-sm sm:text-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/20 transition-all placeholder:text-orange-900/50 light:placeholder:text-orange-200"
                                         placeholder="S"
                                     />
                                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] text-orange-500 font-bold bg-slate-800 px-1">

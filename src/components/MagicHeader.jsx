@@ -95,7 +95,7 @@ const MagicHeader = ({ title, subtitle, icon, themeIndex = 0, isLightMode = fals
             onMouseMove={handleMouseMove}
             onMouseEnter={() => !reducedMotion && setIsHovering(true)}
             onMouseLeave={() => !reducedMotion && setIsHovering(false)}
-            className="relative py-16 text-center rounded-[2rem] bg-slate-950/30 light:bg-white/40 border border-white/10 light:border-slate-300/50 overflow-hidden backdrop-blur-sm group transition-all duration-500 hover:border-white/20 light:hover:border-slate-400"
+            className="relative py-10 sm:py-16 px-4 text-center rounded-[2rem] bg-slate-950/30 light:bg-white/40 border border-white/10 light:border-slate-300/50 overflow-hidden backdrop-blur-sm group transition-all duration-500 hover:border-white/20 light:hover:border-slate-400"
         >
             {/* 1. Base Gradient */}
             <div className={`absolute inset-0 bg-gradient-to-b ${c.bgFrom} to-transparent opacity-50`}></div>
@@ -141,15 +141,15 @@ const MagicHeader = ({ title, subtitle, icon, themeIndex = 0, isLightMode = fals
             )}
 
             {/* Content */}
-            <div className={`relative z-10 w-24 h-24 bg-gradient-to-br from-slate-900 to-slate-950 light:from-white light:to-slate-100 rounded-3xl flex items-center justify-center text-5xl mx-auto mb-6 shadow-2xl border border-white/10 light:border-slate-200 group-hover:scale-105 ${c.shadow} transition-all duration-500`}>
+            <div className={`relative z-10 w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-slate-900 to-slate-950 light:from-white light:to-slate-100 rounded-3xl flex items-center justify-center text-3xl sm:text-5xl mx-auto mb-4 sm:mb-6 shadow-2xl border border-white/10 light:border-slate-200 group-hover:scale-105 ${c.shadow} transition-all duration-500`}>
                 {icon}
             </div>
 
-            <h1 className={`relative z-10 text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white light:from-slate-800 ${c.textVia} to-slate-400 light:to-slate-500 mb-4 tracking-tight drop-shadow-sm`}>
+            <h1 className={`relative z-10 text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white light:from-slate-800 ${c.textVia} to-slate-400 light:to-slate-500 mb-3 sm:mb-4 tracking-tight drop-shadow-sm break-words`}>
                 {title}
             </h1>
 
-            <p className="relative z-10 text-slate-400 light:text-slate-600 text-sm font-medium max-w-lg mx-auto leading-relaxed tracking-wide">
+            <p className="relative z-10 text-slate-400 light:text-slate-600 text-xs sm:text-sm font-medium max-w-lg mx-auto leading-relaxed tracking-wide">
                 {subtitle}
             </p>
 
