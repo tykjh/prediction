@@ -373,12 +373,6 @@ function App() {
     }
   };
 
-  const wrapInteraction = (fn) => (...args) => {
-    playSound('click');
-    triggerHaptic();
-    if (fn) fn(...args);
-  };
-
   const getThemeColors = () => {
     // High Contrast Mode Override
     if (systemSettings.highContrast) {
@@ -445,26 +439,6 @@ function App() {
   };
 
   const navViews = ['workspace', 'test-area', 'backtest'];
-
-  const changeView = (direction) => {
-    wrapInteraction()(); // Play sound/haptic
-
-    // If we are in playground, we "exit" to workspace or backtest
-    let currentIndex = navViews.indexOf(currentView);
-    if (currentIndex === -1) {
-      // We are in playground (or some other custom view)
-      setCurrentView(direction === 'next' ? navViews[0] : navViews[navViews.length - 1]);
-      return;
-    }
-
-    let nextIndex;
-    if (direction === 'next') {
-      nextIndex = (currentIndex + 1) % navViews.length;
-    } else {
-      nextIndex = (currentIndex - 1 + navViews.length) % navViews.length;
-    }
-    setCurrentView(navViews[nextIndex]);
-  };
 
   return (
     <div
@@ -606,38 +580,6 @@ function App() {
         onSwitchGame={setActiveGameID} // Allow switching
         onOpenSidebar={() => setIsSidebarOpen(true)} // Long Press Action
       />
-
-      {/* Side Navigation Arrows - Minimalist Glass */}
-      <div className="fixed top-1/2 right-0 -translate-y-1/2 z-40 flex flex-col gap-0 items-center group/nav">
-        {/* Previous View */}
-        <button
-          onClick={() => changeView('prev')}
-          className="w-10 h-10 rounded-full bg-white/5 light:bg-slate-200 backdrop-blur-md border border-white/10 light:border-slate-300 text-white/40 light:text-slate-500 shadow-lg hover:bg-white/10 light:hover:bg-slate-300 hover:text-white light:hover:text-slate-800 hover:scale-110 hover:border-white/30 active:scale-95 transition-all duration-300 flex items-center justify-center"
-          title={t('app.previousView')}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
-        </button>
-
-        {/* Indicator Dots (Optional context) */}
-        <div className="flex flex-row gap-1 items-center py-0.5 opacity-0 group-hover/nav:opacity-100 transition-opacity duration-500">
-          {navViews.map(v => (
-            <div key={v} className={`w-1 h-1 rounded-full transition-all ${v === currentView ? 'bg-indigo-400 scale-125' : 'bg-slate-700'}`} />
-          ))}
-        </div>
-
-        {/* Next View */}
-        <button
-          onClick={() => changeView('next')}
-          className="w-10 h-10 rounded-full bg-white/5 light:bg-slate-200 backdrop-blur-md border border-white/10 light:border-slate-300 text-white/40 light:text-slate-500 shadow-lg hover:bg-white/10 light:hover:bg-slate-300 hover:text-white light:hover:text-slate-800 hover:scale-110 hover:border-white/30 active:scale-95 transition-all duration-300 flex items-center justify-center"
-          title={t('app.nextView')}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-        </button>
-      </div>
 
       {/* Modal */}
       {quickPickOpen && <QuickPickModal onClose={() => setQuickPickOpen(false)} activeGameConfig={activeGameConfig} />}
