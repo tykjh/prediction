@@ -675,9 +675,60 @@ const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onD
                     </div>
                     <div className="space-y-6 font-mono text-[9px] text-slate-400 font-bold h-64 overflow-y-scroll custom-sidebar-scrollbar pr-6 relative z-10 transition-all scroll-smooth">
 
-                        {/* 2026-01-20 (Today) */}
+                        {/* 2026-08-07 (Latest) */}
                         <div className="relative pl-6 border-l border-white/20">
                             <div className="absolute top-0 -left-[5px] w-2.5 h-2.5 rounded-full bg-white/20"></div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.aug07.date')}</div>
+                            <ul className="space-y-2 text-slate-400">
+                                <li><strong>{t('sidebar.changelog.aug07.item1Label')}</strong>: {t('sidebar.changelog.aug07.item1Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.aug07.item2Label')}</strong>: {t('sidebar.changelog.aug07.item2Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.aug07.item3Label')}</strong>: {t('sidebar.changelog.aug07.item3Desc')}</li>
+                            </ul>
+                        </div>
+
+                        {/* 2026-08-04 */}
+                        <div className="relative pl-6 border-l border-white/20 pt-4">
+                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.aug04.date')}</div>
+                            <ul className="space-y-2 text-slate-400">
+                                <li><strong>{t('sidebar.changelog.aug04.item1Label')}</strong>: {t('sidebar.changelog.aug04.item1Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.aug04.item2Label')}</strong>: {t('sidebar.changelog.aug04.item2Desc')}</li>
+                            </ul>
+                        </div>
+
+                        {/* 2026-08-02 */}
+                        <div className="relative pl-6 border-l border-white/20 pt-4">
+                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.aug02.date')}</div>
+                            <ul className="space-y-2 text-slate-400">
+                                <li><strong>{t('sidebar.changelog.aug02.item1Label')}</strong>: {t('sidebar.changelog.aug02.item1Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.aug02.item2Label')}</strong>: {t('sidebar.changelog.aug02.item2Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.aug02.item3Label')}</strong>: {t('sidebar.changelog.aug02.item3Desc')}</li>
+                            </ul>
+                        </div>
+
+                        {/* 2026-07-30 */}
+                        <div className="relative pl-6 border-l border-white/20 pt-4">
+                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jul30.date')}</div>
+                            <ul className="space-y-2 text-slate-400">
+                                <li><strong>{t('sidebar.changelog.jul30.item1Label')}</strong>: {t('sidebar.changelog.jul30.item1Desc')}</li>
+                            </ul>
+                        </div>
+
+                        {/* 2026-01-25 ~ 02-06 */}
+                        <div className="relative pl-6 border-l border-white/20 pt-4">
+                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
+                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan25_feb06.date')}</div>
+                            <ul className="space-y-2 text-slate-400">
+                                <li><strong>{t('sidebar.changelog.jan25_feb06.item1Label')}</strong>: {t('sidebar.changelog.jan25_feb06.item1Desc')}</li>
+                                <li><strong>{t('sidebar.changelog.jan25_feb06.item2Label')}</strong>: {t('sidebar.changelog.jan25_feb06.item2Desc')}</li>
+                            </ul>
+                        </div>
+
+                        {/* 2026-01-20 */}
+                        <div className="relative pl-6 border-l border-white/20 pt-4">
+                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
                             <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan20.date')}</div>
                             <ul className="space-y-2 text-slate-400">
                                 <li><strong>{t('sidebar.changelog.jan20.item1Label')}</strong>: {t('sidebar.changelog.jan20.item1Desc')}</li>
