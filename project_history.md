@@ -2,6 +2,57 @@
 
 A chronological record of your work and accomplishments on the project.
 
+> **Format note**: Entries are grouped by date (newest first), each with a `Time:` stamp (from the commit timestamp) and bullets tagged by change type — `Added` / `Changed` / `Fixed` / `Docs` / `Removed` — following the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention. Routine automated data-sync commits (`chore: auto-update ... data`) are intentionally omitted here; they're already tracked in full in `git log` and don't reflect development work.
+
+---
+
+## 📅 2026-08-07
+
+### 📱 Mobile-Friendly TopBar & Workspace
+*Time: 00:05 – 00:17*
+- **Changed**: Rebuilt `TopBar.jsx` for small screens — collapsed the navigation into a mobile-friendly layout and removed the side nav arrows, trimming ~50 lines of now-redundant logic out of `App.jsx`. ([a291be8])
+- **Changed**: Applied responsive spacing/sizing adjustments to `InputSection`, `MagicHeader`, and `Workspace` so the main panel lays out correctly on phone widths. ([b84e829])
+- **Added**: Restored the right-middle previous/next view arrow buttons in `App.jsx` after user feedback that they were still needed following the mobile nav cleanup. ([cf89a7d])
+
+---
+
+## 📅 2026-08-04
+
+### 🌐 Bilingual UI & Operation Manual
+*Time: 13:32 – 22:50*
+- **Added**: Introduced full EN/繁中 bilingual support — a language switcher in the top bar plus translation dictionaries (`src/i18n/dict/*`) for the sidebar, TopBar, Prophet, Slot Machine, Trend Lines, Zone Radar, Zone Two Lab/Hybrid, Quick Pick Modal, and Prediction Row (~2,400 lines added across 76 files). ([b10d4a7])
+- **Added**: Wrote an operation manual (`manual.js`) and per-panel help icons, translated into both languages, covering Backtest Lab, Backtest Lab Hybrid/Prophet, Chain Reactor, Chaos Hunter, Matrix Grid, Monte Carlo, Prophet, and Zone Two Lab. ([03b6269])
+
+---
+
+## 📅 2026-08-02
+
+### 🛠️ Data Pipeline Hardening
+*Time: 13:45 – 14:18*
+- **Added**: Supported a manual `?month=` query override on the update endpoint to backfill lottery data gaps. ([3e9f053])
+- **Fixed**: Fixed a hardcoded pick-count bug in `MonteCarlo.jsx` and `Prophet.jsx` that assumed a fixed number of picks regardless of game type. ([6e937ed])
+- **Changed**: Hardened `taiwanLotteryApi.js` and `update-lottery.js` against malformed/incomplete API responses so a bad upstream payload can no longer corrupt stored draw history. ([6e937ed])
+
+---
+
+## 📅 2026-07-30
+
+### ⏱️ Automated Daily Data Updates
+*Time: 23:48 – 23:49*
+- **Added**: Set up a daily auto-update pipeline for lottery draw results via Vercel Cron (`api/update-lottery.js`, `api/_lib/taiwanLotteryApi.js`, `api/_lib/githubContents.js`), which since this date has kept `539`, `LOTTO649`, and `SUPERLOTTO` history in sync automatically (see the recurring `chore: auto-update` commits in `git log`). ([429dfd1])
+- **Changed**: Refreshed the bundled lottery history to the latest available draw (115/04/27) ahead of enabling automation. ([c8dc5f3])
+
+---
+
+## 📅 2026-01-25 ~ 02-06
+
+### 🚀 Vercel Deployment & Pre-Automation Data Refreshes
+*Time: 20:38 (01-25)*
+- **Added**: Landed the initial commit for Vercel deployment, bringing the full early-stage app (Slot Machine, Chaos Lab, four fortune-temple datasets, prediction/algorithm utilities, LSTM model scaffold, secure RNG) into this deployment-ready repo. ([6ed2b15])
+- **Changed**: Manually refreshed lottery data twice (115/02/05, 115/02/06) before the automated cron pipeline existed. ([a80fd30], [51e1386])
+
+---
+
 ## 📅 2026-01-20
 
 ### 🎰 Slot Machine 2.0 & Casino Physics
@@ -95,5 +146,17 @@ A chronological record of your work and accomplishments on the project.
 - **Implemented Core Logic**: Coded the "Weighted Recency" algorithm and the "Hot/Cold" analysis engine.
 - **Built Foundation**: Created the Input, History, and Statistics components.
 
-
+<!-- Commit reference links -->
+[cf89a7d]: https://github.com/tykjh/prediction/commit/cf89a7d
+[a291be8]: https://github.com/tykjh/prediction/commit/a291be8
+[b84e829]: https://github.com/tykjh/prediction/commit/b84e829
+[b10d4a7]: https://github.com/tykjh/prediction/commit/b10d4a7
+[03b6269]: https://github.com/tykjh/prediction/commit/03b6269
+[3e9f053]: https://github.com/tykjh/prediction/commit/3e9f053
+[6e937ed]: https://github.com/tykjh/prediction/commit/6e937ed
+[429dfd1]: https://github.com/tykjh/prediction/commit/429dfd1
+[c8dc5f3]: https://github.com/tykjh/prediction/commit/c8dc5f3
+[6ed2b15]: https://github.com/tykjh/prediction/commit/6ed2b15
+[a80fd30]: https://github.com/tykjh/prediction/commit/a80fd30
+[51e1386]: https://github.com/tykjh/prediction/commit/51e1386
 

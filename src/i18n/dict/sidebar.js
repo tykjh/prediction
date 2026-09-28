@@ -93,6 +93,43 @@ export const sidebar = {
 
         // Changelog entries
         changelog: {
+            aug07: {
+                date: 'Aug 07, 2026 [Mobile-Friendly UI]',
+                item1Label: 'Mobile TopBar',
+                item1Desc: 'Rebuilt the top navigation for phone screens, collapsing controls and removing side nav arrows.',
+                item2Label: 'Responsive Workspace',
+                item2Desc: 'Adjusted spacing and sizing across the Input, Header, and Workspace panels for small screens.',
+                item3Label: 'Restored Nav Arrows',
+                item3Desc: 'Brought back the right-middle prev/next view arrows after feedback from the mobile cleanup.',
+            },
+            aug04: {
+                date: 'Aug 04, 2026 [Bilingual UI]',
+                item1Label: 'EN / 繁中 Language Switch',
+                item1Desc: 'Added full bilingual support with a language switcher in the top bar, covering every panel.',
+                item2Label: 'Operation Manual',
+                item2Desc: 'Added an in-app operation manual and per-panel help icons, translated into both languages.',
+            },
+            aug02: {
+                date: 'Aug 02, 2026 [Data Pipeline Hardening]',
+                item1Label: 'Manual Backfill',
+                item1Desc: 'Added a ?month= override on the update endpoint to backfill missing lottery data gaps.',
+                item2Label: 'Pick-Count Bug Fix',
+                item2Desc: 'Fixed a hardcoded pick-count bug in Monte Carlo and Prophet for non-6/49 games.',
+                item3Label: 'API Hardening',
+                item3Desc: 'Guarded the auto-update pipeline against malformed or incomplete upstream API responses.',
+            },
+            jul30: {
+                date: 'Jul 30, 2026 [Automation]',
+                item1Label: 'Daily Auto-Update',
+                item1Desc: 'Set up a Vercel Cron job that fetches and commits new draw results automatically every day.',
+            },
+            jan25_feb06: {
+                date: 'Jan 25 – Feb 06, 2026 [Deployment]',
+                item1Label: 'Vercel Deployment',
+                item1Desc: 'Landed the deployment-ready repo with the full early-stage app and datasets.',
+                item2Label: 'Manual Data Refresh',
+                item2Desc: 'Manually synced lottery results twice before the automated pipeline existed.',
+            },
             jan20: {
                 date: 'Jan 20, 2026 [Slot Machine 2.0]',
                 item1Label: '5-Reel Casino Engine',
@@ -257,6 +294,43 @@ export const sidebar = {
 
         // Changelog entries
         changelog: {
+            aug07: {
+                date: '2026年8月7日〔行動版介面優化〕',
+                item1Label: '行動版頂部導覽列',
+                item1Desc: '重建手機版頂部導覽列,整合控制項並移除側邊箭頭。',
+                item2Label: '響應式工作區',
+                item2Desc: '調整輸入區、頁首與工作區面板在小螢幕上的間距與尺寸。',
+                item3Label: '復原導覽箭頭',
+                item3Desc: '依使用者回饋,重新加回右側中間的上一頁／下一頁切換箭頭。',
+            },
+            aug04: {
+                date: '2026年8月4日〔雙語介面〕',
+                item1Label: '中英語言切換',
+                item1Desc: '新增完整雙語支援,頂部列加入語言切換器,涵蓋所有面板。',
+                item2Label: '操作手冊',
+                item2Desc: '新增應用內操作手冊與各面板說明圖示,並提供中英雙語翻譯。',
+            },
+            aug02: {
+                date: '2026年8月2日〔資料管線強化〕',
+                item1Label: '手動補資料',
+                item1Desc: '新增 ?month= 參數,可手動補齊缺漏的開獎資料。',
+                item2Label: '選號數量錯誤修復',
+                item2Desc: '修復蒙地卡羅與先知模組在非 6/49 遊戲下選號數量寫死的錯誤。',
+                item3Label: 'API 強化',
+                item3Desc: '強化自動更新流程,避免上游 API 回傳異常或不完整資料時損毀紀錄。',
+            },
+            jul30: {
+                date: '2026年7月30日〔自動化〕',
+                item1Label: '每日自動更新',
+                item1Desc: '建立 Vercel Cron 排程,每天自動抓取並提交最新開獎結果。',
+            },
+            jan25_feb06: {
+                date: '2026年1月25日至2月6日〔部署上線〕',
+                item1Label: 'Vercel 部署',
+                item1Desc: '完成可直接部署的版本,包含完整早期功能與資料集。',
+                item2Label: '手動資料更新',
+                item2Desc: '在自動化建立前,手動同步了兩次開獎資料。',
+            },
             jan20: {
                 date: '2026年1月20日〔老虎機 2.0〕',
                 item1Label: '五輪吃角子老虎引擎',
