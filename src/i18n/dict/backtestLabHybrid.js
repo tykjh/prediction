@@ -39,7 +39,7 @@ export const backtestLabHybrid = {
         errorRefMin: '參考深度至少需要 20。',
         errorRefTooSmall: '參考深度（{refNum}）太小！必須比最大的趨勢深度（{maxTrend}）多 20 以上。建議將參考深度設為 {suggestion} 或更高。',
         errorNoData: '未產生任何模擬資料，請檢查範圍設定。',
-        title: '混合演化實驗室',
+        title: '冷熱混搭參數調校',
         subtitle: '參數化多模型比較',
         inputDataRef: '輸入資料參考',
         refPlaceholder: '參考值',
@@ -67,7 +67,7 @@ export const backtestLabHybrid = {
         colPeriod: '期別',
         colActual: '實際開獎',
         help: {
-            title: '混合演化實驗室',
+            title: '冷熱混搭參數調校',
             body: '可設定最多 5 組獨立的混合策略欄位，各自擁有專屬的熱／冷池大小、趨勢深度與權重策略（標準／積極／平坦），執行回測後即可並排比較各組勝率，找出表現最佳的參數配置。',
         },
     },

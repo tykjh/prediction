@@ -137,7 +137,7 @@ const DreamCatcher = () => {
         <div className="flex flex-col gap-6 w-full h-full animate-in fade-in duration-1000">
             {/* Controls Overlay */}
             <div className="absolute top-6 right-6 z-10 w-64 bg-slate-900/80 backdrop-blur-md rounded-xl border border-white/10 p-5 shadow-2xl space-y-5">
-                <h3 className="text-white font-bold text-sm uppercase tracking-widest flex items-center gap-2">
+                <h3 className="text-white font-bold text-sm flex items-center gap-2">
                     <span className="text-lg">🕸️</span> {t('dreamCatcher.title')}
                 </h3>
 

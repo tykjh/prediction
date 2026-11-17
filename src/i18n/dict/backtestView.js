@@ -4,7 +4,7 @@ export const backtestView = {
         subtitle: 'Verify model accuracy against historical data.',
     },
     zh: {
-        title: '預測品質評估',
-        subtitle: '驗證模型準確度與歷史資料的吻合程度。',
+        title: '回測',
+        subtitle: '拿過去的開獎來檢查，各種選法以前到底準不準。',
     },
 };

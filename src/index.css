@@ -2,66 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Premium Custom Scrollbar */
+:root {
+    /* Page colour. App.jsx updates --app-base when the theme changes. */
+    --app-base: #1d1c1a;
+    --app-raised: color-mix(in srgb, var(--app-base) 88%, white);
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    background-color: var(--app-base);
+    color: #e7e5e4;
+    font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Quiet scrollbars */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(4px);
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #4f46e5, #818cf8);
-    border-radius: 5px;
-    border: 2px solid transparent;
-    background-clip: content-box;
-    transition: background 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, #6366f1, #a5b4fc);
-    border: 2px solid transparent;
-    background-clip: content-box;
-}
-
-::-webkit-scrollbar-corner {
     background: transparent;
 }
 
-/* Specific Sidebar Scrollbar for Acknowledge Log */
+::-webkit-scrollbar-thumb {
+    background: rgba(168, 162, 158, 0.35);
+    border-radius: 5px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(168, 162, 158, 0.6);
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
 .custom-sidebar-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #6366f1 rgba(255, 255, 255, 0.05);
+    scrollbar-color: rgba(168, 162, 158, 0.5) transparent;
 }
 
-.custom-sidebar-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    display: block !important;
-}
-
-.custom-sidebar-scrollbar::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    margin: 4px;
-}
-
-.custom-sidebar-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #6366f1, #a855f7);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.custom-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, #818cf8, #c084fc);
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
-}
-
-body {
-    background-color: #0B0C15;
-    color: white;
+:focus-visible {
+    outline: 2px solid #f59e0b;
+    outline-offset: 2px;
 }
 
 @layer utilities {
@@ -235,4 +223,14 @@ body {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+}
+
+/* Respect the system "reduce motion" setting as well as the in-app switch */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

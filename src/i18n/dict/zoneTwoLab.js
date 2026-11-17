@@ -155,7 +155,7 @@ export const zoneTwoLab = {
         geneticLabTitle: '基因演化實驗室',
         geneticDesc: '運用基因演算法,依循「適者生存」原則,透過培育 {n} 代權重組合,尋找最佳模型配置。',
         generations: '世代數:',
-        startEvolution: '啟動演化',
+        startEvolution: '開始演化',
         evolvingGen: '演化中 第 {gen}/{total} 代...',
         evolutionComplete: '演化完成',
         bestGenome: '最佳基因組(權重)',

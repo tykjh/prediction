@@ -28,6 +28,7 @@ import { playground } from './dict/playground';
 import { predictionRow } from './dict/predictionRow';
 import { prophet } from './dict/prophet';
 import { quickPickModal } from './dict/quickPickModal';
+import { shell } from './dict/shell';
 import { sidebar } from './dict/sidebar';
 import { slotMachine } from './dict/slotMachine';
 import { testArea } from './dict/testArea';
@@ -69,6 +70,7 @@ export const translations = {
         predictionRow: predictionRow.en,
         prophet: prophet.en,
         quickPickModal: quickPickModal.en,
+        shell: shell.en,
         sidebar: sidebar.en,
         slotMachine: slotMachine.en,
         testArea: testArea.en,
@@ -109,6 +111,7 @@ export const translations = {
         predictionRow: predictionRow.zh,
         prophet: prophet.zh,
         quickPickModal: quickPickModal.zh,
+        shell: shell.zh,
         sidebar: sidebar.zh,
         slotMachine: slotMachine.zh,
         testArea: testArea.zh,

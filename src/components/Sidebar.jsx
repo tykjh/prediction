@@ -1,1052 +1,669 @@
-import React from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import DivinationRoom from './DivinationRoom';
-import html2canvas from 'html2canvas';
-import HelpIcon from './HelpIcon';
+import NumberBall from './NumberBall';
+import GamePicker from './GamePicker';
 import { useLanguage } from '../i18n/LanguageContext';
+import { GAME_TYPES } from '../config/games';
+import { THEMES } from '../config/themes';
+import { summarizeByMethod, PRIZE_NONE } from '../utils/prize';
+import { formatNumber } from '../utils/drawSchedule';
+import { LIMITS } from '../utils/sanitize';
 
-const Sidebar = ({ isOpen, onClose, savedPredictions = [], onSavePrediction, onDeletePrediction, onClearVault, onImportVault, onCheckVault, systemSettings, onUpdateSettings, playSound, historyData = [], isLightMode, activeGameID, activeGameConfig, onSwitchGame, gameTypes }) => {
-    const { t } = useLanguage();
-    const [currentView, setCurrentView] = React.useState('menu'); // menu, vault, config
-    const [expandedGroups, setExpandedGroups] = React.useState({});
+const DivinationRoom = lazy(() => import('./DivinationRoom'));
 
-    // Reset to menu when sidebar opens
-    React.useEffect(() => {
-        if (isOpen) setCurrentView('menu');
+const POEM_TYPES = ['雷雨師', '六十甲子籤', '澎湖天后宮一百籤', '觀音一百籤', '東京淺草觀音寺'];
+const GROUP_ORDER = ['LOTTO649', 'SUPERLOTTO', '539', 'poems'];
+const CHANGELOG_IDS = ['nov17', 'aug07', 'aug04', 'aug02', 'jul30', 'jan25_feb06', 'jan20', 'jan18', 'jan17', 'jan13_17', 'jan11', 'jan10', 'jan09'];
+
+const card = 'rounded-2xl border border-white/10 bg-white/[0.04] light:border-stone-200 light:bg-white';
+const sectionTitle = 'text-sm font-semibold text-stone-100 light:text-stone-900';
+const ghostButton = 'rounded-lg border border-white/10 px-3 py-2 text-sm text-stone-200 transition-colors hover:bg-white/10 light:border-stone-200 light:text-stone-700 light:hover:bg-stone-100';
+
+const isPoem = (item) =>
+    !Array.isArray(item.numbers) || POEM_TYPES.includes(item.type) || item.type?.includes('Fortune') || item.type?.includes('Poem');
+
+const Toggle = ({ label, sub, checked, onChange }) => (
+    <label className="flex cursor-pointer items-center justify-between gap-4 py-3">
+        <span>
+            <span className="block text-sm text-stone-100 light:text-stone-900">{label}</span>
+            {sub && <span className="block text-xs text-stone-400 light:text-stone-500">{sub}</span>}
+        </span>
+        <button
+            type="button"
+            role="switch"
+            aria-checked={checked}
+            onClick={onChange}
+            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${checked ? 'bg-amber-500' : 'bg-white/15 light:bg-stone-300'}`}
+        >
+            <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${checked ? 'left-[22px]' : 'left-0.5'}`} />
+        </button>
+    </label>
+);
+
+const Sidebar = ({
+    isOpen,
+    onClose,
+    savedPredictions = [],
+    onSavePrediction,
+    onDeletePrediction,
+    onClearVault,
+    onImportVault,
+    onCheckVault,
+    systemSettings,
+    onUpdateSettings,
+    playSound,
+    historyData = [],
+    isLightMode,
+    onToggleLightMode,
+    bgTheme = 0,
+    onSetTheme,
+    activeGameID,
+    onSwitchGame,
+    onOpenManual,
+    onQuickPick,
+    onNextTheme,
+    onMoneyRain,
+    notify,
+}) => {
+    const { t, lang, toggleLang } = useLanguage();
+    const [view, setView] = useState('menu'); // menu | vault | oracle | settings
+    const [collapsed, setCollapsed] = useState({});
+    const [previewTicket, setPreviewTicket] = useState(null);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const colon = lang === 'zh' ? '：' : ': ';
+    const fileInputRef = useRef(null);
+    const ticketRef = useRef(null);
+
+    useEffect(() => {
+        if (isOpen) setView('menu');
     }, [isOpen]);
 
-    // Poem Types constant for easy identification
-    const POEM_TYPES = ['雷雨師', '六十甲子籤', '澎湖天后宮一百籤', '觀音一百籤', '東京淺草觀音寺'];
-
-    // Group predictions by Category (Poems vs Games)
-    const groupedPredictions = React.useMemo(() => {
-        const groups = {
-            'Poems': [],
-            'LOTTO649': [],
-            'SUPERLOTTO': [],
-            '539': [],
-            'Other': []
+    // Keep the page behind the panel from scrolling while it is open.
+    useEffect(() => {
+        if (!isOpen) return undefined;
+        const previous = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = previous;
         };
+    }, [isOpen]);
 
-        savedPredictions.forEach(item => {
-            if (POEM_TYPES.includes(item.type) || item.type?.includes('Fortune') || item.type?.includes('Poem')) {
-                groups['Poems'].push(item);
-            } else if (item.gameID === 'LOTTO649' || (!item.gameID && item.type !== 'Other')) {
-                groups['LOTTO649'].push(item); // Default to Lotto if no gameID but looks like a number prediction
-            } else if (item.gameID === 'SUPERLOTTO') {
-                groups['SUPERLOTTO'].push(item);
-            } else if (item.gameID === '539') {
-                groups['539'].push(item);
-            } else {
-                groups['Other'].push(item);
-            }
+    useEffect(() => {
+        if (!isOpen) return undefined;
+        const onKey = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [isOpen, onClose]);
+
+    const click = () => playSound && playSound('click');
+
+    const methodLabel = (type) => {
+        if (!type) return t('shell.method.Manual');
+        const key = `shell.method.${type}`;
+        const text = t(key);
+        return text === key ? type : text;
+    };
+
+    const groups = useMemo(() => {
+        const result = { LOTTO649: [], SUPERLOTTO: [], 539: [], poems: [] };
+        savedPredictions.forEach((item) => {
+            if (isPoem(item)) result.poems.push(item);
+            else (result[item.gameID] || result.LOTTO649).push(item);
         });
-
-        // Filter out empty groups but KEEP the specific order
-        const orderedGroups = {};
-        if (groups['LOTTO649'].length > 0) orderedGroups['LOTTO649'] = groups['LOTTO649'];
-        if (groups['SUPERLOTTO'].length > 0) orderedGroups['SUPERLOTTO'] = groups['SUPERLOTTO'];
-        if (groups['539'].length > 0) orderedGroups['539'] = groups['539'];
-        if (groups['Poems'].length > 0) orderedGroups['Poems'] = groups['Poems'];
-        if (groups['Other'].length > 0) orderedGroups['Other'] = groups['Other'];
-
-        return orderedGroups;
+        return result;
     }, [savedPredictions]);
 
-    const getGroupInfo = (key) => {
-        switch (key) {
-            case 'Poems': return { title: '🔮 Fortune Poems', icon: '📜', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
-            case 'LOTTO649': return { title: '🎱 Lotto 6/49', icon: '🎱', color: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' };
-            case 'SUPERLOTTO': return { title: '🪙 Super Lotto', icon: '🪙', color: 'bg-rose-500/20 text-rose-400 border-rose-500/30' };
-            case '539': return { title: '💵 Jin Cai 539', icon: '💵', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' };
-            default: return { title: '📂 Other', icon: '📁', color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' };
-        }
-    };
+    const scoreboard = useMemo(() => summarizeByMethod(savedPredictions), [savedPredictions]);
 
-    const toggleGroup = (type) => {
-        if (playSound) playSound('click');
-        setExpandedGroups(prev => ({
-            ...prev,
-            [type]: !prev[type]
-        }));
-    };
+    // ---------- Backup ----------
 
-    const fileInputRef = React.useRef(null);
-
-    const verifyAccess = () => {
-        const password = window.prompt(t('sidebar.passwordPrompt'));
-        if (password === "2026111") {
-            return true;
-        } else {
-            alert(t('sidebar.accessDenied'));
-            if (playSound) playSound('error');
-            return false;
-        }
+    const handleExport = () => {
+        const blob = new Blob([JSON.stringify(savedPredictions, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `lottery_backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        if (playSound) playSound('success');
     };
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    onImportVault(data);
-                    if (playSound) playSound('success');
-                } catch (error) {
-                    alert(t('sidebar.jsonParseError'));
-                    if (playSound) playSound('error');
-                }
-            };
-            reader.readAsText(file);
-        }
-        // Reset input value to allow re-importing same file
         event.target.value = '';
+        if (!file) return;
+        if (file.size > LIMITS.maxImportBytes) {
+            notify(t('shell.settings.importInvalid'));
+            if (playSound) playSound('error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                onImportVault(JSON.parse(e.target.result));
+            } catch {
+                notify(t('shell.settings.importInvalid'));
+                if (playSound) playSound('error');
+            }
+        };
+        reader.readAsText(file);
     };
 
-    const handleExport = () => {
-        if (!verifyAccess()) return;
-
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(savedPredictions, null, 2));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `lottery_vault_backup_${new Date().toISOString().split('T')[0]}.json`);
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-        if (playSound) playSound('success');
+    const handleClear = () => {
+        if (savedPredictions.length === 0) return;
+        if (window.confirm(t('shell.settings.clearConfirm', { n: savedPredictions.length }))) {
+            onClearVault();
+            if (playSound) playSound('delete');
+        }
     };
 
-    const renderOracle = () => (
-        <div className="h-full overflow-y-auto p-8 space-y-10 custom-scrollbar animate-in fade-in slide-in-from-right-8 duration-500">
-            <div className="flex items-center justify-between gap-4 px-2">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => {
-                            if (playSound) playSound('click');
-                            setCurrentView('menu');
-                        }}
-                        className="group w-10 h-10 rounded-2xl bg-slate-800/80 light:bg-white text-slate-400 light:text-slate-600 flex items-center justify-center hover:bg-fuchsia-500 hover:text-white transition-all active:scale-90 border border-white/10 light:border-slate-200 shadow-xl"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                        </svg>
-                    </button>
-                    <div>
-                        <h3 className="text-2xl font-black text-white light:text-slate-900 tracking-tight flex items-center gap-3">
-                            <span className="p-2 bg-fuchsia-500/20 rounded-xl border border-fuchsia-500/30 text-xl shadow-inner">🔮</span> Oracle Room
-                        </h3>
-                        <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-1 ml-1">Divination Nexus</p>
-                    </div>
-                </div>
-                <HelpIcon title={t('sidebar.help.oracle.title')} body={t('sidebar.help.oracle.body')} />
-            </div>
-            {/* Embed Divination Room logic here visually */}
-            <div className="relative rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl">
-                <DivinationRoom playSound={playSound} embedded={true} onSave={onSavePrediction} isLightMode={isLightMode} reducedMotion={systemSettings.reducedMotion} />
-            </div>
-        </div>
-    );
+    // ---------- Ticket image ----------
 
-    const renderMenu = () => (
-        <div className="grid grid-cols-1 gap-6 p-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
-            {/* Vault Button */}
-            <button
-                onClick={() => {
-                    if (playSound) playSound('click');
-                    setCurrentView('vault');
-                }}
-                onMouseEnter={() => playSound && playSound('hover')}
-                className="group relative h-28 rounded-[2rem] bg-gradient-to-br from-indigo-600/20 via-slate-900/40 to-slate-900/60 light:from-indigo-100/50 light:to-white border border-indigo-500/30 light:border-indigo-200 hover:border-indigo-400 p-5 text-left transition-all hover:shadow-[0_0_40px_-5px_rgba(99,102,241,0.3)] light:hover:shadow-xl active:scale-95 flex flex-col justify-between overflow-hidden"
-            >
-                <div className="absolute -top-4 -right-4 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700"></div>
-                <div className="relative z-10 flex items-center justify-between">
-                    <div className="bg-indigo-500/20 light:bg-indigo-100 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-indigo-500/30 light:border-indigo-300 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 light:text-indigo-700 shadow-inner">
-                        💾
-                    </div>
-                    <div className="text-[10px] uppercase font-black tracking-widest text-indigo-400 light:text-indigo-600 opacity-60 group-hover:opacity-100 transition-opacity">{t('sidebar.vaultTag')}</div>
-                </div>
-                <div className="relative z-10">
-                    <h3 className="text-2xl font-black text-white light:text-slate-900 group-hover:translate-x-1 transition-transform tracking-tight">{t('sidebar.vaultTitle')}</h3>
-                    <p className="text-xs text-slate-400 light:text-slate-500 font-bold mt-1 uppercase tracking-wider">{t('sidebar.vaultSub', { n: savedPredictions.length })}</p>
-                </div>
-            </button >
+    const handleDownloadTicket = async () => {
+        if (!ticketRef.current || isDownloading) return;
+        setIsDownloading(true);
+        try {
+            const { default: html2canvas } = await import('html2canvas');
+            const canvas = await html2canvas(ticketRef.current, { scale: 3, backgroundColor: '#fbf8f2', logging: false });
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = `lottery_${previewTicket.period || 'pick'}_${previewTicket.id}.png`;
+            link.click();
+            if (playSound) playSound('success');
+            setPreviewTicket(null);
+        } catch (err) {
+            console.error(err);
+            notify(t('shell.vault.ticketFailed'));
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
-            {/* Oracle Button */}
-            <button
-                onClick={() => {
-                    if (playSound) playSound('click');
-                    setCurrentView('oracle');
-                }}
-                onMouseEnter={() => playSound && playSound('hover')}
-                className="group relative h-28 rounded-[2rem] bg-gradient-to-br from-fuchsia-600/20 via-slate-900/40 to-slate-900/60 light:from-fuchsia-100/50 light:to-white border border-fuchsia-500/30 light:border-fuchsia-200 hover:border-fuchsia-400 p-5 text-left transition-all hover:shadow-[0_0_40px_-5px_rgba(217,70,239,0.3)] light:hover:shadow-xl active:scale-95 flex flex-col justify-between overflow-hidden"
-            >
-                <div className="absolute -top-4 -right-4 w-32 h-32 bg-fuchsia-500/10 rounded-full blur-3xl group-hover:bg-fuchsia-500/20 transition-all duration-700"></div>
-                <div className="relative z-10 flex items-center justify-between">
-                    <div className="bg-fuchsia-500/20 light:bg-fuchsia-100 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-fuchsia-500/30 light:border-fuchsia-300 group-hover:bg-fuchsia-500 group-hover:text-white transition-all duration-500 light:text-fuchsia-700 shadow-inner">
-                        🔮
-                    </div>
-                    <div className="text-[10px] uppercase font-black tracking-widest text-fuchsia-400 light:text-fuchsia-600 opacity-60 group-hover:opacity-100 transition-opacity">{t('sidebar.oracleTag')}</div>
-                </div>
-                <div className="relative z-10">
-                    <h3 className="text-2xl font-black text-white light:text-slate-900 group-hover:translate-x-1 transition-transform tracking-tight">{t('sidebar.oracleTitle')}</h3>
-                    <p className="text-xs text-slate-400 light:text-slate-500 font-bold mt-1 uppercase tracking-wider">{t('sidebar.oracleSub')}</p>
-                </div>
-            </button >
+    // ---------- Pieces ----------
 
-            {/* System Button */}
-            <button
-                onClick={() => {
-                    if (playSound) playSound('click');
-                    setCurrentView('config');
-                }}
-                onMouseEnter={() => playSound && playSound('hover')}
-                className="group relative h-28 rounded-[2rem] bg-gradient-to-br from-slate-600/20 via-slate-900/40 to-slate-900/60 light:from-slate-100/50 light:to-white border border-slate-600/30 light:border-slate-300 hover:border-slate-400 p-5 text-left transition-all hover:shadow-[0_0_40px_-5px_rgba(148,163,184,0.3)] light:hover:shadow-xl active:scale-95 flex flex-col justify-between overflow-hidden"
-            >
-                <div className="absolute -top-4 -right-4 w-32 h-32 bg-slate-500/10 rounded-full blur-3xl group-hover:bg-slate-500/20 transition-all duration-700"></div>
-                <div className="relative z-10 flex items-center justify-between">
-                    <div className="bg-slate-700/50 light:bg-slate-200/50 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-white/10 light:border-slate-300 group-hover:bg-slate-700 group-hover:text-white transition-all duration-500 light:text-slate-900 shadow-inner">
-                        ⚙️
-                    </div>
-                    <div className="text-[10px] uppercase font-black tracking-widest text-slate-400 light:text-slate-500 opacity-60 group-hover:opacity-100 transition-opacity">{t('sidebar.configTag')}</div>
-                </div>
-                <div className="relative z-10">
-                    <h3 className="text-2xl font-black text-white light:text-slate-900 group-hover:translate-x-1 transition-transform tracking-tight">{t('sidebar.configTitle')}</h3>
-                    <p className="text-xs text-slate-400 light:text-slate-500 font-bold mt-1 uppercase tracking-wider">{t('sidebar.configSub')}</p>
-                </div>
-            </button >
-        </div >
-    );
+    const renderTicket = (item, gameID) => {
+        const config = GAME_TYPES[gameID];
+        const pickCount = config ? config.settings.pickCount : item.numbers.length;
+        const v = item.verification?.checked ? item.verification : null;
+        const matched = Array.isArray(v?.matchedNumbers) ? v.matchedNumbers : [];
+        const won = v?.prizeKey && v.prizeKey !== PRIZE_NONE;
 
-    const renderVault = () => (
-        <div className="h-full overflow-y-auto p-8 space-y-8 custom-scrollbar animate-in fade-in slide-in-from-right-8 duration-300">
-            <div className="flex flex-col gap-6">
-                <div className="flex items-center justify-between px-2">
-                    <div className="flex items-center gap-4">
+        // Lotto 6/49: the special number can match one of the ticket's own numbers.
+        const drawnSpecialInPool = v?.specialHit && gameID === 'LOTTO649' && Array.isArray(v.drawNumbers)
+            ? v.drawNumbers[pickCount]
+            : null;
+        const drawnText = Array.isArray(v?.drawNumbers)
+            ? [
+                v.drawNumbers.slice(0, pickCount).map(formatNumber).join(' '),
+                v.drawNumbers[pickCount] !== undefined ? formatNumber(v.drawNumbers[pickCount]) : '',
+            ].filter(Boolean).join(' ＋ ')
+            : '';
+
+        let resultText = t('shell.vault.waiting');
+        if (v) {
+            if (v.zoneTwoOnly) {
+                resultText = v.specialHit ? t('shell.vault.zoneTwoHit') : t('shell.vault.zoneTwoMiss');
+            } else {
+                const hitText = t('shell.vault.hits', { n: typeof v.hits === 'number' ? v.hits : matched.length });
+                const special = v.specialHit ? ` ${t('shell.vault.specialHit')}` : '';
+                const prize = v.prizeKey ? t(`shell.prize.${v.prizeKey}`) : '';
+                resultText = [`${hitText}${special}`, prize].filter(Boolean).join(' · ');
+            }
+        }
+
+        return (
+            <li key={item.id} className="rounded-xl border border-white/10 p-3 light:border-stone-200">
+                <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 text-xs text-stone-400 light:text-stone-500">
+                        <span className="font-medium text-stone-200 light:text-stone-800">{methodLabel(item.type)}</span>
+                        {item.period && <span> · {t('shell.vault.period', { period: item.period })}</span>}
+                    </div>
+                    <div className="flex shrink-0 gap-1">
+                        <button
+                            onClick={() => { click(); setPreviewTicket({ ...item, gameID }); }}
+                            className="rounded-md px-2 py-1 text-xs text-stone-400 hover:bg-white/10 hover:text-stone-100 light:hover:bg-stone-100 light:hover:text-stone-900"
+                        >
+                            {t('shell.vault.share')}
+                        </button>
                         <button
                             onClick={() => {
-                                if (playSound) playSound('click');
-                                setCurrentView('menu');
+                                if (!window.confirm(t('shell.vault.deleteConfirm'))) return;
+                                onDeletePrediction(item.id);
+                                if (playSound) playSound('delete');
                             }}
-                            className="group w-10 h-10 rounded-2xl bg-slate-800/80 light:bg-white text-slate-400 light:text-slate-600 flex items-center justify-center hover:bg-indigo-500 hover:text-white transition-all active:scale-90 border border-white/10 light:border-slate-200 shadow-xl"
+                            className="rounded-md px-2 py-1 text-xs text-stone-400 hover:bg-rose-500/15 hover:text-rose-300 light:hover:text-rose-600"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                            </svg>
+                            {t('shell.vault.delete')}
                         </button>
-                        <div>
-                            <h3 className="text-2xl font-black text-white light:text-slate-900 tracking-tight flex items-center gap-3">
-                                <span className="p-2 bg-indigo-500/20 rounded-xl border border-indigo-500/30 text-xl shadow-inner">💾</span> The Vault
-                            </h3>
-                            <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-1 ml-1">Archive of Destinies</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={onCheckVault}
-                            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 light:text-amber-700 hover:from-amber-500 hover:to-orange-500 hover:text-white rounded-2xl border border-amber-500/30 transition-all active:scale-95 group shadow-lg shadow-amber-500/10"
-                            title={t('sidebar.verifyAllTitle')}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 group-hover:rotate-[360deg] transition-transform duration-700">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                            </svg>
-                            <span className="text-[10px] font-black uppercase tracking-widest">Verify All</span>
-                        </button>
-                        <HelpIcon title={t('sidebar.help.vault.title')} body={t('sidebar.help.vault.body')} />
                     </div>
                 </div>
 
-                <div className="p-4 rounded-3xl bg-white/5 border border-white/5 text-center shadow-inner">
-                    <div className="text-[10px] text-slate-500 uppercase font-black mb-1 tracking-[0.2em]">Total Predictions</div>
-                    <div className="text-3xl font-black text-white">{savedPredictions.length}</div>
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                    {item.numbers.map((num, idx) => {
+                        let tone = 'plain';
+                        if (v?.zoneTwoOnly) tone = v.specialHit ? 'hit' : 'muted';
+                        else if (idx >= pickCount) tone = v ? (v.specialHit ? 'hit' : 'muted') : 'special';
+                        else if (v) tone = matched.includes(num) ? 'hit' : (drawnSpecialInPool === num ? 'special' : 'muted');
+                        return <NumberBall key={`${idx}-${num}`} value={num} tone={tone} />;
+                    })}
+                </div>
+
+                <p className={`mt-2.5 text-xs ${won ? 'font-semibold text-emerald-400 light:text-emerald-600' : 'text-stone-400 light:text-stone-500'}`}>
+                    {resultText}
+                </p>
+                {drawnText && (
+                    <p className="mt-1 text-xs tabular-nums text-stone-500">
+                        {t('shell.vault.drawn')}{colon}{drawnText}
+                    </p>
+                )}
+            </li>
+        );
+    };
+
+    const renderPoem = (item) => (
+        <li key={item.id} className="rounded-xl border border-white/10 p-3 light:border-stone-200">
+            <div className="flex items-start justify-between gap-3">
+                <span className="text-xs font-medium text-stone-200 light:text-stone-800">{item.type}</span>
+                <button
+                    onClick={() => {
+                        if (!window.confirm(t('shell.vault.deleteConfirm'))) return;
+                        onDeletePrediction(item.id);
+                        if (playSound) playSound('delete');
+                    }}
+                    className="rounded-md px-2 py-1 text-xs text-stone-400 hover:bg-rose-500/15 hover:text-rose-300 light:hover:text-rose-600"
+                >
+                    {t('shell.vault.delete')}
+                </button>
+            </div>
+            <p className="mt-2 whitespace-pre-line font-serif text-sm leading-relaxed text-stone-200 light:text-stone-700">
+                {Array.isArray(item.numbers) ? item.numbers.join(' ') : item.numbers}
+            </p>
+        </li>
+    );
+
+    const renderMenu = () => {
+        const rows = [
+            { id: 'vault', icon: '🔖', title: t('shell.mine.vault'), sub: t('shell.mine.vaultSub', { n: savedPredictions.length }) },
+            { id: 'oracle', icon: '🎋', title: t('shell.mine.oracle'), sub: t('shell.mine.oracleSub') },
+            { id: 'settings', icon: '⚙️', title: t('shell.mine.settings'), sub: t('shell.mine.settingsSub') },
+        ];
+        return (
+            <div className="space-y-3 p-4 sm:p-6">
+                {rows.map((row) => (
+                    <button
+                        key={row.id}
+                        onClick={() => { click(); setView(row.id); }}
+                        className={`${card} flex w-full items-center gap-4 p-4 text-left transition-colors hover:bg-white/[0.08] light:hover:bg-stone-50`}
+                    >
+                        <span className="text-2xl" aria-hidden="true">{row.icon}</span>
+                        <span className="min-w-0 grow">
+                            <span className="block text-base font-semibold text-stone-100 light:text-stone-900">{row.title}</span>
+                            <span className="block text-xs text-stone-400 light:text-stone-500">{row.sub}</span>
+                        </span>
+                        <span className="text-stone-500" aria-hidden="true">›</span>
+                    </button>
+                ))}
+                <div className="flex flex-wrap gap-2 pt-2">
+                    <button onClick={() => { click(); onClose(); onQuickPick(); }} className={ghostButton}>⚡ {t('shell.tools.quickPick')}</button>
+                    <button onClick={() => { click(); onNextTheme(); }} className={ghostButton}>🎨 {t('shell.tools.nextTheme')}</button>
+                    <button onClick={() => { click(); onClose(); onMoneyRain(); }} className={ghostButton}>💸 {t('shell.tools.moneyRain')}</button>
+                    <button onClick={() => { click(); onClose(); onOpenManual(); }} className={ghostButton}>? {t('shell.nav.manual')}</button>
                 </div>
             </div>
+        );
+    };
 
+    const renderVault = () => (
+        <div className="space-y-4 p-4 sm:p-6">
             {savedPredictions.length === 0 ? (
-                <div className="p-8 rounded-2xl bg-white/[0.02] light:bg-slate-100/50 border border-white/5 light:border-slate-300 border-dashed flex flex-col items-center justify-center text-center space-y-3">
-                    <span className="text-4xl opacity-20">📭</span>
-                    <p className="text-slate-500 light:text-slate-400 font-medium">The Vault is empty.</p>
-                    <p className="text-slate-600 light:text-slate-500 text-sm">Save your lucky numbers to track them here.</p>
+                <div className="rounded-2xl border border-dashed border-white/15 p-8 text-center light:border-stone-300">
+                    <p className="text-sm font-medium text-stone-200 light:text-stone-800">{t('shell.vault.empty')}</p>
+                    <p className="mt-1 text-xs text-stone-400 light:text-stone-500">{t('shell.vault.emptyHint')}</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-4">
-                    {['LOTTO649', 'SUPERLOTTO', '539', 'Poems', 'Other'].map(key => {
-                        const items = groupedPredictions[key];
+                <>
+                    <button
+                        onClick={onCheckVault}
+                        title={t('shell.vault.checkAllHint')}
+                        className="w-full rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-stone-900 transition-colors hover:bg-amber-400"
+                    >
+                        {t('shell.vault.checkAll')}
+                    </button>
+
+                    {scoreboard.length > 0 && (
+                        <div className={`${card} p-4`}>
+                            <h4 className={sectionTitle}>{t('shell.vault.scoreboard')}</h4>
+                            <p className="mt-1 text-xs text-stone-400 light:text-stone-500">{t('shell.vault.scoreboardHint')}</p>
+                            <div className="mt-3 overflow-x-auto">
+                                <table className="w-full text-left text-xs tabular-nums">
+                                    <thead className="text-stone-400 light:text-stone-500">
+                                        <tr>
+                                            <th className="py-1.5 pr-3 font-medium">{t('shell.vault.colMethod')}</th>
+                                            <th className="py-1.5 pr-3 font-medium">{t('shell.vault.colChecked')}</th>
+                                            <th className="py-1.5 pr-3 font-medium">{t('shell.vault.colAvg')}</th>
+                                            <th className="py-1.5 pr-3 font-medium">{t('shell.vault.colBest')}</th>
+                                            <th className="py-1.5 font-medium">{t('shell.vault.colWins')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="text-stone-200 light:text-stone-800">
+                                        {scoreboard.map((row) => (
+                                            <tr key={`${row.gameID}-${row.type}`} className="border-t border-white/10 light:border-stone-200">
+                                                <td className="py-1.5 pr-3">
+                                                    {methodLabel(row.type)}
+                                                    <span className="ml-1.5 text-stone-500">{t(`shell.game.${row.gameID}`)}</span>
+                                                </td>
+                                                <td className="py-1.5 pr-3">{row.checked}</td>
+                                                <td className="py-1.5 pr-3">{row.avgHits.toFixed(1)}</td>
+                                                <td className="py-1.5 pr-3">{row.bestHits}</td>
+                                                <td className="py-1.5">{row.wins}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                    {GROUP_ORDER.map((key) => {
+                        const items = groups[key];
                         if (!items || items.length === 0) return null;
-
-                        const groupInfo = getGroupInfo(key);
+                        const title = key === 'poems' ? t('shell.vault.poems') : t(`shell.game.${key}`);
+                        const open = !collapsed[key];
                         return (
-                            <div key={key} className="bg-slate-800/30 light:bg-white rounded-2xl border border-white/5 light:border-slate-200 overflow-hidden shadow-sm light:shadow-md light:shadow-slate-200/50">
-                                {/* Group Header */}
+                            <div key={key} className={card}>
                                 <button
-                                    onClick={() => toggleGroup(key)}
-                                    className="w-full flex items-center justify-between p-4 bg-white/5 light:bg-slate-50/80 hover:bg-white/10 light:hover:bg-slate-100 transition-colors border-b border-light-slate-100"
+                                    onClick={() => { click(); setCollapsed((prev) => ({ ...prev, [key]: !prev[key] })); }}
+                                    aria-expanded={open}
+                                    className="flex w-full items-center justify-between p-4 text-left"
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${groupInfo.color}`}>
-                                            {expandedGroups[key] ? '📂' : groupInfo.icon}
-                                        </div>
-                                        <div className="text-left">
-                                            <div className="font-bold text-slate-200 light:text-slate-900">{groupInfo.title}</div>
-                                            <div className="text-xs text-slate-500 light:text-slate-500">{items.length} prediction{items.length !== 1 && 's'}</div>
-                                        </div>
-                                    </div>
-                                    <div className={`text-slate-500 transition-transform duration-300 ${expandedGroups[key] ? 'rotate-180' : ''}`}>
-                                        ▼
-                                    </div>
+                                    <span className={sectionTitle}>{title}</span>
+                                    <span className="text-xs text-stone-400 light:text-stone-500">
+                                        {t('shell.vault.count', { n: items.length })} {open ? '▾' : '▸'}
+                                    </span>
                                 </button>
-
-                                {/* Group Content - Accordion */}
-                                <div className={`grid transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${expandedGroups[key] ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                                    <div className="overflow-hidden">
-                                        <div className="p-4 space-y-4 bg-black/20 light:bg-slate-100/30">
-                                            {items.map((item) => (
-                                                <div key={item.id} className="group relative overflow-hidden p-0 rounded-[1.5rem] bg-slate-900 border border-white/5 hover:border-indigo-500/40 transition-all duration-300 shadow-xl">
-                                                    {/* Ticket Header (Stub) */}
-                                                    <div className="flex justify-between items-center px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-950 border-b border-white/5 font-mono text-[9px] text-slate-500 uppercase tracking-tighter">
-                                                        <span>{new Date(item.date).toLocaleDateString()}</span>
-                                                        <span className="text-indigo-400 font-black">Ticket: #{item.id.toString().slice(-6)}</span>
-                                                    </div>
-
-                                                    <div className="p-4">
-                                                        <div className="flex justify-between items-start mb-4">
-                                                            <div className="flex flex-col gap-1">
-                                                                <div className="flex items-center gap-2">
-                                                                    {item.period && (
-                                                                        <span className="text-xs font-black text-indigo-300 uppercase tracking-tighter">
-                                                                            P-{item.period}
-                                                                        </span>
-                                                                    )}
-                                                                    {key !== 'Poems' && (
-                                                                        <span className="px-2 py-0.5 rounded-full text-[8px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-widest">
-                                                                            {item.type || 'Manual'}
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="flex gap-2">
-                                                                {/* Share Button */}
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        handleShareClick(item);
-                                                                    }}
-                                                                    className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-xl border border-white/5 hover:border-indigo-500/30 transition-all active:scale-90"
-                                                                    title={t('sidebar.shareTitle')}
-                                                                >
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
-                                                                    </svg>
-                                                                </button>
-
-                                                                {/* Delete Button */}
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        onDeletePrediction(item.id);
-                                                                        if (playSound) playSound('delete');
-                                                                    }}
-                                                                    className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl border border-white/5 hover:border-red-500/30 transition-all active:scale-90"
-                                                                    title={t('sidebar.deleteTitle')}
-                                                                >
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Number Strip */}
-                                                        <div className="flex flex-wrap items-center justify-center gap-2 p-3 bg-white/5 rounded-2xl shadow-inner mb-4">
-                                                            {Array.isArray(item.numbers) ? (
-                                                                item.numbers.map((num, idx) => {
-                                                                    const isSpecial = idx === 6;
-                                                                    let isMatched = false;
-                                                                    if (item.verification?.checked) {
-                                                                        if (isSpecial) isMatched = !!item.verification.specialHit;
-                                                                        else isMatched = item.verification.hits?.includes(num);
-                                                                    }
-
-                                                                    return (
-                                                                        <div
-                                                                            key={idx}
-                                                                            className={`
-                                                                                w-9 h-9 flex items-center justify-center rounded-xl text-[11px] font-black transition-all duration-700
-                                                                                ${isMatched
-                                                                                    ? (isSpecial ? 'bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.5)] scale-110 ring-2 ring-orange-300' : 'bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)] scale-110 ring-2 ring-emerald-300')
-                                                                                    : (isSpecial ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-white/5 text-slate-300 border border-white/5')
-                                                                                }
-                                                                                shadow-lg
-                                                                            `}
-                                                                        >
-                                                                            {num}
-                                                                        </div>
-                                                                    );
-                                                                })
-                                                            ) : (
-                                                                <div className="text-amber-300 font-serif text-center italic text-lg leading-tight px-4">{item.numbers}</div>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Verification Footer */}
-                                                        {item.verification?.checked && (
-                                                            <div className="flex items-center justify-between mt-2 pt-3 border-t border-white/5">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                                                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Verified Target</span>
-                                                                </div>
-                                                                <span className="text-[9px] font-mono text-slate-600">
-                                                                    {new Date(item.verification.checkDate).toLocaleDateString()}
-                                                                </span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Side Perforations (Visual Only) */}
-                                                    <div className="absolute top-1/2 -left-2 w-4 h-4 bg-slate-900 border border-white/5 rounded-full -translate-y-1/2 z-20"></div>
-                                                    <div className="absolute top-1/2 -right-2 w-4 h-4 bg-slate-900 border border-white/5 rounded-full -translate-y-1/2 z-20"></div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
+                                {open && (
+                                    <ul className="space-y-2 px-4 pb-4">
+                                        {items.map((item) => (key === 'poems' ? renderPoem(item) : renderTicket(item, key)))}
+                                    </ul>
+                                )}
                             </div>
                         );
                     })}
-                </div>
+                </>
             )}
         </div>
     );
 
-    const renderConfig = () => (
-        <div className="h-full overflow-y-auto p-8 space-y-10 custom-scrollbar animate-in fade-in slide-in-from-right-8 duration-500">
-            <div className="flex items-center justify-between gap-4 px-2">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => {
-                            if (playSound) playSound('click');
-                            setCurrentView('menu');
-                        }}
-                        className="group w-10 h-10 rounded-2xl bg-slate-800/80 light:bg-white text-slate-400 light:text-slate-600 flex items-center justify-center hover:bg-slate-700 hover:text-white transition-all active:scale-90 border border-white/10 light:border-slate-200 shadow-xl"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                        </svg>
-                    </button>
-                    <div>
-                        <h3 className="text-2xl font-black text-white light:text-slate-900 tracking-tight flex items-center gap-3">
-                            <span className="p-2 bg-slate-500/20 rounded-xl border border-white/10 text-xl shadow-inner">⚙️</span> System Config
-                        </h3>
-                        <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-1 ml-1">Kernel Configuration</p>
-                    </div>
+    const renderOracle = () => (
+        <div className="p-4 sm:p-6">
+            <Suspense fallback={<p className="p-6 text-center text-sm text-stone-400">{t('shell.loading')}</p>}>
+                <div className="overflow-hidden rounded-2xl border border-white/10 light:border-stone-200">
+                    <DivinationRoom
+                        playSound={playSound}
+                        embedded={true}
+                        onSave={onSavePrediction}
+                        isLightMode={isLightMode}
+                        reducedMotion={systemSettings.reducedMotion}
+                    />
                 </div>
-                <HelpIcon title={t('sidebar.help.config.title')} body={t('sidebar.help.config.body')} />
-            </div>
+            </Suspense>
+        </div>
+    );
 
-            <div className="space-y-6">
-                {/* Game Core Settings (New) */}
-                {/* Game Core Settings */}
-                <div className="bg-slate-900/40 rounded-3xl border border-white/5 p-8 shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl group-hover:bg-indigo-500/10 transition-all"></div>
-                    <div className="flex items-center gap-3 mb-6 relative z-10">
-                        <span className="text-xl">🎲</span>
-                        <h4 className="text-slate-200 font-black uppercase tracking-widest text-xs">Game Core Engine</h4>
-                    </div>
-                    <div className="grid grid-cols-1 gap-3 relative z-10">
-                        {gameTypes && Object.values(gameTypes).map(game => (
-                            <button
-                                key={game.id}
-                                onClick={() => {
-                                    if (playSound) playSound('click');
-                                    onSwitchGame(game.id);
-                                }}
-                                className={`group/btn w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 ${activeGameID === game.id
-                                    ? `bg-${game.theme.primary}-500/10 border-${game.theme.primary}-500/40 shadow-lg shadow-${game.theme.primary}-500/5`
-                                    : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'
-                                    }`}
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-all duration-500 ${activeGameID === game.id ? `bg-${game.theme.primary}-500 text-white shadow-lg shadow-${game.theme.primary}-500/40 rotate-12` : 'bg-slate-800 text-slate-500'
-                                        }`}>
-                                        {game.id === 'LOTTO649' ? '🎱' : (game.id === '539' ? '🌈' : '⚡')}
-                                    </div>
-                                    <div className="text-left">
-                                        <div className={`text-base font-black tracking-tight ${activeGameID === game.id ? 'text-white' : 'text-slate-500'}`}>
-                                            {game.name}
-                                        </div>
-                                        <div className="text-[9px] text-slate-500 font-black uppercase tracking-widest mt-0.5">
-                                            {game.settings.maxNumber} Balls • Pick {game.settings.pickCount}
-                                        </div>
-                                    </div>
-                                </div>
-                                {activeGameID === game.id && (
-                                    <div className={`w-2 h-2 rounded-full bg-${game.theme.accent}-500 animate-pulse shadow-[0_0_10px] shadow-${game.theme.accent}-500`}></div>
-                                )}
+    const renderChangelog = () => (
+        <ul className="max-h-64 space-y-4 overflow-y-auto pr-2 text-xs leading-relaxed text-stone-400 light:text-stone-600">
+            {CHANGELOG_IDS.map((id) => {
+                const dateKey = `sidebar.changelog.${id}.date`;
+                const date = t(dateKey);
+                if (date === dateKey) return null;
+                const lines = [];
+                for (let i = 1; i <= 8; i += 1) {
+                    const labelKey = `sidebar.changelog.${id}.item${i}Label`;
+                    const label = t(labelKey);
+                    if (label === labelKey) break;
+                    lines.push({ label, desc: t(`sidebar.changelog.${id}.item${i}Desc`) });
+                }
+                return (
+                    <li key={id}>
+                        <p className="font-semibold text-stone-200 light:text-stone-800">{date}</p>
+                        <ul className="mt-1 space-y-1">
+                            {lines.map((line) => (
+                                <li key={line.label}>
+                                    <span className="text-stone-300 light:text-stone-700">{line.label}</span>{colon}{line.desc}
+                                </li>
+                            ))}
+                        </ul>
+                    </li>
+                );
+            })}
+        </ul>
+    );
+
+    const renderSettings = () => {
+        const toggleSetting = (id) => {
+            click();
+            onUpdateSettings((s) => ({ ...s, [id]: !s[id] }));
+        };
+        const oldest = historyData[historyData.length - 1];
+        const newest = historyData[0];
+        const config = GAME_TYPES[activeGameID];
+
+        return (
+            <div className="space-y-4 p-4 sm:p-6">
+                <div className={`${card} p-4`}>
+                    <h4 className={sectionTitle}>{t('shell.settings.game')}</h4>
+                    <GamePicker activeGameID={activeGameID} onSwitchGame={(id) => { click(); onSwitchGame(id); }} className="mt-3" />
+                    <p className="mt-2 text-xs text-stone-400 light:text-stone-500">
+                        {t('shell.settings.gameInfo', { max: config.settings.maxNumber, pick: config.settings.pickCount })}
+                    </p>
+                </div>
+
+                <div className={`${card} px-4 py-2`}>
+                    <h4 className={`${sectionTitle} pt-2`}>{t('shell.settings.display')}</h4>
+                    <div className="divide-y divide-white/10 light:divide-stone-200">
+                        <Toggle label={t('shell.settings.lightMode')} sub={t('shell.settings.lightModeSub')} checked={isLightMode} onChange={() => { click(); onToggleLightMode(); }} />
+                        <Toggle label={t('shell.settings.highContrast')} sub={t('shell.settings.highContrastSub')} checked={systemSettings.highContrast} onChange={() => toggleSetting('highContrast')} />
+                        <Toggle label={t('shell.settings.reducedMotion')} sub={t('shell.settings.reducedMotionSub')} checked={systemSettings.reducedMotion} onChange={() => toggleSetting('reducedMotion')} />
+                        <div className="py-3">
+                            <span className="block text-sm text-stone-100 light:text-stone-900">{t('shell.settings.background')}</span>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                                {THEMES.map((theme, index) => (
+                                    <button
+                                        key={theme.id}
+                                        onClick={() => { click(); onSetTheme(index); }}
+                                        aria-pressed={bgTheme === index}
+                                        className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${bgTheme === index
+                                            ? 'border-amber-500 text-stone-50 light:text-stone-900'
+                                            : 'border-white/10 text-stone-400 hover:text-stone-100 light:border-stone-200 light:text-stone-500 light:hover:text-stone-900'
+                                            }`}
+                                    >
+                                        <span className="h-3 w-3 rounded-full" style={{ backgroundColor: theme.swatch }} />
+                                        {t(`shell.theme.${theme.id}`)}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between py-3">
+                            <span className="text-sm text-stone-100 light:text-stone-900">{t('shell.settings.language')}</span>
+                            <button onClick={() => { click(); toggleLang(); }} className={ghostButton}>
+                                {lang === 'zh' ? '繁體中文 → English' : 'English → 繁體中文'}
                             </button>
-                        ))}
-                    </div>
-                </div>
-                {/* Interface Settings */}
-                <div className="bg-slate-900/40 rounded-3xl border border-white/5 p-8 shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 rounded-full blur-3xl group-hover:bg-sky-500/10 transition-all"></div>
-                    <div className="flex items-center gap-3 mb-6 relative z-10">
-                        <span className="text-xl">🎨</span>
-                        <h4 className="text-slate-200 font-black uppercase tracking-widest text-xs">Aesthetic Layer</h4>
-                    </div>
-                    <div className="space-y-4 relative z-10">
-                        {/* Toggle Item */}
-                        {[
-                            { id: 'highContrast', label: 'High Contrast', sub: 'Increase element visibility' },
-                            { id: 'reducedMotion', label: 'Reduced Motion', sub: 'Disable complex physics' },
-                            { id: 'autoSave', label: 'Quantum Sync', sub: 'Instant local persistence' }
-                        ].map((item) => (
-                            <div key={item.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
-                                <div className="flex flex-col">
-                                    <span className="text-sm text-white font-black tracking-tight">{item.label}</span>
-                                    <span className="text-[10px] text-slate-500 font-black uppercase tracking-tighter">{item.sub}</span>
-                                </div>
-                                <button
-                                    onClick={() => {
-                                        if (playSound) playSound('click');
-                                        onUpdateSettings(s => ({ ...s, [item.id]: !s[item.id] }));
-                                    }}
-                                    className={`w-14 h-7 rounded-full relative transition-all duration-500 shadow-inner ${systemSettings[item.id] ? 'bg-indigo-500 shadow-indigo-500/20' : 'bg-slate-800'}`}
-                                >
-                                    <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-lg transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${systemSettings[item.id] ? 'left-8' : 'left-1'}`}></div>
-                                </button>
-                            </div>
-                        ))}
+                        </div>
                     </div>
                 </div>
 
-                {/* Immersion Settings */}
-                <div className="bg-slate-900/40 rounded-3xl border border-white/5 p-8 shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/5 rounded-full blur-3xl group-hover:bg-fuchsia-500/10 transition-all"></div>
-                    <div className="flex items-center gap-3 mb-6 relative z-10">
-                        <span className="text-xl">🎧</span>
-                        <h4 className="text-slate-200 font-black uppercase tracking-widest text-xs">Sensory Immersion</h4>
-                    </div>
-                    <div className="space-y-4 relative z-10">
-                        {/* Toggle Item */}
-                        {[
-                            { id: 'soundEnabled', label: 'Sonic Feedback', sub: 'High-fidelity audio spatialization' },
-                            { id: 'hapticEnabled', label: 'Kinetic Engine', sub: 'Haptic feedback on interaction' },
-                        ].map((item) => (
-                            <div key={item.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
-                                <div className="flex flex-col">
-                                    <span className="text-sm text-white font-black tracking-tight">{item.label}</span>
-                                    <span className="text-[10px] text-slate-500 font-black uppercase tracking-tighter">{item.sub}</span>
-                                </div>
-                                <button
-                                    onClick={() => {
-                                        if (playSound) playSound('click');
-                                        onUpdateSettings(s => ({ ...s, [item.id]: !s[item.id] }));
-                                    }}
-                                    className={`w-14 h-7 rounded-full relative transition-all duration-500 shadow-inner ${systemSettings[item.id] ? 'bg-fuchsia-500 shadow-fuchsia-500/20' : 'bg-slate-800'}`}
-                                >
-                                    <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-lg transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${systemSettings[item.id] ? 'left-8' : 'left-1'}`}></div>
-                                </button>
-                            </div>
-                        ))}
-
-                        {/* Slider Item */}
-                        <div className="flex flex-col p-5 bg-white/5 rounded-2xl border border-white/5 space-y-4">
-                            <div className="flex justify-between items-center">
-                                <div className="flex flex-col">
-                                    <span className="text-sm text-white font-black tracking-tight">Reality Distortion</span>
-                                    <span className="text-[10px] text-slate-500 font-black uppercase tracking-tighter">Visual anomaly scaling</span>
-                                </div>
-                                <span className="text-xs font-black text-fuchsia-400 font-mono bg-fuchsia-500/10 px-2 py-1 rounded-lg border border-fuchsia-500/20">{systemSettings.realityDistortion}%</span>
+                <div className={`${card} px-4 py-2`}>
+                    <h4 className={`${sectionTitle} pt-2`}>{t('shell.settings.feel')}</h4>
+                    <div className="divide-y divide-white/10 light:divide-stone-200">
+                        <Toggle label={t('shell.settings.sound')} sub={t('shell.settings.soundSub')} checked={systemSettings.soundEnabled} onChange={() => toggleSetting('soundEnabled')} />
+                        <Toggle label={t('shell.settings.haptic')} sub={t('shell.settings.hapticSub')} checked={systemSettings.hapticEnabled} onChange={() => toggleSetting('hapticEnabled')} />
+                        <div className="py-3">
+                            <div className="flex items-center justify-between">
+                                <span>
+                                    <span className="block text-sm text-stone-100 light:text-stone-900">{t('shell.settings.distortion')}</span>
+                                    <span className="block text-xs text-stone-400 light:text-stone-500">{t('shell.settings.distortionSub')}</span>
+                                </span>
+                                <span className="text-xs tabular-nums text-stone-400">{systemSettings.realityDistortion}%</span>
                             </div>
                             <input
                                 type="range"
                                 min="0"
                                 max="100"
                                 value={systemSettings.realityDistortion}
-                                onChange={(e) => onUpdateSettings(s => ({ ...s, realityDistortion: parseInt(e.target.value) }))}
-                                className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-fuchsia-500"
+                                onChange={(e) => onUpdateSettings((s) => ({ ...s, realityDistortion: parseInt(e.target.value, 10) }))}
+                                className="mt-3 w-full accent-amber-500"
                             />
                         </div>
                     </div>
                 </div>
 
-                {/* Data Center */}
-                <div className="bg-slate-900/40 rounded-3xl border border-white/5 p-8 shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/10 transition-all"></div>
-                    <div className="flex items-center gap-3 mb-6 relative z-10">
-                        <span className="text-xl">💾</span>
-                        <h4 className="text-slate-200 font-black uppercase tracking-widest text-xs">Secure Data Node</h4>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 mb-6 relative z-10">
+                <div className={`${card} p-4`}>
+                    <h4 className={sectionTitle}>{t('shell.settings.data')}</h4>
+                    <p className="mt-1 text-xs leading-relaxed text-stone-400 light:text-stone-500">{t('shell.settings.dataNote')}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                        <button onClick={handleExport} className={ghostButton}>{t('shell.settings.export')}</button>
+                        <button onClick={() => fileInputRef.current?.click()} className={ghostButton}>{t('shell.settings.import')}</button>
+                        <input ref={fileInputRef} type="file" className="hidden" accept=".json,application/json" onChange={handleFileUpload} />
                         <button
-                            onClick={handleExport}
-                            className="group/item flex flex-col items-center justify-center p-6 bg-indigo-500/5 border border-indigo-500/20 rounded-2xl hover:bg-indigo-500 hover:text-white transition-all active:scale-95 shadow-lg shadow-indigo-500/5"
+                            onClick={handleClear}
+                            disabled={savedPredictions.length === 0}
+                            className="rounded-lg border border-rose-500/30 px-3 py-2 text-sm text-rose-300 transition-colors hover:bg-rose-500/15 disabled:opacity-40 light:text-rose-600"
                         >
-                            <span className="text-3xl mb-2 group-hover/item:-translate-y-1 transition-transform">📤</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest">Archive Vault</span>
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                if (verifyAccess()) {
-                                    fileInputRef.current.click();
-                                }
-                            }}
-                            className="group/item flex flex-col items-center justify-center p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl hover:bg-emerald-500 hover:text-white transition-all active:scale-95 shadow-lg shadow-emerald-500/5"
-                        >
-                            <span className="text-3xl mb-2 group-hover/item:translate-y-1 transition-transform">📥</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest">Restore Link</span>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                className="hidden"
-                                accept=".json"
-                                onChange={handleFileUpload}
-                            />
-                        </button>
-                    </div>
-
-                    <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/20 relative z-10">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                            <h5 className="text-red-400 font-black uppercase tracking-widest text-[10px]">Critical Termination</h5>
-                        </div>
-                        <p className="text-[10px] text-slate-500 font-bold mb-4">Complete erasure of all stored synaptic records.</p>
-                        <button
-                            onClick={() => {
-                                if (playSound) playSound('error');
-                                if (verifyAccess()) {
-                                    onClearVault();
-                                }
-                            }}
-                            className="w-full py-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-[10px] font-black rounded-xl border border-red-500/30 transition-all uppercase tracking-widest shadow-lg shadow-red-500/5"
-                        >
-                            Execute Purge
+                            {t('shell.settings.clear')}
                         </button>
                     </div>
                 </div>
 
-                {/* Diagnostics */}
-                {/* Database Metrics - New Detailed Stats */}
-                {/* Diagnostics & Metrics */}
-                <div className="bg-slate-900/40 rounded-3xl border border-white/5 p-8 shadow-2xl relative overflow-hidden group">
-                    <div className="flex items-center gap-3 mb-6 relative z-10">
-                        <span className="text-xl">📊</span>
-                        <h4 className="text-slate-200 font-black uppercase tracking-widest text-xs">System Telemetry</h4>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 mb-6 relative z-10">
-                        <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                            <div className="text-[8px] text-slate-500 uppercase font-black tracking-widest mb-1">Database Entropy</div>
-                            <div className="text-lg font-black text-indigo-400">{(historyData.reduce((acc, curr) => acc + (curr.numbers?.length || 0), 0)).toLocaleString()} pts</div>
+                <div className={`${card} p-4`}>
+                    <h4 className={sectionTitle}>{t('shell.settings.about')}</h4>
+                    <dl className="mt-3 space-y-1.5 text-xs text-stone-400 light:text-stone-500">
+                        <div className="flex justify-between gap-4">
+                            <dt>{t('shell.settings.draws')} · {t(`shell.game.${activeGameID}`)}</dt>
+                            <dd className="text-stone-200 light:text-stone-800">
+                                {historyData.length}
+                                {oldest && newest && ` · ${t('shell.settings.range', { from: oldest.date, to: newest.date })}`}
+                            </dd>
                         </div>
-                        <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                            <div className="text-[8px] text-slate-500 uppercase font-black tracking-widest mb-1">Kernel Status</div>
-                            <div className="text-lg font-black text-emerald-400">Stable v2.5</div>
+                        <div className="flex justify-between gap-4">
+                            <dt>{t('shell.settings.vaultSize')}</dt>
+                            <dd className="text-stone-200 light:text-stone-800">{(JSON.stringify(savedPredictions).length / 1024).toFixed(1)} KB</dd>
                         </div>
-                    </div>
-
-                    <div className="space-y-3 font-mono text-[9px] text-slate-500 font-bold relative z-10">
-                        <div className="flex justify-between border-b border-white/5 pb-2">
-                            <span className="uppercase tracking-tighter text-[8px]">Temporal Range</span>
-                            <span className="text-slate-300">
-                                {historyData.length > 0 ? `${new Date(historyData[historyData.length - 1].date).getFullYear()} – ${new Date(historyData[0].date).getFullYear()}` : 'N/A'}
-                            </span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/5 pb-2">
-                            <span className="uppercase tracking-tighter text-[8px]">Vault Payload</span>
-                            <span className="text-slate-300">{(JSON.stringify(savedPredictions).length / 1024).toFixed(2)} KB</span>
-                        </div>
-                        <div className="flex justify-between border-b border-white/5 pb-2">
-                            <span className="uppercase tracking-tighter text-[8px]">Entropy Leakage</span>
-                            <span className="text-emerald-500">0.00% [Nominal]</span>
-                        </div>
-                    </div>
+                    </dl>
+                    <p className="mt-4 text-xs leading-relaxed text-stone-500">{t('shell.disclaimer')}</p>
                 </div>
 
-                {/* Developer Activity Log */}
-                <div className="bg-slate-900/40 rounded-3xl border border-white/5 p-8 shadow-2xl relative overflow-hidden group">
-                    <div className="flex items-center gap-3 mb-6 relative z-10">
-                        <span className="text-xl">📜</span>
-                        <h4 className="text-slate-200 font-black uppercase tracking-widest text-xs">{t('sidebar.sectionChangelog')}</h4>
-                    </div>
-                    <div className="space-y-6 font-mono text-[9px] text-slate-400 font-bold h-64 overflow-y-scroll custom-sidebar-scrollbar pr-6 relative z-10 transition-all scroll-smooth">
-
-                        {/* 2026-08-07 (Latest) */}
-                        <div className="relative pl-6 border-l border-white/20">
-                            <div className="absolute top-0 -left-[5px] w-2.5 h-2.5 rounded-full bg-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.aug07.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.aug07.item1Label')}</strong>: {t('sidebar.changelog.aug07.item1Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.aug07.item2Label')}</strong>: {t('sidebar.changelog.aug07.item2Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.aug07.item3Label')}</strong>: {t('sidebar.changelog.aug07.item3Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-08-04 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.aug04.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.aug04.item1Label')}</strong>: {t('sidebar.changelog.aug04.item1Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.aug04.item2Label')}</strong>: {t('sidebar.changelog.aug04.item2Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-08-02 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.aug02.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.aug02.item1Label')}</strong>: {t('sidebar.changelog.aug02.item1Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.aug02.item2Label')}</strong>: {t('sidebar.changelog.aug02.item2Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.aug02.item3Label')}</strong>: {t('sidebar.changelog.aug02.item3Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-07-30 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jul30.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.jul30.item1Label')}</strong>: {t('sidebar.changelog.jul30.item1Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-01-25 ~ 02-06 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan25_feb06.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.jan25_feb06.item1Label')}</strong>: {t('sidebar.changelog.jan25_feb06.item1Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.jan25_feb06.item2Label')}</strong>: {t('sidebar.changelog.jan25_feb06.item2Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-01-20 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan20.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.jan20.item1Label')}</strong>: {t('sidebar.changelog.jan20.item1Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.jan20.item2Label')}</strong>: {t('sidebar.changelog.jan20.item2Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.jan20.item3Label')}</strong>: {t('sidebar.changelog.jan20.item3Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.jan20.item4Label')}</strong>: {t('sidebar.changelog.jan20.item4Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-01-18 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan18.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.jan18.item1Label')}</strong>: {t('sidebar.changelog.jan18.item1Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.jan18.item2Label')}</strong>: {t('sidebar.changelog.jan18.item2Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-01-17 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan17.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.jan17.item1Label')}</strong>: {t('sidebar.changelog.jan17.item1Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.jan17.item2Label')}</strong>: {t('sidebar.changelog.jan17.item2Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.jan17.item3Label')}</strong>: {t('sidebar.changelog.jan17.item3Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-01-13 ~ 17 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan13_17.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.jan13_17.item1Label')}</strong>: {t('sidebar.changelog.jan13_17.item1Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.jan13_17.item2Label')}</strong>: {t('sidebar.changelog.jan13_17.item2Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-01-11 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan11.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.jan11.item1Label')}</strong>: {t('sidebar.changelog.jan11.item1Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.jan11.item2Label')}</strong>: {t('sidebar.changelog.jan11.item2Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-01-10 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan10.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.jan10.item1Label')}</strong>: {t('sidebar.changelog.jan10.item1Desc')}</li>
-                                <li><strong>{t('sidebar.changelog.jan10.item2Label')}</strong>: {t('sidebar.changelog.jan10.item2Desc')}</li>
-                            </ul>
-                        </div>
-
-                        {/* 2026-01-09 */}
-                        <div className="relative pl-6 border-l border-white/20 pt-4">
-                            <div className="absolute top-4 -left-1.5 w-3 h-3 rounded-full bg-slate-800 border border-white/20"></div>
-                            <div className="text-[10px] font-black text-slate-200 uppercase mb-2">{t('sidebar.changelog.jan09.date')}</div>
-                            <ul className="space-y-2 text-slate-400">
-                                <li><strong>{t('sidebar.changelog.jan09.item1Label')}</strong>: {t('sidebar.changelog.jan09.item1Desc')}</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    // --- Share Ticket Logic ---
-    const [previewTicket, setPreviewTicket] = React.useState(null); // { numbers, period, date, type }
-    const ticketRef = React.useRef(null);
-    const [isDownloading, setIsDownloading] = React.useState(false);
-
-    const handleShareClick = (item) => {
-        if (playSound) playSound('click');
-        setPreviewTicket(item);
-    };
-
-    const handleDownloadTicket = async () => {
-        if (!ticketRef.current || isDownloading) return;
-        setIsDownloading(true);
-        if (playSound) playSound('click');
-
-        try {
-            // Wait a moment for fonts/styles to settle
-            await new Promise(resolve => setTimeout(resolve, 200));
-
-            const canvas = await html2canvas(ticketRef.current, {
-                scale: 3, // Higher resolution
-                useCORS: true,
-                backgroundColor: null, // Keep transparency if needed, or set a solid bg
-                logging: false,
-                // Critical: Fix layout shifts by forcing the cloned element to a fixed size
-                onclone: (clonedDoc) => {
-                    const clonedElement = clonedDoc.querySelector('[data-ticket-content]');
-                    const gradientText = clonedDoc.querySelector('[data-gradient-text]');
-
-                    if (clonedElement) {
-                        // Force specific width to prevent responsive squishing during capture
-                        clonedElement.style.width = '350px';
-                        clonedElement.style.height = 'auto';
-                        clonedElement.style.margin = '0';
-                        clonedElement.style.transform = 'none';
-                    }
-
-                    // Fix: html2canvas fails with text-transparent + bg-clip, so we fallback to solid color
-                    if (gradientText) {
-                        gradientText.classList.remove('text-transparent', 'bg-clip-text', 'bg-gradient-to-r');
-                        gradientText.style.color = '#818cf8'; // Indigo-400 fallback
-                    }
-                }
-            });
-
-            const image = canvas.toDataURL("image/png");
-
-            const link = document.createElement('a');
-            link.href = image;
-            link.download = `Lottery_Ticket_${previewTicket.period || 'Prediction'}_${previewTicket.id}.png`;
-            link.click();
-
-            if (playSound) playSound('success');
-            setPreviewTicket(null);
-        } catch (err) {
-            console.error(err);
-            alert("Failed to generate ticket image.");
-            if (playSound) playSound('error');
-        } finally {
-            setIsDownloading(false);
-        }
-    };
-
-    const renderTicketPreview = () => {
-        if (!previewTicket) return null;
-
-        const isSpecialType = ['Hybrid', 'AI-Weighted'].includes(previewTicket.type);
-
-        return (
-            <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-                <div className="flex flex-col gap-6 max-w-sm w-full relative">
-
-                    {/* Close Button */}
-                    <button
-                        onClick={() => setPreviewTicket(null)}
-                        className="absolute -top-12 right-0 text-white/50 hover:text-white transition-colors"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-
-                    {/* The Ticket (What will be captured) */}
-                    <div
-                        ref={ticketRef}
-                        data-ticket-content
-                        className="bg-slate-900 light:bg-white rounded-3xl overflow-hidden border border-amber-500/30 light:border-amber-400 shadow-2xl relative"
-                    >
-                        {/* Decorative Header */}
-                        <div className="h-24 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 p-6 flex flex-col items-center justify-center relative overflow-hidden">
-                            {/* Pattern */}
-                            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent scale-150"></div>
-
-                            <h2 className="text-3xl font-black text-white tracking-[0.2em] uppercase drop-shadow-md font-serif">Lottery Lab</h2>
-                            <div className="flex items-center gap-2 mt-2">
-                                <span className="text-[10px] text-amber-100 font-bold tracking-widest uppercase opacity-80">
-                                    {previewTicket.period ? `No. ${previewTicket.period}` : new Date().getFullYear()}
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Ticket Body */}
-                        <div className="p-8 flex flex-col items-center gap-6 bg-slate-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]">
-
-                            <div className="flex flex-col items-center gap-1">
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">Prediction</span>
-                                <span
-                                    data-gradient-text
-                                    className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-indigo-100 to-indigo-300 tracking-wider font-serif italic"
-                                >
-                                    {previewTicket.type || 'Standard'}
-                                </span>
-                            </div>
-
-                            {/* Numbers Display - Text Only Layout */}
-                            <div className="grid grid-cols-3 gap-y-6 gap-x-10 justify-items-center my-2">
-                                {previewTicket.numbers.map((num, idx) => {
-                                    const isSpecial = idx === 6;
-                                    if (isSpecial) return null;
-                                    return (
-                                        <div
-                                            key={idx}
-                                            className="text-4xl font-black text-white drop-shadow-2xl font-mono tracking-tighter"
-                                        >
-                                            {num}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            {/* Special Number */}
-                            {previewTicket.numbers[6] && (
-                                <div className="flex flex-col items-center mt-2">
-                                    <div className="text-[9px] uppercase font-bold text-red-400 tracking-[0.2em] mb-1">Special</div>
-                                    <div className="text-5xl font-black text-red-500 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)] font-mono tracking-tighter">
-                                        {previewTicket.numbers[6]}
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="w-full flex items-center gap-4 opacity-30 mt-2">
-                                <div className="h-px bg-white flex-1"></div>
-                                <div className="text-white text-[10px]">☘</div>
-                                <div className="h-px bg-white flex-1"></div>
-                            </div>
-
-                            <div className="flex justify-between w-full text-[10px] text-slate-500 font-mono tracking-wider">
-                                <span>{new Date(previewTicket.date).toLocaleDateString()}</span>
-                                <span>#{previewTicket.id.toString().slice(-4)}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Action Button */}
-                    <button
-                        onClick={handleDownloadTicket}
-                        disabled={isDownloading}
-                        className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/20 text-lg flex items-center justify-center gap-3 active:scale-95 transition-all"
-                    >
-                        {isDownloading ? (
-                            <span>{t('sidebar.generatingLabel')}</span>
-                        ) : (
-                            <>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M12 12.75l-3-3m0 0l3-3m-3 3h7.5" />
-                                </svg>
-                                Save Ticket
-                            </>
-                        )}
-                    </button>
-                    <p className="text-center text-xs text-white/40">Previewing ticket before download</p>
+                <div className={`${card} p-4`}>
+                    <h4 className={`${sectionTitle} mb-3`}>{t('shell.settings.changelog')}</h4>
+                    {renderChangelog()}
                 </div>
             </div>
         );
     };
 
+    const renderTicketPreview = () => {
+        if (!previewTicket) return null;
+        const config = GAME_TYPES[previewTicket.gameID];
+        const pickCount = config ? config.settings.pickCount : previewTicket.numbers.length;
+
+        return (
+            <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/70 p-4" onClick={() => setPreviewTicket(null)}>
+                <div className="w-full max-w-sm space-y-4" onClick={(e) => e.stopPropagation()}>
+                    {/* Captured as an image: fixed colours, no theme classes. */}
+                    <div ref={ticketRef} style={{ backgroundColor: '#fbf8f2', color: '#292524' }} className="rounded-2xl p-6">
+                        <p style={{ color: '#78716c' }} className="text-xs">
+                            {config ? t(`shell.game.${previewTicket.gameID}`) : ''}
+                            {previewTicket.period ? ` · ${t('shell.vault.period', { period: previewTicket.period })}` : ''}
+                        </p>
+                        <p className="mt-1 text-lg font-bold">{t('shell.vault.ticketTitle')}</p>
+                        <div className="mt-5 flex flex-wrap gap-2">
+                            {previewTicket.numbers.map((num, idx) => (
+                                <span
+                                    key={`${idx}-${num}`}
+                                    style={{
+                                        backgroundColor: idx >= pickCount ? '#f59e0b' : '#292524',
+                                        color: idx >= pickCount ? '#292524' : '#fafaf9',
+                                    }}
+                                    className="inline-flex h-11 w-11 items-center justify-center rounded-full text-base font-semibold tabular-nums"
+                                >
+                                    {formatNumber(num)}
+                                </span>
+                            ))}
+                        </div>
+                        <p style={{ color: '#a8a29e' }} className="mt-5 text-xs">
+                            {methodLabel(previewTicket.type)} · {new Date(previewTicket.date).toLocaleDateString()}
+                        </p>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <button
+                            onClick={handleDownloadTicket}
+                            disabled={isDownloading}
+                            className="grow rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-stone-900 hover:bg-amber-400 disabled:opacity-60"
+                        >
+                            {isDownloading ? t('shell.vault.ticketGenerating') : t('shell.vault.ticketDownload')}
+                        </button>
+                        <button onClick={() => setPreviewTicket(null)} className="rounded-xl border border-white/20 px-4 py-2.5 text-sm text-stone-100 hover:bg-white/10">
+                            {t('shell.mine.close')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const titles = {
+        menu: t('shell.mine.title'),
+        vault: t('shell.mine.vault'),
+        oracle: t('shell.mine.oracle'),
+        settings: t('shell.mine.settings'),
+    };
+
     return createPortal(
         <div className={isLightMode ? 'light-theme' : ''}>
-            {/* Backdrop Overlay */}
             <div
-                className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[990] transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`fixed inset-0 z-[990] bg-black/50 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
                 onClick={onClose}
             />
 
-            {/* Sidebar Panel */}
-            <div
-                className={`
-                    fixed top-0 left-0 h-full w-full md:w-[600px] bg-slate-950/90 light:bg-white/95 backdrop-blur-3xl border-r border-white/10 light:border-slate-300 shadow-[0_0_100px_rgba(0,0,0,0.5)] z-[999] 
-                    transform transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]
-                    ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-                `}
+            <aside
+                aria-hidden={!isOpen}
+                className={`fixed right-0 top-0 z-[999] flex h-full w-full flex-col border-l border-white/10 bg-[var(--app-base)] text-stone-300 shadow-2xl transition-transform duration-300 md:w-[520px] light:border-stone-200 light:text-stone-700 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
             >
-                {/* Decorative Side Glow */}
-                <div className="absolute top-0 right-0 w-[2px] h-full bg-gradient-to-b from-transparent via-indigo-500/50 to-transparent"></div>
-
-                {/* Header */}
-                <div className="h-28 flex items-center justify-between px-10 border-b border-white/5 light:border-slate-200 bg-white/[0.02] light:bg-slate-50 relative overflow-hidden">
-                    {/* Animated Background Pulse */}
-                    <div className="absolute top-0 left-0 w-full h-full opacity-10">
-                        <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-indigo-500 rounded-full blur-[100px] animate-pulse"></div>
-                    </div>
-
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-3">
-                            <h2 className="text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-300 to-slate-500 light:from-slate-900 light:to-slate-600">
-                                COMMAND
-                            </h2>
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                            <p className="text-slate-500 light:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                                {currentView === 'menu' ? t('sidebar.statusMenu') :
-                                    currentView === 'vault' ? t('sidebar.statusVault') :
-                                        currentView === 'config' ? t('sidebar.statusConfig') :
-                                            currentView === 'oracle' ? t('sidebar.statusOracle') : ''}
-                            </p>
-                        </div>
-                    </div>
-
+                <div className="flex h-14 shrink-0 items-center gap-2 border-b border-white/10 px-4 light:border-stone-200">
+                    {view !== 'menu' && (
+                        <button
+                            onClick={() => { click(); setView('menu'); }}
+                            className="rounded-lg px-2 py-1.5 text-sm text-stone-400 hover:bg-white/10 hover:text-stone-100 light:hover:bg-stone-100 light:hover:text-stone-900"
+                        >
+                            ‹ {t('shell.mine.back')}
+                        </button>
+                    )}
+                    <h2 className="grow text-base font-semibold text-stone-50 light:text-stone-900">{titles[view]}</h2>
                     <button
                         onClick={onClose}
-                        className="group relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 light:bg-slate-100 text-slate-400 light:text-slate-500 hover:text-white light:hover:text-slate-900 transition-all duration-300 overflow-hidden border border-white/5 hover:border-white/20 active:scale-90"
+                        aria-label={t('shell.mine.close')}
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-stone-400 hover:bg-white/10 hover:text-stone-100 light:hover:bg-stone-100 light:hover:text-stone-900"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 relative z-10 group-hover:rotate-90 transition-transform duration-500">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        ✕
                     </button>
                 </div>
 
-                {/* Main Content Area Switcher */}
-                <div className="h-[calc(100vh-7rem)] relative">
-                    {currentView === 'menu' && renderMenu()}
-                    {currentView === 'vault' && renderVault()}
-                    {currentView === 'config' && renderConfig()}
-                    {currentView === 'oracle' && renderOracle()}
+                <div className="min-h-0 grow overflow-y-auto overscroll-contain">
+                    {view === 'menu' && renderMenu()}
+                    {view === 'vault' && renderVault()}
+                    {isOpen && view === 'oracle' && renderOracle()}
+                    {view === 'settings' && renderSettings()}
                 </div>
-            </div>
+            </aside>
 
-            {/* Modals */}
             {renderTicketPreview()}
-
         </div>,
-        document.body
+        document.body,
     );
 };
 

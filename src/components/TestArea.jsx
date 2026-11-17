@@ -10,22 +10,22 @@ import { useLanguage } from '../i18n/LanguageContext';
 
 const ExperimentHeader = ({ icon, title, subtitle, badge }) => (
     <div className="flex items-center gap-5 mb-8 pb-6 border-b border-white/5 relative group">
-        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border text-3xl shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 ${badge === 'EXP-01' ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-indigo-500/10' :
-            badge === 'EXP-02' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-emerald-500/10' :
-                badge === 'EXP-03' ? 'bg-orange-500/10 border-orange-500/20 text-orange-400 shadow-orange-500/10' :
-                    badge === 'EXP-04' ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 shadow-purple-500/10' :
-                        'bg-rose-500/10 border-rose-500/20 text-rose-400 shadow-rose-500/10'
-            }`}>
+        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border text-3xl transition-transform duration-500 ${badge === 'EXP-01' ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 ' :
+ badge === 'EXP-02' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 ' :
+ badge === 'EXP-03' ? 'bg-orange-500/10 border-orange-500/20 text-orange-400 ' :
+ badge === 'EXP-04' ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 ' :
+ 'bg-rose-500/10 border-rose-500/20 text-rose-400 '
+ }`}>
             {icon}
         </div>
         <div>
             <div className="flex items-center gap-3">
-                <h3 className="text-2xl font-black text-white tracking-tight">{title}</h3>
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded border tracking-widest uppercase ${badge === 'EXP-01' ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300' :
-                    badge === 'EXP-02' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' :
-                        badge === 'EXP-03' ? 'bg-orange-500/10 border-orange-500/30 text-orange-300' :
-                            badge === 'EXP-04' ? 'bg-purple-500/10 border-purple-500/30 text-purple-300' :
-                                'bg-rose-500/10 border-rose-500/30 text-rose-300'}`}>
+                <h3 className="text-2xl font-semibold text-white tracking-tight">{title}</h3>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${badge === 'EXP-01' ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300' :
+ badge === 'EXP-02' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' :
+ badge === 'EXP-03' ? 'bg-orange-500/10 border-orange-500/30 text-orange-300' :
+ badge === 'EXP-04' ? 'bg-purple-500/10 border-purple-500/30 text-purple-300' :
+ 'bg-rose-500/10 border-rose-500/30 text-rose-300'}`}>
                     {badge}
                 </span>
             </div>

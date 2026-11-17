@@ -173,28 +173,28 @@ const ParticleLife = () => {
         <div className="flex flex-col gap-4 w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-slate-800/50 rounded-xl border border-white/10 text-sm">
                 <div className="space-y-1">
-                    <label className="text-slate-400 text-xs font-bold uppercase">{t('chaosLab.particles')}</label>
+                    <label className="text-slate-400 text-xs font-bold">{t('chaosLab.particles')}</label>
                     <div className="flex items-center gap-2 text-white font-mono">
                         <input type="range" min="100" max="1500" value={params.particleCount} onChange={e => { setParams({ ...params, particleCount: Number(e.target.value) }); initAtoms(); }} className="w-full accent-indigo-500" />
                         {params.particleCount}
                     </div>
                 </div>
                 <div className="space-y-1">
-                    <label className="text-slate-400 text-xs font-bold uppercase">{t('chaosLab.forceStrength')}</label>
+                    <label className="text-slate-400 text-xs font-bold">{t('chaosLab.forceStrength')}</label>
                     <div className="flex items-center gap-2 text-white font-mono">
                         <input type="range" min="0.1" max="2.0" step="0.1" value={params.forceMultiplier} onChange={e => setParams({ ...params, forceMultiplier: Number(e.target.value) })} className="w-full accent-emerald-500" />
                         {params.forceMultiplier}
                     </div>
                 </div>
                 <div className="space-y-1">
-                    <label className="text-slate-400 text-xs font-bold uppercase">{t('chaosLab.friction')}</label>
+                    <label className="text-slate-400 text-xs font-bold">{t('chaosLab.friction')}</label>
                     <div className="flex items-center gap-2 text-white font-mono">
                         <input type="range" min="0.50" max="0.99" step="0.01" value={params.friction} onChange={e => setParams({ ...params, friction: Number(e.target.value) })} className="w-full accent-rose-500" />
                         {params.friction}
                     </div>
                 </div>
                 <div className="flex items-end">
-                    <button onClick={() => { initAtoms(); randomizeRules(); }} className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold text-white transition-colors text-xs uppercase tracking-wider">
+                    <button onClick={() => { initAtoms(); randomizeRules(); }} className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold text-white transition-colors text-xs">
                         {t('chaosLab.reRollUniverse')}
                     </button>
                 </div>
@@ -218,7 +218,7 @@ const ParticleLife = () => {
                             }} />
                         )))}
                     </div>
-                    <div className="text-[10px] text-center text-slate-500 mt-1 uppercase font-bold tracking-widest">{t('chaosLab.dna')}</div>
+                    <div className="text-xs text-center text-slate-500 mt-1 font-bold">{t('chaosLab.dna')}</div>
                 </div>
 
                 <div className="absolute top-4 left-4 pointer-events-none">
@@ -421,7 +421,7 @@ const DoublePendulum = () => {
                         </label>
                     </div>
                 </div>
-                <button onClick={reset} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-bold transition-all shadow-lg active:scale-95 text-sm uppercase tracking-wider">
+                <button onClick={reset} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-bold transition-all shadow-lg active:scale-95 text-sm">
                     {t('chaosLab.kickSystem')}
                 </button>
             </div>
@@ -455,13 +455,13 @@ const ChaosLab = () => {
                 <div className="bg-slate-900/80 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 flex shadow-xl">
                     <button
                         onClick={() => setMode('particle')}
-                        className={`px-8 py-2.5 rounded-xl transition-all font-bold tracking-wide ${mode === 'particle' ? 'bg-indigo-600 text-white shadow-lg ring-1 ring-white/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                        className={`px-8 py-2.5 rounded-xl transition-all font-bold ${mode === 'particle' ? 'bg-indigo-600 text-white shadow-lg ring-1 ring-white/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
                     >
                         {t('chaosLab.particleLifeTab')}
                     </button>
                     <button
                         onClick={() => setMode('pendulum')}
-                        className={`px-8 py-2.5 rounded-xl transition-all font-bold tracking-wide ${mode === 'pendulum' ? 'bg-indigo-600 text-white shadow-lg ring-1 ring-white/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                        className={`px-8 py-2.5 rounded-xl transition-all font-bold ${mode === 'pendulum' ? 'bg-indigo-600 text-white shadow-lg ring-1 ring-white/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
                     >
                         {t('chaosLab.doublePendulum')}
                     </button>

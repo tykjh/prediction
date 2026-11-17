@@ -241,7 +241,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
 
     return (
         <div className="w-full max-w-7xl mx-auto mt-8 mb-16">
-            <div className="bg-slate-900/40 light:bg-white/80 backdrop-blur-xl rounded-[2rem] border border-white/5 light:border-slate-200 overflow-hidden shadow-2xl light:shadow-xl relative group">
+            <div className="bg-slate-900/40 light:bg-white/80 rounded-2xl border border-white/5 light:border-slate-200 overflow-hidden relative group">
                 {/* Ambient Glow */}
                 <div className="absolute -top-40 -right-40 w-96 h-96 bg-indigo-500/10 light:bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none"></div>
 
@@ -249,12 +249,12 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                 <div className="p-8 bg-gradient-to-r from-white/[0.03] light:from-slate-100/50 to-transparent border-b border-white/5 light:border-slate-200 relative z-10">
                     <div className="flex items-center justify-between gap-5 mb-8">
                         <div className="flex items-center gap-5">
-                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-slate-800/50 light:from-indigo-100 light:to-white border border-indigo-500/30 light:border-indigo-100 flex items-center justify-center text-3xl text-indigo-400 light:text-indigo-600 shadow-lg shadow-indigo-500/10 backdrop-blur-sm">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-slate-800/50 light:from-indigo-100 light:to-white border border-indigo-500/30 light:border-indigo-100 flex items-center justify-center text-3xl text-indigo-400 light:text-indigo-600">
                                 🔬
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-white light:text-slate-800 tracking-tight">{t('backtestLab.title')}</h2>
-                                <p className="text-indigo-200/60 light:text-indigo-800/60 text-sm font-medium tracking-wide">{t('backtestLab.subtitle')}</p>
+                                <h2 className="text-3xl font-semibold text-white light:text-slate-800 tracking-tight">{t('backtestLab.title')}</h2>
+                                <p className="text-indigo-200/60 light:text-indigo-800/60 text-sm font-medium">{t('backtestLab.subtitle')}</p>
                             </div>
                         </div>
                         <HelpIcon title={t('backtestLab.help.title')} body={t('backtestLab.help.body')} />
@@ -262,7 +262,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
 
                     <div className="flex flex-wrap items-end gap-6">
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.refDepth')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('backtestLab.refDepth')}</label>
                             <input
                                 type="number"
                                 min="10"
@@ -288,7 +288,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.testRangeStart')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('backtestLab.testRangeStart')}</label>
                             <select
                                 className="bg-slate-900 light:bg-slate-100 border border-slate-700 light:border-slate-300 text-white light:text-slate-900 px-4 py-2 rounded-lg text-sm"
                                 value={startPeriod}
@@ -302,7 +302,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
                         <div className="text-slate-600 font-bold text-xl">→</div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.hybridBets')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('backtestLab.hybridBets')}</label>
                             <input
                                 type="number"
                                 min="1"
@@ -317,7 +317,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.monteCarloBets')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('backtestLab.monteCarloBets')}</label>
                             <input
                                 type="number"
                                 min="1"
@@ -332,7 +332,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.randomBets')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('backtestLab.randomBets')}</label>
                             <input
                                 type="number"
                                 min="1"
@@ -347,7 +347,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">{t('backtestLab.endPeriod')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('backtestLab.endPeriod')}</label>
                             <select
                                 className="bg-slate-900 light:bg-slate-100 border border-slate-700 light:border-slate-300 text-white light:text-slate-900 px-4 py-2 rounded-lg text-sm"
                                 value={endPeriod}
@@ -363,7 +363,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                         <button
                             onClick={runBacktest}
                             disabled={!isValid || isRunning}
-                            className={`px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs shadow-xl transition-all ml-auto relative overflow-hidden group/btn ${isValid && !isRunning ? 'bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-indigo-500/40 hover:-translate-y-0.5' : 'bg-slate-800/50 light:bg-slate-200 text-slate-500 light:text-slate-400 cursor-not-allowed border border-white/5 light:border-slate-300'}`}
+                            className={`px-8 py-3 rounded-xl font-semibold text-xs transition-all ml-auto relative overflow-hidden group/btn ${isValid && !isRunning ? 'bg-indigo-600 hover:bg-indigo-500 text-white ' : 'bg-slate-800/50 light:bg-slate-200 text-slate-500 light:text-slate-400 cursor-not-allowed border border-white/5 light:border-slate-300'}`}
                         >
                             <span className="relative z-10">{isRunning ? t('backtestLab.simulating', { progress }) : t('backtestLab.startBacktest')}</span>
                             {isValid && !isRunning && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>}
@@ -386,9 +386,9 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                     <div className="grid grid-cols-2 md:grid-cols-7 gap-4 p-6 bg-slate-900/50 light:bg-white border-b border-slate-800 light:border-slate-200">
                         {Object.entries(summary.avgs).map(([key, val]) => (
                             <div key={key} className="bg-slate-800/40 light:bg-slate-50 p-4 rounded-xl border border-slate-700 light:border-slate-200 text-center shadow-sm">
-                                <div className="text-[10px] uppercase font-bold text-slate-500 light:text-slate-500 mb-1">{t(`backtestLab.${MODEL_LABEL_KEYS[key]}`)}</div>
-                                <div className={`text-xl font-black ${Number(val) > 1.5 ? 'text-emerald-400 light:text-emerald-600' : 'text-white light:text-slate-900'}`}>{val}</div>
-                                <div className="text-[10px] text-slate-600 light:text-slate-400">{t('backtestLab.hitsPerDraw')}</div>
+                                <div className="text-xs font-bold text-slate-500 light:text-slate-500 mb-1">{t(`backtestLab.${MODEL_LABEL_KEYS[key]}`)}</div>
+                                <div className={`text-xl font-semibold ${Number(val) > 1.5 ? 'text-emerald-400 light:text-emerald-600' : 'text-white light:text-slate-900'}`}>{val}</div>
+                                <div className="text-xs text-slate-600 light:text-slate-400">{t('backtestLab.hitsPerDraw')}</div>
                                 <div className="text-xs font-bold text-yellow-500 light:text-yellow-600 mt-1">{summary.wins[key]}%</div>
                             </div>
                         ))}
@@ -398,17 +398,17 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                 {/* Detailed Logs Table */}
                 <div className="overflow-x-auto max-h-[600px] overflow-y-auto custom-scrollbar bg-slate-950/30 light:bg-white">
                     <table className="w-full text-left border-collapse">
-                        <thead className="bg-slate-900 light:bg-slate-100 sticky top-0 z-50 shadow-lg border-b border-white/10 light:border-slate-200">
+                        <thead className="bg-slate-900 light:bg-slate-100 sticky top-0 z-50 border-b border-white/10 light:border-slate-200">
                             <tr>
-                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colPeriod')}</th>
-                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colActual')}</th>
-                                <th className="p-4 text-xs font-bold text-blue-400 light:text-blue-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colStandard')}</th>
-                                <th className="p-4 text-xs font-bold text-purple-400 light:text-purple-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colWeighted')}</th>
-                                <th className="p-4 text-xs font-bold text-amber-400 light:text-amber-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colHybrid')}</th>
-                                <th className="p-4 text-xs font-bold text-indigo-400 light:text-indigo-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colProphet')}</th>
-                                <th className="p-4 text-xs font-bold text-rose-400 light:text-rose-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colReactor')}</th>
-                                <th className="p-4 text-xs font-bold text-emerald-400 light:text-emerald-600 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colMonteCarlo')}</th>
-                                <th className="p-4 text-xs font-bold text-slate-500 uppercase border-b border-slate-800 light:border-slate-200">{t('backtestLab.colRandom')}</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 border-b border-slate-800 light:border-slate-200">{t('backtestLab.colPeriod')}</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 border-b border-slate-800 light:border-slate-200">{t('backtestLab.colActual')}</th>
+                                <th className="p-4 text-xs font-bold text-blue-400 light:text-blue-600 border-b border-slate-800 light:border-slate-200">{t('backtestLab.colStandard')}</th>
+                                <th className="p-4 text-xs font-bold text-purple-400 light:text-purple-600 border-b border-slate-800 light:border-slate-200">{t('backtestLab.colWeighted')}</th>
+                                <th className="p-4 text-xs font-bold text-amber-400 light:text-amber-600 border-b border-slate-800 light:border-slate-200">{t('backtestLab.colHybrid')}</th>
+                                <th className="p-4 text-xs font-bold text-indigo-400 light:text-indigo-600 border-b border-slate-800 light:border-slate-200">{t('backtestLab.colProphet')}</th>
+                                <th className="p-4 text-xs font-bold text-rose-400 light:text-rose-600 border-b border-slate-800 light:border-slate-200">{t('backtestLab.colReactor')}</th>
+                                <th className="p-4 text-xs font-bold text-emerald-400 light:text-emerald-600 border-b border-slate-800 light:border-slate-200">{t('backtestLab.colMonteCarlo')}</th>
+                                <th className="p-4 text-xs font-bold text-slate-500 border-b border-slate-800 light:border-slate-200">{t('backtestLab.colRandom')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50">
@@ -428,11 +428,11 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                                             const isNormalHit = targetSet.has(n) && !isSpecialHit;
 
                                             let bgClass = 'bg-slate-800 light:bg-slate-100 text-slate-400 light:text-slate-400';
-                                            if (isSpecialHit) bgClass = 'bg-orange-500 light:bg-orange-500 text-white ring-2 ring-orange-400 shadow-orange-500/50 shadow-sm';
+                                            if (isSpecialHit) bgClass = 'bg-orange-500 light:bg-orange-500 text-white ring-2 ring-orange-400  shadow-sm';
                                             else if (isNormalHit) bgClass = 'bg-white light:bg-indigo-100 text-slate-900 light:text-indigo-900 ring-2 ring-indigo-500 light:ring-indigo-300 font-bold';
 
                                             return (
-                                                <span key={n} className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold ${bgClass}`}>
+                                                <span key={n} className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold ${bgClass}`}>
                                                     {n}
                                                 </span>
                                             );
@@ -444,13 +444,13 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                                     // Use Config or Default
                                     const JACKPOT = activeGameConfig?.settings?.prizeRules?.jackpotHits || 6;
 
-                                    if (hits >= JACKPOT) return "p-4 bg-[repeating-linear-gradient(45deg,rgba(239,68,68,0.3)_0px,rgba(239,68,68,0.3)_10px,rgba(249,115,22,0.3)_10px,rgba(249,115,22,0.3)_20px,rgba(234,179,8,0.3)_20px,rgba(234,179,8,0.3)_30px,rgba(34,197,94,0.3)_30px,rgba(34,197,94,0.3)_40px,rgba(59,130,246,0.3)_40px,rgba(59,130,246,0.3)_50px)] border-4 border-yellow-400 shadow-[0_0_20px_-3px_rgba(234,179,8,0.5)] relative overflow-hidden backdrop-brightness-125";
+                                    if (hits >= JACKPOT) return "p-4 bg-[repeating-linear-gradient(45deg,rgba(239,68,68,0.3)_0px,rgba(239,68,68,0.3)_10px,rgba(249,115,22,0.3)_10px,rgba(249,115,22,0.3)_20px,rgba(234,179,8,0.3)_20px,rgba(234,179,8,0.3)_30px,rgba(34,197,94,0.3)_30px,rgba(34,197,94,0.3)_40px,rgba(59,130,246,0.3)_40px,rgba(59,130,246,0.3)_50px)] border-4 border-yellow-400  relative overflow-hidden backdrop-brightness-125";
 
-                                    if (hits === JACKPOT - 1) return "p-4 bg-[repeating-linear-gradient(45deg,rgba(168,85,247,0.25)_0px,rgba(168,85,247,0.25)_10px,rgba(239,68,68,0.25)_10px,rgba(239,68,68,0.25)_20px)] border-2 border-purple-500/50 shadow-[0_0_15px_-3px_rgba(168,85,247,0.3)] relative overflow-hidden backdrop-brightness-110";
+                                    if (hits === JACKPOT - 1) return "p-4 bg-[repeating-linear-gradient(45deg,rgba(168,85,247,0.25)_0px,rgba(168,85,247,0.25)_10px,rgba(239,68,68,0.25)_10px,rgba(239,68,68,0.25)_20px)] border-2 border-purple-500/50  relative overflow-hidden backdrop-brightness-110";
 
-                                    if (hits === JACKPOT - 2) return "p-4 bg-gradient-to-br from-red-500/10 via-orange-600/5 to-transparent light:bg-red-100 light:border-red-400 border-2 border-red-500/40 shadow-[0_0_15px_-3px_rgba(239,68,68,0.3)] relative overflow-hidden backdrop-brightness-110";
+                                    if (hits === JACKPOT - 2) return "p-4 bg-gradient-to-br from-red-500/10 via-orange-600/5 to-transparent light:bg-red-100 light:border-red-400 border-2 border-red-500/40  relative overflow-hidden backdrop-brightness-110";
 
-                                    if (hits === JACKPOT - 3) return "p-4 bg-gradient-to-br from-yellow-400/10 via-yellow-600/5 to-transparent light:bg-yellow-100 light:border-yellow-400 border-2 border-yellow-400/40 shadow-[0_0_15px_-3px_rgba(250,204,21,0.2)] relative overflow-hidden backdrop-brightness-110";
+                                    if (hits === JACKPOT - 3) return "p-4 bg-gradient-to-br from-yellow-400/10 via-yellow-600/5 to-transparent light:bg-yellow-100 light:border-yellow-400 border-2 border-yellow-400/40  relative overflow-hidden backdrop-brightness-110";
 
                                     return "p-4";
                                 };
@@ -461,10 +461,10 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                                         <td className="p-4 border-r border-slate-800/50 light:border-slate-200 bg-slate-900/20 light:bg-slate-50/50">
                                             <div className="flex flex-wrap gap-1 w-max">
                                                 {log.actual.slice(0, PICK).map(n => (
-                                                    <span key={n} className="w-6 h-6 rounded-full bg-slate-700 light:bg-slate-200 text-white light:text-slate-800 flex items-center justify-center text-[10px] font-bold">{n}</span>
+                                                    <span key={n} className="w-6 h-6 rounded-full bg-slate-700 light:bg-slate-200 text-white light:text-slate-800 flex items-center justify-center text-xs font-bold">{n}</span>
                                                 ))}
                                                 {!isSeparate && activeGameConfig?.settings?.specialNumber?.enabled && log.actual[PICK] && (
-                                                    <span className="w-6 h-6 rounded-full bg-indigo-900 light:bg-indigo-100 text-indigo-200 light:text-indigo-700 flex items-center justify-center text-[10px] font-bold">{log.actual[PICK]}</span>
+                                                    <span className="w-6 h-6 rounded-full bg-indigo-900 light:bg-indigo-100 text-indigo-200 light:text-indigo-700 flex items-center justify-center text-xs font-bold">{log.actual[PICK]}</span>
                                                 )}
                                             </div>
                                         </td>
@@ -476,7 +476,7 @@ const BacktestLab = ({ historyData, isLightMode, activeGameConfig }) => {
                                         </td>
                                         <td className={getCellClass(log.hits.hybrid)}>
                                             <MultiBetCell predictions={log.predictions.hybrid} targetSet={targetSet} specialNum={log.actual[PICK]} maxHits={log.hits.hybrid} isSeparate={isSeparate} />
-                                            <div className="text-[9px] text-slate-500 mt-2 font-mono">
+                                            <div className="text-[11px] text-slate-500 mt-2 font-mono">
                                                 H:{log.hybridStats.avgHot} C:{log.hybridStats.avgCold} N:{log.hybridStats.avgNeutral}
                                             </div>
                                         </td>

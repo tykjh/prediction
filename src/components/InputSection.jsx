@@ -132,7 +132,7 @@ const InputSection = ({ onAddEntry, existingPeriods, nextPeriod, activeGameConfi
         onAddEntry({
             period: cleanPeriod,
             date: finalDate,
-            numbers: parsedNumbers
+            numbers: parsedAll
         });
 
         // Reset
@@ -145,15 +145,15 @@ const InputSection = ({ onAddEntry, existingPeriods, nextPeriod, activeGameConfi
     };
 
     return (
-        <div className="bg-slate-900/40 light:bg-gradient-to-br light:from-white light:to-slate-100/90 backdrop-blur-md rounded-2xl p-8 border border-white/5 light:border-slate-200/60 shadow-inner light:shadow-lg h-full flex flex-col justify-center relative overflow-hidden group">
+        <div className="bg-slate-900/40 light:bg-gradient-to-br light:from-white light:to-slate-100/90 rounded-2xl p-8 border border-white/5 light:border-slate-200/60 h-full flex flex-col justify-center relative overflow-hidden group">
             {/* Subtle glow effect */}
             <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700"></div>
 
             <h2 className="text-xl font-bold mb-6 text-white flex items-center gap-3 relative z-10">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white border border-white/10">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white border border-white/10">
                     ➕
                 </div>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 light:from-slate-700 light:to-slate-500">{t('inputSection.heading')}</span>
+                <span className="text-stone-100 light:text-stone-900">{t('inputSection.heading')}</span>
             </h2>
 
             {error && (
@@ -165,33 +165,33 @@ const InputSection = ({ onAddEntry, existingPeriods, nextPeriod, activeGameConfi
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-slate-400 light:text-slate-600 text-xs uppercase font-bold mb-1 ml-1">{t('inputSection.periodLabel')}</label>
+                        <label className="block text-slate-400 light:text-slate-600 text-xs font-bold mb-1 ml-1">{t('inputSection.periodLabel')}</label>
                         <input
                             type="text"
                             value={period}
                             onChange={(e) => setPeriod(e.target.value)}
                             placeholder={nextPeriod || "115000001"}
                             maxLength={9}
-                            className="w-full bg-slate-900 light:bg-slate-50 border border-slate-600 light:border-slate-300 rounded-xl px-4 py-3 text-white light:text-slate-900 font-bold tracking-wide focus:border-blue-500 light:focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-mono transition-all"
+                            className="w-full bg-slate-900 light:bg-slate-50 border border-slate-600 light:border-slate-300 rounded-xl px-4 py-3 text-white light:text-slate-900 font-bold focus:border-blue-500 light:focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-mono transition-all"
                         />
                     </div>
                     <div>
-                        <label className="block text-slate-400 light:text-slate-600 text-xs uppercase font-bold mb-1 ml-1">{t('inputSection.dateLabel')}</label>
+                        <label className="block text-slate-400 light:text-slate-600 text-xs font-bold mb-1 ml-1">{t('inputSection.dateLabel')}</label>
                         <input
                             type="text"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
                             placeholder="1150110"
                             maxLength={7}
-                            className="w-full bg-slate-900 light:bg-slate-50 border border-slate-600 light:border-slate-300 rounded-xl px-4 py-3 text-white light:text-slate-900 font-bold tracking-wide focus:border-blue-500 light:focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-mono transition-all"
+                            className="w-full bg-slate-900 light:bg-slate-50 border border-slate-600 light:border-slate-300 rounded-xl px-4 py-3 text-white light:text-slate-900 font-bold focus:border-blue-500 light:focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-mono transition-all"
                         />
                     </div>
                 </div>
 
                 <div>
                     <div className="flex justify-between items-center mb-1">
-                        <label className="block text-slate-400 text-xs uppercase font-bold">{t('inputSection.winningNumbersLabel')}</label>
-                        <span className="text-[10px] text-slate-500">
+                        <label className="block text-slate-400 text-xs font-bold">{t('inputSection.winningNumbersLabel')}</label>
+                        <span className="text-xs text-slate-500">
                             {(() => {
                                 const SPECIAL_MAX = activeGameConfig?.settings?.specialNumber?.max || MAX;
                                 if (IS_SEPARATE) return t('inputSection.rangeHintSeparate', { max: MAX, specialMax: SPECIAL_MAX });
@@ -210,7 +210,7 @@ const InputSection = ({ onAddEntry, existingPeriods, nextPeriod, activeGameConfi
                                 value={num}
                                 onChange={(e) => handleNumberChange(idx, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(idx, e)}
-                                className="w-full aspect-square text-center bg-slate-950/50 light:bg-slate-50 border border-slate-700/50 light:border-slate-300 rounded-xl text-white light:text-slate-900 font-black text-base sm:text-2xl focus:border-blue-500 light:focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all placeholder:text-slate-700 light:placeholder:text-slate-300 hover:border-slate-600 light:hover:border-slate-400"
+                                className="w-full aspect-square text-center bg-slate-950/50 light:bg-slate-50 border border-slate-700/50 light:border-slate-300 rounded-xl text-white light:text-slate-900 font-semibold text-base sm:text-2xl focus:border-blue-500 light:focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all placeholder:text-slate-700 light:placeholder:text-slate-300 hover:border-slate-600 light:hover:border-slate-400"
                                 placeholder="#"
                             />
                         ))}
@@ -229,7 +229,7 @@ const InputSection = ({ onAddEntry, existingPeriods, nextPeriod, activeGameConfi
                                         className="w-full aspect-square text-center bg-slate-950/50 light:bg-slate-50 border-2 border-orange-500/30 light:border-orange-400/30 rounded-xl text-orange-400 light:text-orange-500 font-bold text-sm sm:text-xl focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/20 transition-all placeholder:text-orange-900/50 light:placeholder:text-orange-200"
                                         placeholder="S"
                                     />
-                                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] text-orange-500 font-bold bg-slate-800 px-1">
+                                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-[11px] text-orange-500 font-bold bg-slate-800 px-1">
                                         SP
                                     </div>
                                 </div>
@@ -240,7 +240,7 @@ const InputSection = ({ onAddEntry, existingPeriods, nextPeriod, activeGameConfi
 
                 <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black uppercase tracking-widest py-4 rounded-xl shadow-xl shadow-blue-900/20 hover:shadow-blue-500/40 transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 active:scale-95 border border-white/10 group-hover:from-blue-500 group-hover:to-indigo-500"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-4 rounded-xl transition-all duration-300 transform active:translate-y-0 border border-white/10 group-hover:from-blue-500 group-hover:to-indigo-500"
                 >
                     {t('inputSection.submitButton')}
                 </button>

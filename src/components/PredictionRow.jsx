@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import NumberBall from './NumberBall';
 import { useLanguage } from '../i18n/LanguageContext';
+import { formatNumber } from '../utils/drawSchedule';
 
+const smallButton = 'rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-stone-300 transition-colors hover:bg-white/10 light:border-stone-200 light:text-stone-600 light:hover:bg-stone-100';
+
+// One way of picking numbers: a name, a one-line explanation, a button and
+// the result. The colour props from the old design are accepted but unused.
 const PredictionRow = ({
     title,
     subtitle,
@@ -9,135 +15,122 @@ const PredictionRow = ({
     numbers = [],
     stats,
     meta,
-    boxColors,
-    buttonColor = "bg-slate-700 hover:bg-slate-600",
-    icon = "🎲",
-    type = "standard", // standard, hybrid, ai
+    type = 'standard', // standard, hybrid, ai
     progress = 0,
-
     onSave,
-    pickCount = 6
+    pickCount = 6,
+    disabled = false,
+    note,
+    copyLabel = '',
 }) => {
     const { t } = useLanguage();
+    const [justSaved, setJustSaved] = useState(false);
+    const [copyState, setCopyState] = useState('idle'); // idle | done | failed
+    const hasNumbers = Array.isArray(numbers) && numbers.length > 0;
 
-    // Helper to generate style map for hybrid numbers
-    const getHybridStyle = (num) => {
-        if (!meta || type !== 'hybrid') return boxColors || 'bg-blue-600';
+    // A new result clears the "saved / copied" confirmations.
+    useEffect(() => {
+        setJustSaved(false);
+        setCopyState('idle');
+    }, [numbers]);
 
-        const { hot, cold } = meta;
-        // Check membership
-        if (hot && hot.includes(num)) return "bg-red-900/60 border-2 border-red-500/50 text-red-200 shadow-red-500/20";
-        if (cold && cold.includes(num)) return "bg-blue-900/60 border-2 border-blue-500/50 text-blue-200 shadow-blue-500/20";
-
-        return "bg-slate-700 border border-slate-600 text-slate-300"; // Neutral
+    const toneFor = (num) => {
+        if (type !== 'hybrid' || !meta) return 'plain';
+        if (meta.hot?.includes(num)) return 'hot';
+        if (meta.cold?.includes(num)) return 'cold';
+        return 'plain';
     };
 
+    const handleSave = () => {
+        onSave();
+        setJustSaved(true);
+    };
+
+    const handleCopy = async () => {
+        const text = `${copyLabel ? `${copyLabel} ` : ''}${numbers.map(formatNumber).join(' ')}`;
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopyState('done');
+        } catch {
+            setCopyState('failed');
+        }
+    };
+
+    const sortedList = (list) => [...(list || [])].sort((a, b) => a - b).map(formatNumber).join(' ');
+
     return (
-        <div className="bg-slate-900/40 light:bg-white/80 backdrop-blur rounded-2xl p-5 border border-white/5 light:border-slate-200 shadow-lg light:shadow-xl transition-all hover:border-white/10 light:hover:border-slate-300 hover:bg-slate-900/60 light:hover:bg-white group">
-            <div className="flex flex-col md:flex-row items-center gap-6">
-                {/* Left: Button Area */}
-                <div className="shrink-0">
+        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 light:border-stone-200 light:bg-white">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                <div className="md:w-56 md:shrink-0">
+                    <h3 className="text-sm font-semibold text-stone-100 light:text-stone-900">{title}</h3>
+                    <p className="mt-0.5 text-xs leading-relaxed text-stone-400 light:text-stone-500">{subtitle}</p>
+                </div>
+
+                <div className="flex grow flex-wrap items-center gap-2">
+                    {hasNumbers
+                        ? numbers.map((num, idx) => (
+                            <NumberBall key={`${idx}-${num}`} value={num} size="lg" tone={toneFor(num)} />
+                        ))
+                        : Array.from({ length: pickCount }).map((_, idx) => (
+                            <NumberBall key={`empty-${idx}`} size="lg" tone="empty" />
+                        ))}
+                </div>
+
+                <div className="flex shrink-0 items-center gap-2">
+                    {hasNumbers && (
+                        <>
+                            <button onClick={handleCopy} className={smallButton}>
+                                {copyState === 'done' ? t('shell.pick.copied') : t('shell.pick.copy')}
+                            </button>
+                            {onSave && (
+                                <button onClick={handleSave} disabled={justSaved} className={`${smallButton} disabled:opacity-60`}>
+                                    {justSaved ? t('shell.pick.saved') : t('shell.pick.save')}
+                                </button>
+                            )}
+                        </>
+                    )}
                     <button
                         onClick={onGenerate}
-                        disabled={isLoading}
-                        className={`w-16 h-16 rounded-2xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-indigo-500/20 flex flex-col items-center justify-center gap-1 border border-white/10 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed hover:scale-105 active:scale-95 group/btn relative overflow-hidden ${buttonColor}`}
+                        disabled={isLoading || disabled}
+                        className="min-w-[5.5rem] rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-stone-900 transition-colors hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                        {isLoading ? (
-                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-white/30 border-t-white"></div>
-                        ) : (
-                            <>
-                                <span className="text-2xl leading-none filter drop-shadow-md group-hover/btn:scale-125 transition-transform duration-300">{icon}</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest opacity-80 group-hover/btn:opacity-100">{t('predictionRow.run')}</span>
-                            </>
-                        )}
-                        {/* Shine Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
+                        {isLoading ? t('shell.pick.generating') : hasNumbers ? t('shell.pick.again') : t('shell.pick.generate')}
                     </button>
                 </div>
-
-                {/* Right: Content Area (Horizontal Layout) */}
-                <div className="grow flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-                    {/* Header - Left Aligned */}
-                    <div className="w-full md:w-56 shrink-0 text-center md:text-left md:border-r border-white/5 light:border-slate-200 md:pr-6">
-                        <h3 className="text-sm font-black text-white light:text-slate-800 uppercase tracking-wider leading-tight mb-1">{title}</h3>
-                        <p className="text-[10px] font-medium text-slate-400 light:text-slate-500 leading-snug">{subtitle}</p>
-                    </div>
-
-                    {/* Numbers Container - Centered */}
-                    <div className="grow flex flex-col items-center justify-center">
-                        <div className="flex flex-wrap justify-center gap-2 md:gap-3">
-                            {numbers && numbers.length > 0 ? (
-                                numbers.map((num, idx) => (
-                                    <div
-                                        key={`${idx}-${num}`}
-                                        className={`w-11 h-11 flex items-center justify-center rounded-full text-lg font-black text-white shadow-lg animate-in fade-in zoom-in duration-300 border border-white/10 ${getHybridStyle(num)} ${type !== 'hybrid' && !meta ? (boxColors || 'bg-blue-600') : ''}`}
-                                    >
-                                        {num}
-                                    </div>
-                                ))
-                            ) : (
-                                Array.from({ length: pickCount }).map((_, idx) => (
-                                    <div
-                                        key={`placeholder-${idx}`}
-                                        className="w-11 h-11 rounded-full border-2 border-slate-800 light:border-slate-300 border-dashed bg-slate-950/30 light:bg-slate-100"
-                                    ></div>
-                                ))
-                            )}
-                        </div>
-
-                        {/* Progress Bar (Compact) */}
-                        {type === 'ai' && isLoading && (
-                            <div className="w-24 bg-slate-800 rounded-full h-1 mt-2 overflow-hidden">
-                                <div
-                                    className="bg-teal-500 h-full transition-all duration-300"
-                                    style={{ width: `${progress}%` }}
-                                ></div>
-                            </div>
-                        )}
-
-                        {/* Hybrid Stats (Compact) */}
-                        {type === 'hybrid' && stats && (
-                            <div className="flex gap-3 text-[10px] text-amber-500/60 font-mono mt-1">
-                                <span>🔥{stats.avgHot}</span>
-                                <span>❄️{stats.avgCold}</span>
-                                <span>⚖️{stats.avgNeutral}</span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Save Button (Conditional) */}
-                {numbers && numbers.length > 0 && onSave && (
-                    <button
-                        onClick={onSave}
-                        className="ml-auto w-10 h-10 rounded-full bg-white/5 light:bg-slate-200 border border-white/10 light:border-slate-300 text-white/40 light:text-slate-500 hover:text-white hover:bg-emerald-500 hover:border-emerald-400 hover:shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all duration-300 flex items-center justify-center group/save"
-                        title={t('predictionRow.saveToVault')}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 transition-transform group-hover/save:scale-110">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
-                        </svg>
-                    </button>
-                )}
             </div>
 
-            {/* Hybrid Reference Pools - Full Width Bottom (if exists) */}
-            {
-                type === 'hybrid' && meta && (
-                    <div className="mt-3 pt-3 border-t border-slate-800/50 light:border-slate-200 text-[10px]">
-                        <div className="flex flex-wrap gap-4 justify-center bg-slate-950/30 light:bg-slate-50 p-2 rounded border border-slate-800/30 light:border-slate-200">
-                            <div className="flex gap-2 items-center">
-                                <span className="text-red-400 font-bold">🔥 {t('predictionRow.hotLabel')}</span>
-                                <span className="text-slate-500">{meta.hot && meta.hot.sort((a, b) => a - b).map(n => (n < 10 ? `0${n}` : n)).join(' ')}</span>
-                            </div>
-                            <div className="flex gap-2 items-center border-l border-slate-800 light:border-slate-300 pl-4">
-                                <span className="text-blue-400 font-bold">❄️ {t('predictionRow.coldLabel')}</span>
-                                <span className="text-slate-500">{meta.cold && meta.cold.sort((a, b) => a - b).map(n => (n < 10 ? `0${n}` : n)).join(' ')}</span>
-                            </div>
-                        </div>
+            {type === 'ai' && isLoading && (
+                <div className="mt-3">
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10 light:bg-stone-200">
+                        <div className="h-full bg-amber-500 transition-all duration-300" style={{ width: `${progress}%` }} />
                     </div>
-                )
-            }
-        </div >
+                    <p className="mt-1.5 text-xs text-stone-500">{t('shell.pick.aiNote')}</p>
+                </div>
+            )}
+
+            {copyState === 'failed' && (
+                <p className="mt-3 text-xs text-rose-400">{t('shell.pick.copyFailed')}</p>
+            )}
+
+            {note && !isLoading && (
+                <p className="mt-3 text-xs text-stone-500">{note}</p>
+            )}
+
+            {type === 'hybrid' && meta && hasNumbers && (
+                <div className="mt-3 space-y-1 border-t border-white/10 pt-3 text-xs text-stone-400 light:border-stone-200 light:text-stone-500">
+                    <p>
+                        <span className="font-medium text-rose-400 light:text-rose-600">{t('predictionRow.hotLabel')}</span>{' '}
+                        <span className="tabular-nums">{sortedList(meta.hot)}</span>
+                        {stats && <span className="ml-2 opacity-70">({stats.avgHot})</span>}
+                    </p>
+                    <p>
+                        <span className="font-medium text-sky-400 light:text-sky-600">{t('predictionRow.coldLabel')}</span>{' '}
+                        <span className="tabular-nums">{sortedList(meta.cold)}</span>
+                        {stats && <span className="ml-2 opacity-70">({stats.avgCold})</span>}
+                    </p>
+                </div>
+            )}
+        </div>
     );
 };
 

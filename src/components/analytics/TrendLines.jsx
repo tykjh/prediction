@@ -94,7 +94,7 @@ const TrendLines = ({ rawHistory, isLightMode, activeZone, isSeparate, PICK = 6,
 
             {/* Chart 1: Sum Trend */}
             <div className="bg-slate-900/30 light:bg-slate-50/50 rounded-xl p-4 border border-white/5 light:border-slate-200">
-                <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-4 uppercase tracking-wider">{t('trendLines.sumVolatility')}</h4>
+                <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-4">{t('trendLines.sumVolatility')}</h4>
                 <div className="h-40">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={trendData}>
@@ -116,7 +116,7 @@ const TrendLines = ({ rawHistory, isLightMode, activeZone, isSeparate, PICK = 6,
 
             {/* Chart 2: Odd / Even Balance */}
             <div className="bg-slate-900/30 light:bg-slate-50/50 rounded-xl p-4 border border-white/5 light:border-slate-200">
-                <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-4 uppercase tracking-wider">{t('trendLines.oddEvenCount')}</h4>
+                <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-4">{t('trendLines.oddEvenCount')}</h4>
                 <div className="h-40">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={trendData}>
@@ -135,8 +135,8 @@ const TrendLines = ({ rawHistory, isLightMode, activeZone, isSeparate, PICK = 6,
             {/* Chart 3: High / Low Balance */}
             <div className="bg-slate-900/30 light:bg-slate-50/50 rounded-xl p-4 border border-white/5 light:border-slate-200 lg:col-span-2">
                 <div className="flex justify-between items-center mb-4">
-                    <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 uppercase tracking-wider">{t('trendLines.highLowDistribution')}</h4>
-                    <span className="text-[10px] font-mono text-slate-500 bg-slate-800 light:bg-slate-200 px-2 py-0.5 rounded">
+                    <h4 className="text-xs font-bold text-slate-400 light:text-slate-600">{t('trendLines.highLowDistribution')}</h4>
+                    <span className="text-xs font-mono text-slate-500 bg-slate-800 light:bg-slate-200 px-2 py-0.5 rounded">
                         {(() => {
                             const mid = Math.ceil((maxNumber + 1) / 2);
                             return t('trendLines.rangeLabel', { lowMax: mid - 1, highMin: mid, maxNumber });

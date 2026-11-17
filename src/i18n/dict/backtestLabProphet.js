@@ -25,7 +25,7 @@ export const backtestLabProphet = {
         },
     },
     zh: {
-        title: '先知模型拆解分析',
+        title: '三模型逐一檢查',
         subtitle: '深度解析：k-NN．馬可夫．迴歸',
         refDepth: '參考深度',
         accumulate: '累積模式',
@@ -45,7 +45,7 @@ export const backtestLabProphet = {
         colProphet: '先知',
         colRandom: '隨機',
         help: {
-            title: '先知模型拆解分析',
+            title: '三模型逐一檢查',
             body: '將先知的三個子模型——k-近鄰、馬可夫、迴歸——分開回測，並與整合後的先知預測及隨機基準線比較，協助你了解在所選期別範圍中哪個子模型表現最佳。',
         },
     },

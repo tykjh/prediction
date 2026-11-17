@@ -93,6 +93,17 @@ export const sidebar = {
 
         // Changelog entries
         changelog: {
+            nov17: {
+                date: 'Nov 17, 2026 [Ready to Launch]',
+                item1Label: 'Simpler layout',
+                item1Desc: 'Labelled navigation, a visible game picker, a calmer look and a latest-draw card on the first page.',
+                item2Label: 'Correct prize checking',
+                item2Desc: 'Prize rules now follow the official tables for all three games, and saved picks are checked automatically.',
+                item3Label: 'Remembers your settings',
+                item3Desc: 'Game, background, light mode and sound are kept between visits.',
+                item4Label: 'Faster first load',
+                item4Desc: 'Labs, backtests and the learning model are only downloaded when you open them.',
+            },
             aug07: {
                 date: 'Aug 07, 2026 [Mobile-Friendly UI]',
                 item1Label: 'Mobile TopBar',
@@ -294,6 +305,17 @@ export const sidebar = {
 
         // Changelog entries
         changelog: {
+            nov17: {
+                date: '2026年11月17日〔上線準備〕',
+                item1Label: '更好懂的版面',
+                item1Desc: '導覽加上文字、彩種直接三選一、整體視覺變安靜，首頁多了最新開獎。',
+                item2Label: '對獎修正',
+                item2Desc: '三種彩券的獎項規則改為依官方對照表，收藏的號碼開獎後會自動對獎。',
+                item3Label: '記住你的設定',
+                item3Desc: '彩種、背景、淺色模式、音效下次打開都還在。',
+                item4Label: '開啟更快',
+                item4Desc: '實驗室、回測和學習模型改成用到才下載。',
+            },
             aug07: {
                 date: '2026年8月7日〔行動版介面優化〕',
                 item1Label: '行動版頂部導覽列',

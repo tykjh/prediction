@@ -16,13 +16,22 @@ const interpolate = (str, vars) => {
 
 export const LanguageProvider = ({ children }) => {
     const [lang, setLang] = useState(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved === 'en' || saved === 'zh') return saved;
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved === 'en' || saved === 'zh') return saved;
+        } catch {
+            // Storage blocked: fall through to the browser language.
+        }
         return navigator.language?.startsWith('zh') ? 'zh' : 'en';
     });
 
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, lang);
+        try {
+            localStorage.setItem(STORAGE_KEY, lang);
+        } catch {
+            // Not being able to remember the language is not fatal.
+        }
+        document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
     }, [lang]);
 
     const toggleLang = useCallback(() => {

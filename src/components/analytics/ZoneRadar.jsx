@@ -67,7 +67,7 @@ const ZoneRadar = ({ data, isLightMode, maxNumber = 49 }) => {
 
     return (
         <div className="h-full w-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-500">
-            <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-2 uppercase tracking-wider">{t('zoneRadar.heading')}</h4>
+            <h4 className="text-xs font-bold text-slate-400 light:text-slate-600 mb-2">{t('zoneRadar.heading')}</h4>
             <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <RadarChart cx="50%" cy="50%" outerRadius="80%" data={zoneData}>
@@ -98,7 +98,7 @@ const ZoneRadar = ({ data, isLightMode, maxNumber = 49 }) => {
                     </RadarChart>
                 </ResponsiveContainer>
             </div>
-            <p className="text-center text-[10px] text-slate-500 light:text-slate-500 mt-2 max-w-xs mx-auto">
+            <p className="text-center text-xs text-slate-500 light:text-slate-500 mt-2 max-w-xs mx-auto">
                 {t('zoneRadar.footer')}
             </p>
         </div>

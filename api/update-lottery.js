@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import { GAME_ENDPOINTS, fetchGameMonth } from './_lib/taiwanLotteryApi.js';
 import { getFile, putFile } from './_lib/githubContents.js';
 
@@ -6,15 +7,41 @@ function currentYyyyMm() {
   return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
 }
 
+// Compare without leaking how many leading characters matched.
+function safeEqual(a, b) {
+  const left = Buffer.from(String(a));
+  const right = Buffer.from(String(b));
+  return left.length === right.length && timingSafeEqual(left, right);
+}
+
+export function isAuthorized(authorizationHeader, secret) {
+  // Without this check an unset secret would make "Bearer undefined" a valid key.
+  if (typeof secret !== 'string' || secret.length < 16) return false;
+  if (typeof authorizationHeader !== 'string') return false;
+  return safeEqual(authorizationHeader, `Bearer ${secret}`);
+}
+
+export function isValidMonth(value) {
+  return typeof value === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(value);
+}
+
 export default async function handler(req, res) {
-  const authHeader = req.headers.authorization;
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  res.setHeader('Cache-Control', 'no-store');
+
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET');
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+  if (!isAuthorized(req.headers.authorization, process.env.CRON_SECRET)) {
     return res.status(401).json({ error: 'Unauthorized' });
+  }
+  if (!process.env.LOTTERY_BOT_GITHUB_TOKEN) {
+    return res.status(500).json({ error: 'Server is not configured' });
   }
 
   const dryRun = req.query.dryRun === 'true';
   const monthOverride = req.query.month;
-  if (monthOverride && !/^\d{4}-\d{2}$/.test(monthOverride)) {
+  if (monthOverride !== undefined && !isValidMonth(monthOverride)) {
     return res.status(400).json({ error: 'month must be in YYYY-MM format' });
   }
   const month = monthOverride || currentYyyyMm();
@@ -25,6 +52,7 @@ export default async function handler(req, res) {
     try {
       const { records: fetched, skipped } = await fetchGameMonth(gameKey, month);
       const { content: existing, sha } = await getFile(historyFile);
+      if (!Array.isArray(existing)) throw new Error('history file is not an array');
 
       const existingPeriods = new Set(existing.map((r) => r.period));
       const newRecords = fetched.filter((r) => !existingPeriods.has(r.period));
@@ -57,7 +85,10 @@ export default async function handler(req, res) {
         );
       }
     } catch (err) {
-      summary[gameKey] = { error: err.message };
+      // Full detail goes to the server log. The response only gets a short
+      // message, so upstream error bodies are never echoed back.
+      console.error(`${gameKey} update failed`, err);
+      summary[gameKey] = { error: String(err?.message || 'update failed').slice(0, 120) };
     }
   }
 

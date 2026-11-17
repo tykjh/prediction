@@ -2,6 +2,7 @@ export const GAME_TYPES = {
     'LOTTO649': {
         id: 'LOTTO649',
         name: 'Lotto 6/49 (大樂透)',
+        drawDays: [2, 5], // Tue, Fri
         logo: '🎱', // Default Ball
         settings: {
             maxNumber: 49,
@@ -26,6 +27,7 @@ export const GAME_TYPES = {
     'SUPERLOTTO': {
         id: 'SUPERLOTTO',
         name: 'Super Lotto (威力彩)',
+        drawDays: [1, 4], // Mon, Thu
         logo: '🪙', // Coin / Wealth
         settings: {
             maxNumber: 38,
@@ -49,6 +51,7 @@ export const GAME_TYPES = {
     '539': {
         id: '539',
         name: 'Jin Cai 539 (今彩539)',
+        drawDays: [1, 2, 3, 4, 5, 6], // Mon - Sat
         logo: '💵', // Banknote
         settings: {
             maxNumber: 39,
@@ -72,3 +75,6 @@ export const GAME_TYPES = {
 };
 
 export const DEFAULT_GAME = 'LOTTO649';
+
+// Display order. Object.keys() would put '539' first because it looks like a number.
+export const GAME_ORDER = ['LOTTO649', 'SUPERLOTTO', '539'];

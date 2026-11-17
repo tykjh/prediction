@@ -288,8 +288,8 @@ const AlchemyLab = () => {
                         <button
                             key={el.id}
                             onClick={() => setSelectedElement(el.id)}
-                            className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wide flex items-center gap-2 transition-all
-                            ${selectedElement === el.id ? 'bg-white text-slate-900 shadow-lg scale-105' : 'text-slate-300 hover:bg-slate-700'}`}
+                            className={`px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-2 transition-all
+ ${selectedElement === el.id ? 'bg-white text-slate-900 shadow-lg scale-105' : 'text-slate-300 hover:bg-slate-700'}`}
                         >
                             <div className={`w-3 h-3 rounded-full ${el.color}`}></div>
                             {t(`alchemyLab.elements.${el.key}`)}
@@ -299,7 +299,7 @@ const AlchemyLab = () => {
 
                 <div className="flex items-center gap-4 border-l border-white/10 pl-4">
                     <div className="flex flex-col gap-1">
-                        <span className="text-[10px] uppercase font-bold text-slate-500">{t('alchemyLab.brushSize')}</span>
+                        <span className="text-xs font-bold text-slate-500">{t('alchemyLab.brushSize')}</span>
                         <input type="range" min="1" max="10" value={brushSize} onChange={e => setBrushSize(Number(e.target.value))} className="w-24 accent-indigo-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
                     </div>
                     <button
@@ -310,7 +310,7 @@ const AlchemyLab = () => {
                     </button>
                     <button
                         onClick={() => gridRef.current.fill(EMPTY)}
-                        className="text-xs font-bold text-red-400 hover:text-red-300 uppercase"
+                        className="text-xs font-bold text-red-400 hover:text-red-300"
                     >
                         {t('alchemyLab.clear')}
                     </button>
@@ -331,7 +331,7 @@ const AlchemyLab = () => {
                     style={{ imageRendering: 'pixelated' }}
                 />
                 <div className="absolute top-4 left-4 pointer-events-none opacity-50">
-                    <div className="text-[10px] text-slate-500 font-mono">
+                    <div className="text-xs text-slate-500 font-mono">
                         {t('alchemyLab.simulationRunning')}<br />
                         {t('alchemyLab.gridInfo')}
                     </div>

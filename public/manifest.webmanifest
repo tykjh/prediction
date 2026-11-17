@@ -1,0 +1,19 @@
+{
+  "name": "LottoOS 選號與統計",
+  "short_name": "LottoOS",
+  "description": "看最新開獎、用歷史統計選號、收藏號碼並自動對獎。僅供娛樂與統計參考。",
+  "lang": "zh-Hant",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1d1c1a",
+  "theme_color": "#1d1c1a",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -7,14 +7,11 @@ const MultiBetCell = ({ predictions, targetSet, specialNum, maxHits, isSeparate 
     const timerRef = useRef(null);
     const isLongPress = useRef(false);
 
-    // Safety check
-    if (!predictions || predictions.length === 0) return <span>-</span>;
-
-    const count = predictions.length;
+    const count = predictions ? predictions.length : 0;
 
     // Find winning bets (3+ hits), sorted by hits (DESC)
     const winningIndices = useMemo(() => {
-        return predictions
+        return (predictions || [])
             .map((pred, idx) => {
                 const hits = pred.filter(n => targetSet.has(n)).length;
                 return { idx, hits };
@@ -23,6 +20,9 @@ const MultiBetCell = ({ predictions, targetSet, specialNum, maxHits, isSeparate 
             .sort((a, b) => b.hits - a.hits) // Sort by hits Descending
             .map(item => item.idx);
     }, [predictions, targetSet]);
+
+    // Safety check (after the hooks, so they always run in the same order)
+    if (count === 0) return <span>-</span>;
 
     // Ensure index is valid safely
     const safeIndex = index >= count ? 0 : index;
@@ -79,11 +79,11 @@ const MultiBetCell = ({ predictions, targetSet, specialNum, maxHits, isSeparate 
                 const isNormalHit = targetSet.has(n) && !isSpecialHit;
 
                 let bgClass = 'bg-slate-800 light:bg-slate-100 text-slate-400 light:text-slate-400';
-                if (isSpecialHit) bgClass = 'bg-orange-500 light:bg-orange-500 text-white ring-2 ring-orange-400 shadow-orange-500/50 shadow-sm';
+                if (isSpecialHit) bgClass = 'bg-orange-500 light:bg-orange-500 text-white ring-2 ring-orange-400  shadow-sm';
                 else if (isNormalHit) bgClass = 'bg-white light:bg-indigo-100 text-slate-900 light:text-indigo-900 ring-2 ring-indigo-500 light:ring-indigo-300 font-bold';
 
                 return (
-                    <span key={n} className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold ${bgClass}`}>
+                    <span key={n} className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold ${bgClass}`}>
                         {n}
                     </span>
                 );
@@ -103,7 +103,7 @@ const MultiBetCell = ({ predictions, targetSet, specialNum, maxHits, isSeparate 
                         onTouchStart={() => startPress(resetBet)}
                         onTouchEnd={endPress}
                         onClick={(e) => handleClick(e, nextBet)}
-                        className="w-4 h-4 rounded-full bg-slate-700 hover:bg-slate-600 light:bg-slate-200 light:hover:bg-slate-300 flex items-center justify-center text-[9px] text-white light:text-slate-700 shadow-sm transition-colors select-none"
+                        className="w-4 h-4 rounded-full bg-slate-700 hover:bg-slate-600 light:bg-slate-200 light:hover:bg-slate-300 flex items-center justify-center text-[11px] text-white light:text-slate-700 shadow-sm transition-colors select-none"
                         title={t('multiBetCell.nextBet')}
                     >
                         {safeIndex + 1}
@@ -116,13 +116,13 @@ const MultiBetCell = ({ predictions, targetSet, specialNum, maxHits, isSeparate 
                             onTouchStart={() => startPress(resetWinner)}
                             onTouchEnd={endPress}
                             onClick={(e) => handleClick(e, nextWinner)}
-                            className="w-4 h-4 rounded-full bg-yellow-500/20 hover:bg-yellow-500/40 border border-yellow-500/50 flex items-center justify-center text-[8px] shadow-sm transition-colors select-none"
+                            className="w-4 h-4 rounded-full bg-yellow-500/20 hover:bg-yellow-500/40 border border-yellow-500/50 flex items-center justify-center text-[11px] shadow-sm transition-colors select-none"
                             title={t('multiBetCell.nextWinner')}
                         >
                             🏆
                         </button>
                     )}
-                    <span className="text-[8px] text-slate-500 font-mono leading-none">/{count}</span>
+                    <span className="text-[11px] text-slate-500 font-mono leading-none">/{count}</span>
                 </div>
             )}
         </div>

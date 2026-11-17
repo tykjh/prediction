@@ -72,7 +72,7 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
     const getCellColor = (num) => {
         // Mode 1: Affinity View (If number selected)
         if (selectedNumber) {
-            if (num === selectedNumber) return "bg-white text-slate-900 border-white ring-2 ring-white shadow-[0_0_15px_rgba(255,255,255,0.5)] z-10 scale-110"; // Selected
+            if (num === selectedNumber) return "bg-white text-slate-900 border-white ring-2 ring-white  z-10 scale-110"; // Selected
 
             // Calculate affinity strength
             const key = num < selectedNumber ? `${num}-${selectedNumber}` : `${selectedNumber}-${num}`;
@@ -82,7 +82,7 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
 
             // Affinity Gradient (Blue -> Purple -> Pink -> Red)
             const intensity = strength / (maxCoOcc * 0.5 || 1); // Boost scaling a bit
-            if (intensity > 0.8) return "bg-red-500 text-white border-red-400 font-bold shadow-red-500/30";
+            if (intensity > 0.8) return "bg-red-500 text-white border-red-400 font-bold ";
             if (intensity > 0.6) return "bg-pink-500 text-white border-pink-400";
             if (intensity > 0.4) return "bg-purple-500 text-purple-100 border-purple-400";
             if (intensity > 0.2) return "bg-blue-600 text-blue-100 border-blue-500";
@@ -94,7 +94,7 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
         const normalized = count / (maxFreq || 1);
 
         // Heatmap Gradient (Slate -> Teal -> Emerald -> Yellow)
-        if (normalized > 0.9) return "bg-amber-400 text-amber-900 border-amber-300 font-bold shadow-amber-400/20"; // Hot!
+        if (normalized > 0.9) return "bg-amber-400 text-amber-900 border-amber-300 font-bold "; // Hot!
         if (normalized > 0.8) return "bg-emerald-400 text-emerald-900 border-emerald-300 font-bold";
         if (normalized > 0.6) return "bg-teal-500 text-teal-100 border-teal-400";
         if (normalized > 0.4) return "bg-cyan-600 text-cyan-100 border-cyan-500";
@@ -139,7 +139,7 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
 
                     {/* Legend */}
                     {!selectedNumber && (
-                        <div className="flex items-center gap-1 text-[9px] text-slate-500 light:text-slate-500 mt-2">
+                        <div className="flex items-center gap-1 text-[11px] text-slate-500 light:text-slate-500 mt-2">
                             <span>{t('matrixGrid.cold')}</span>
                             <div className="w-16 h-2 rounded bg-gradient-to-r from-slate-800 via-teal-500 to-amber-400 light:from-slate-200"></div>
                             <span>{t('matrixGrid.hot')}</span>
@@ -151,7 +151,7 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
             </div>
 
             {/* The Grid (Dynamic) */}
-            <div className={`grid gap-2 md:gap-3 p-4 bg-slate-900/50 light:bg-white rounded-2xl border border-slate-800 light:border-slate-200 aspect-square shadow-xl light:shadow-lg ${MAX > 40 ? 'grid-cols-7' : 'grid-cols-6'}`}>
+            <div className={`grid gap-2 md:gap-3 p-4 bg-slate-900/50 light:bg-white rounded-2xl border border-slate-800 light:border-slate-200 aspect-square ${MAX > 40 ? 'grid-cols-7' : 'grid-cols-6'}`}>
                 {Array.from({ length: MAX }, (_, i) => i + 1).map(num => {
                     // Get pair count if selected, else freq
                     const pairCount = selectedNumber
@@ -163,14 +163,14 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
                             key={num}
                             onClick={() => setSelectedNumber(selectedNumber === num ? null : num)}
                             className={`
-                                relative flex flex-col items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer overflow-hidden group hover:scale-110 hover:z-20 hover:shadow-xl
-                                ${getCellColor(num)}
-                            `}
+ relative flex flex-col items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer overflow-hidden group hover:z-20 
+ ${getCellColor(num)}
+ `}
                         >
                             <span className="text-sm md:text-lg font-bold z-10">{num}</span>
 
                             {/* Optional: Show small value on hover or always? */}
-                            <span className="text-[9px] opacity-60 z-10">{pairCount > 0 ? pairCount : '-'}</span>
+                            <span className="text-[11px] opacity-60 z-10">{pairCount > 0 ? pairCount : '-'}</span>
 
                             {/* Hover Gleam */}
                             <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors"></div>
@@ -179,7 +179,7 @@ const MatrixGrid = ({ history, isLightMode, activeGameConfig }) => {
                 })}
             </div>
 
-            <div className="mt-4 text-[10px] text-slate-600 text-center font-mono">
+            <div className="mt-4 text-xs text-slate-600 text-center font-mono">
                 {t('matrixGrid.footer', { n: history.length })}
             </div>
         </div>

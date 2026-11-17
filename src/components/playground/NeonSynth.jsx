@@ -222,8 +222,8 @@ const NeonSynth = () => {
 
                     <div className="flex justify-between items-start mb-6">
                         <div>
-                            <h2 className="text-2xl font-black italic text-white tracking-tighter">NEON<span className="text-indigo-500">SYNTH</span></h2>
-                            <div className="text-[10px] text-slate-500 font-mono tracking-widest mt-1">PRO SERIES MK-II</div>
+                            <h2 className="text-2xl font-semibold italic text-white">NEON<span className="text-indigo-500">SYNTH</span></h2>
+                            <div className="text-xs text-slate-500 font-mono mt-1">PRO SERIES MK-II</div>
                         </div>
                         <div className={`w-3 h-3 rounded-full ${isPlaying ? 'bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse' : 'bg-red-900'}`}></div>
                     </div>
@@ -232,8 +232,8 @@ const NeonSynth = () => {
                         <div className="flex gap-4 items-center">
                             <button
                                 onClick={() => { initAudio(); setIsPlaying(!isPlaying); }}
-                                className={`flex-1 py-4 rounded-lg font-bold text-lg tracking-wide transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2
-                                ${isPlaying ? 'bg-rose-600 text-white hover:bg-rose-500' : 'bg-indigo-600 text-white hover:bg-indigo-500'}`}
+                                className={`flex-1 py-4 rounded-lg font-bold text-lg transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2
+ ${isPlaying ? 'bg-rose-600 text-white hover:bg-rose-500' : 'bg-indigo-600 text-white hover:bg-indigo-500'}`}
                             >
                                 {isPlaying ? (
                                     <><span>■</span> {t('neonSynth.stop')}</>
@@ -245,14 +245,14 @@ const NeonSynth = () => {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">{t('neonSynth.tempo')}</label>
+                                <label className="text-xs font-bold text-slate-400">{t('neonSynth.tempo')}</label>
                                 <div className="flex items-center gap-2">
                                     <input type="range" min="60" max="200" value={bpm} onChange={(e) => setBpm(Number(e.target.value))} className="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
                                     <span className="text-white font-mono font-bold w-8">{bpm}</span>
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">{t('neonSynth.masterVol')}</label>
+                                <label className="text-xs font-bold text-slate-400">{t('neonSynth.masterVol')}</label>
                                 <div className="flex items-center gap-2">
                                     <input type="range" min="0" max="1" step="0.01" value={volume} onChange={(e) => setVolume(Number(e.target.value))} className="w-full accent-pink-500 h-1.5 bg-slate-700 rounded-lg appearance-none" />
                                 </div>
@@ -260,13 +260,13 @@ const NeonSynth = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-400 uppercase">{t('neonSynth.waveform')}</label>
+                            <label className="text-xs font-bold text-slate-400">{t('neonSynth.waveform')}</label>
                             <div className="flex bg-slate-800 p-1 rounded-lg">
                                 {['sine', 'square', 'sawtooth'].map(type => (
                                     <button
                                         key={type}
                                         onClick={() => setWaveType(type)}
-                                        className={`flex-1 py-1 rounded text-xs font-bold uppercase transition-colors ${waveType === type ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:text-white'}`}
+                                        className={`flex-1 py-1 rounded text-xs font-bold transition-colors ${waveType === type ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:text-white'}`}
                                     >
                                         {type}
                                     </button>
@@ -297,7 +297,7 @@ const NeonSynth = () => {
                     {['Kick', 'Snare', 'HiHat', 'Synth'].map((trackName, trackIndex) => (
                         <div key={trackName} className="flex flex-col md:flex-row items-center gap-4">
                             <div className="w-full md:w-24 flex justify-between md:justify-end items-center px-2">
-                                <span className={`font-bold text-sm uppercase tracking-wider ${trackIndex === 3 ? 'text-pink-400' : 'text-slate-400'}`}>
+                                <span className={`font-bold text-sm ${trackIndex === 3 ? 'text-pink-400' : 'text-slate-400'}`}>
                                     {t(`neonSynth.tracks.${trackName.toLowerCase()}`)}
                                 </span>
                                 <div className={`w-1.5 h-1.5 rounded-full ml-2 ${grid[trackIndex][currentStep] ? 'bg-green-400 shadow-[0_0_5px_#4ade80]' : 'bg-slate-800'}`}></div>
@@ -309,12 +309,12 @@ const NeonSynth = () => {
                                         key={step}
                                         onClick={() => toggleStep(trackIndex, step)}
                                         className={`
-                                            aspect-square rounded-[4px] relative transition-all duration-75
-                                            ${active
-                                                ? (trackIndex === 3 ? 'bg-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.6)]' : 'bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.6)]')
-                                                : (step % 4 === 0 ? 'bg-slate-700/80' : 'bg-slate-800')}
-                                            ${currentStep === step ? 'ring-1 ring-white brightness-150 scale-105 z-10' : 'hover:bg-slate-600'}
-                                        `}
+ aspect-square rounded-[4px] relative transition-all duration-75
+ ${active
+ ? (trackIndex === 3 ? 'bg-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.6)]' : 'bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.6)]')
+ : (step % 4 === 0 ? 'bg-slate-700/80' : 'bg-slate-800')}
+ ${currentStep === step ? 'ring-1 ring-white brightness-150 scale-105 z-10' : 'hover:bg-slate-600'}
+ `}
                                     >
                                         {step % 4 === 0 && !active && (
                                             <div className="absolute inset-0 flex items-center justify-center">

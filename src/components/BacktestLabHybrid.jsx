@@ -267,17 +267,17 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
 
     return (
         <div className="w-full max-w-7xl mx-auto mt-16 mb-16">
-            <div className="bg-slate-900/40 light:bg-white/80 backdrop-blur-xl rounded-[2rem] border border-white/5 light:border-slate-200 overflow-hidden shadow-2xl relative">
+            <div className="bg-slate-900/40 light:bg-white/80 rounded-2xl border border-white/5 light:border-slate-200 overflow-hidden relative">
 
                 {/* Header Section */}
                 <div className="p-8 border-b border-white/5 light:border-slate-200 bg-gradient-to-r from-slate-900/50 to-transparent light:from-slate-50/50">
                     <div className="flex items-center justify-between gap-4 mb-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 flex items-center justify-center text-2xl shadow-inner">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 flex items-center justify-center text-2xl">
                                 🧬
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-white light:text-slate-800">{t('backtestLabHybrid.title')}</h2>
+                                <h2 className="text-2xl font-semibold text-white light:text-slate-800">{t('backtestLabHybrid.title')}</h2>
                                 <p className="text-xs text-slate-400 light:text-slate-500 font-medium">{t('backtestLabHybrid.subtitle')}</p>
                             </div>
                         </div>
@@ -287,7 +287,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                     {/* Global Simulation Controls */}
                     <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">{t('backtestLabHybrid.inputDataRef')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('backtestLabHybrid.inputDataRef')}</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="number" className="w-20 bg-black/20 light:bg-white border border-white/10 light:border-slate-300 rounded px-2 py-1.5 text-xs text-white light:text-slate-800 text-center focus:outline-none focus:border-cyan-500 transition-colors"
@@ -303,7 +303,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">{t('backtestLabHybrid.testRange')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('backtestLabHybrid.testRange')}</label>
                             <div className="flex items-center gap-2">
                                 <select
                                     className="bg-black/20 light:bg-white border border-white/10 light:border-slate-300 rounded px-3 py-1.5 text-xs text-white light:text-slate-800 outline-none cursor-pointer focus:border-cyan-500 transition-colors"
@@ -326,21 +326,21 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">{t('backtestLabHybrid.multiBets')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('backtestLabHybrid.multiBets')}</label>
                             <div className="flex items-center gap-2">
                                 <div className="relative">
                                     <input
                                         type="number" className="w-16 bg-black/20 light:bg-white border border-white/10 light:border-slate-300 rounded px-2 py-1.5 text-xs text-cyan-300 light:text-cyan-600 text-center font-bold focus:outline-none focus:border-cyan-500"
                                         value={hybridBetCount} onChange={e => setHybridBetCount(e.target.value)}
                                     />
-                                    <span className="absolute right-1 top-1.5 text-[8px] text-slate-500 pointer-events-none">HYB</span>
+                                    <span className="absolute right-1 top-1.5 text-[11px] text-slate-500 pointer-events-none">HYB</span>
                                 </div>
                                 <div className="relative">
                                     <input
                                         type="number" className="w-16 bg-black/20 light:bg-white border border-white/10 light:border-slate-300 rounded px-2 py-1.5 text-xs text-slate-300 light:text-slate-600 text-center font-bold focus:outline-none focus:border-slate-500"
                                         value={randomBetCount} onChange={e => setRandomBetCount(e.target.value)}
                                     />
-                                    <span className="absolute right-1 top-1.5 text-[8px] text-slate-500 pointer-events-none">RND</span>
+                                    <span className="absolute right-1 top-1.5 text-[11px] text-slate-500 pointer-events-none">RND</span>
                                 </div>
                             </div>
                         </div>
@@ -348,7 +348,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                         <button
                             onClick={runBacktest}
                             disabled={isRunning}
-                            className={`ml-auto px-6 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${isRunning ? 'bg-slate-800 text-slate-500 cursor-wait' : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg props-hover'}`}
+                            className={`ml-auto px-6 py-2 rounded-lg font-bold text-xs transition-all ${isRunning ? 'bg-slate-800 text-slate-500 cursor-wait' : 'bg-cyan-600 hover:bg-cyan-500 text-white props-hover'}`}
                         >
                             {isRunning ? t('backtestLabHybrid.running', { progress }) : t('backtestLabHybrid.executeSimulation')}
                         </button>
@@ -356,7 +356,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
 
                     {/* Error Message Display */}
                     {errorMsg && (
-                        <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-xs font-bold animate-pulse">
+                        <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-xs font-bold">
                             ⚠️ {errorMsg}
                         </div>
                     )}
@@ -381,7 +381,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                     <div className="p-6 grid grid-cols-2 md:grid-cols-5 gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('backtestLabHybrid.hotPoolSize')}</label>
+                            <label className="text-xs text-slate-400 light:text-slate-500 font-bold">{t('backtestLabHybrid.hotPoolSize')}</label>
                             <input
                                 type="range" min="1" max="25" step="1"
                                 value={columnConfigs[activeTab].hotCount}
@@ -396,7 +396,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('backtestLabHybrid.coldPoolSize')}</label>
+                            <label className="text-xs text-slate-400 light:text-slate-500 font-bold">{t('backtestLabHybrid.coldPoolSize')}</label>
                             <input
                                 type="range" min="1" max="25" step="1"
                                 value={columnConfigs[activeTab].coldCount}
@@ -411,7 +411,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('backtestLabHybrid.trendDepth')}</label>
+                            <label className="text-xs text-slate-400 light:text-slate-500 font-bold">{t('backtestLabHybrid.trendDepth')}</label>
                             <input
                                 type="range" min="5" max="100" step="5"
                                 value={columnConfigs[activeTab].trendDepth}
@@ -426,7 +426,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('backtestLabHybrid.weightStrategy')}</label>
+                            <label className="text-xs text-slate-400 light:text-slate-500 font-bold">{t('backtestLabHybrid.weightStrategy')}</label>
                             <select
                                 value={columnConfigs[activeTab].weightStrategy}
                                 onChange={e => updateConfig('weightStrategy', e.target.value)}
@@ -436,7 +436,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                                 <option value="aggressive">{t('backtestLabHybrid.weightAggressive')}</option>
                                 <option value="flat">{t('backtestLabHybrid.weightFlat')}</option>
                             </select>
-                            <div className="text-[10px] text-slate-500 leading-tight mt-1">
+                            <div className="text-xs text-slate-500 leading-tight mt-1">
                                 {columnConfigs[activeTab].weightStrategy === 'aggressive' ? t('backtestLabHybrid.descAggressive') :
                                     columnConfigs[activeTab].weightStrategy === 'flat' ? t('backtestLabHybrid.descFlat') :
                                         t('backtestLabHybrid.descStandard')}
@@ -461,15 +461,15 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                 {summary && (
                     <div className="grid grid-cols-7 divide-x divide-white/10 light:divide-slate-200 border-b border-white/10 light:border-slate-200 bg-slate-950/30 light:bg-slate-100">
                         {/* Headers */}
-                        <div className="p-4 flex flex-col justify-center items-center text-slate-500 text-[10px] uppercase font-bold">{t('backtestLabHybrid.model')}</div>
+                        <div className="p-4 flex flex-col justify-center items-center text-slate-500 text-xs font-bold">{t('backtestLabHybrid.model')}</div>
                         {['h1', 'h2', 'h3', 'h4', 'h5', 'rnd'].map((k, i) => (
                             <div key={k} className="p-4 text-center">
-                                <div className={`text-xs font-black uppercase mb-1 ${k === 'rnd' ? 'text-slate-500' :
-                                    i === 0 ? 'text-blue-400' : i === 1 ? 'text-purple-400' : i === 2 ? 'text-amber-400' : i === 3 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                <div className={`text-xs font-semibold mb-1 ${k === 'rnd' ? 'text-slate-500' :
+ i === 0 ? 'text-blue-400' : i === 1 ? 'text-purple-400' : i === 2 ? 'text-amber-400' : i === 3 ? 'text-emerald-400' : 'text-rose-400'}`}>
                                     {k === 'rnd' ? t('backtestLabHybrid.random') : t('backtestLabHybrid.hybridTab', { n: i + 1 })}
                                 </div>
-                                <div className="text-xl text-white light:text-slate-800 font-bold">{summary.avgs[k]} <span className="text-[10px] text-slate-500 font-normal">{t('backtestLabHybrid.avg')}</span></div>
-                                <div className="text-xs text-yellow-500 font-mono">{summary.wins[k]}% <span className="text-[9px] text-slate-600">{t('backtestLabHybrid.win')}</span></div>
+                                <div className="text-xl text-white light:text-slate-800 font-bold">{summary.avgs[k]} <span className="text-xs text-slate-500 font-normal">{t('backtestLabHybrid.avg')}</span></div>
+                                <div className="text-xs text-yellow-500 font-mono">{summary.wins[k]}% <span className="text-[11px] text-slate-600">{t('backtestLabHybrid.win')}</span></div>
                             </div>
                         ))}
                     </div>
@@ -478,22 +478,22 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                 {/* Results Table */}
                 <div className="overflow-x-auto max-h-[600px] overflow-y-auto custom-scrollbar bg-slate-900 light:bg-slate-50">
                     <table className="w-full text-left border-collapse">
-                        <thead className="bg-slate-950 light:bg-white sticky top-0 z-50 shadow-lg">
+                        <thead className="bg-slate-950 light:bg-white sticky top-0 z-50">
                             <tr>
-                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">{t('backtestLabHybrid.colPeriod')}</th>
-                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">{t('backtestLabHybrid.colActual')}</th>
+                                <th className="p-3 text-xs font-bold text-slate-500 border-b border-slate-800 light:border-slate-200">{t('backtestLabHybrid.colPeriod')}</th>
+                                <th className="p-3 text-xs font-bold text-slate-500 border-b border-slate-800 light:border-slate-200">{t('backtestLabHybrid.colActual')}</th>
                                 {[0, 1, 2, 3, 4].map(i => (
                                     <th key={i} className="p-3 border-b border-slate-800 light:border-slate-200 min-w-[140px]">
                                         <div className="flex flex-col">
-                                            <span className={`text-[10px] font-black uppercase ${i === 0 ? 'text-blue-400' : i === 1 ? 'text-purple-400' : i === 2 ? 'text-amber-400' : i === 3 ? 'text-emerald-400' : 'text-rose-400'
-                                                }`}>{t('backtestLabHybrid.hybridTab', { n: i + 1 })}</span>
-                                            <span className="text-[8px] text-slate-500 font-mono mt-0.5">
+                                            <span className={`text-xs font-semibold ${i === 0 ? 'text-blue-400' : i === 1 ? 'text-purple-400' : i === 2 ? 'text-amber-400' : i === 3 ? 'text-emerald-400' : 'text-rose-400'
+ }`}>{t('backtestLabHybrid.hybridTab', { n: i + 1 })}</span>
+                                            <span className="text-[11px] text-slate-500 font-mono mt-0.5">
                                                 H:{columnConfigs[i].hotCount} C:{columnConfigs[i].coldCount} T:{columnConfigs[i].trendDepth} {columnConfigs[i].weightStrategy[0].toUpperCase()}
                                             </span>
                                         </div>
                                     </th>
                                 ))}
-                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">{t('backtestLabHybrid.random')}</th>
+                                <th className="p-3 text-xs font-bold text-slate-500 border-b border-slate-800 light:border-slate-200">{t('backtestLabHybrid.random')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50 light:divide-slate-200">
@@ -512,10 +512,10 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
 
                                     // Match styles from BacktestLab Highlighting
                                     let bg = 'p-3';
-                                    if (hits >= JACKPOT) bg = "p-3 bg-[repeating-linear-gradient(45deg,rgba(239,68,68,0.3)_0px,rgba(239,68,68,0.3)_10px,rgba(249,115,22,0.3)_10px,rgba(249,115,22,0.3)_20px,rgba(234,179,8,0.3)_20px,rgba(234,179,8,0.3)_30px,rgba(34,197,94,0.3)_30px,rgba(34,197,94,0.3)_40px,rgba(59,130,246,0.3)_40px,rgba(59,130,246,0.3)_50px)] border-4 border-yellow-400 shadow-[0_0_20px_-3px_rgba(234,179,8,0.5)] relative overflow-hidden backdrop-brightness-125";
-                                    else if (hits === JACKPOT - 1) bg = "p-3 bg-[repeating-linear-gradient(45deg,rgba(168,85,247,0.25)_0px,rgba(168,85,247,0.25)_10px,rgba(239,68,68,0.25)_10px,rgba(239,68,68,0.25)_20px)] border-2 border-purple-500/50 shadow-[0_0_15px_-3px_rgba(168,85,247,0.3)] relative overflow-hidden backdrop-brightness-110";
-                                    else if (hits === JACKPOT - 2) bg = "p-3 bg-gradient-to-br from-red-500/10 via-orange-600/5 to-transparent light:bg-red-100 light:border-red-400 border-2 border-red-500/40 shadow-[0_0_15px_-3px_rgba(239,68,68,0.3)] relative overflow-hidden backdrop-brightness-110";
-                                    else if (hits === JACKPOT - 3) bg = "p-3 bg-gradient-to-br from-yellow-400/10 via-yellow-600/5 to-transparent light:bg-yellow-100 light:border-yellow-400 border-2 border-yellow-400/40 shadow-[0_0_15px_-3px_rgba(250,204,21,0.2)] relative overflow-hidden backdrop-brightness-110";
+                                    if (hits >= JACKPOT) bg = "p-3 bg-[repeating-linear-gradient(45deg,rgba(239,68,68,0.3)_0px,rgba(239,68,68,0.3)_10px,rgba(249,115,22,0.3)_10px,rgba(249,115,22,0.3)_20px,rgba(234,179,8,0.3)_20px,rgba(234,179,8,0.3)_30px,rgba(34,197,94,0.3)_30px,rgba(34,197,94,0.3)_40px,rgba(59,130,246,0.3)_40px,rgba(59,130,246,0.3)_50px)] border-4 border-yellow-400  relative overflow-hidden backdrop-brightness-125";
+                                    else if (hits === JACKPOT - 1) bg = "p-3 bg-[repeating-linear-gradient(45deg,rgba(168,85,247,0.25)_0px,rgba(168,85,247,0.25)_10px,rgba(239,68,68,0.25)_10px,rgba(239,68,68,0.25)_20px)] border-2 border-purple-500/50  relative overflow-hidden backdrop-brightness-110";
+                                    else if (hits === JACKPOT - 2) bg = "p-3 bg-gradient-to-br from-red-500/10 via-orange-600/5 to-transparent light:bg-red-100 light:border-red-400 border-2 border-red-500/40  relative overflow-hidden backdrop-brightness-110";
+                                    else if (hits === JACKPOT - 3) bg = "p-3 bg-gradient-to-br from-yellow-400/10 via-yellow-600/5 to-transparent light:bg-yellow-100 light:border-yellow-400 border-2 border-yellow-400/40  relative overflow-hidden backdrop-brightness-110";
 
                                     return (
                                         <div className={`h-full w-full ${bg} transition-all duration-300`}>
@@ -527,7 +527,7 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                                                 isSeparate={isSeparate}
                                             />
                                             {stats && (
-                                                <div className="text-[9px] text-slate-500 light:text-slate-600 mt-2 font-mono whitespace-nowrap">
+                                                <div className="text-[11px] text-slate-500 light:text-slate-600 mt-2 font-mono whitespace-nowrap">
                                                     H:{stats.avgHot} C:{stats.avgCold} N:{stats.avgNeutral}
                                                 </div>
                                             )}
@@ -541,9 +541,9 @@ const BacktestLabHybrid = ({ historyData, isLightMode, activeGameConfig }) => {
                                         <td className="p-3 border-r border-slate-800/50 light:border-slate-200 bg-black/10 light:bg-slate-100">
                                             <div className="flex flex-wrap gap-1 w-max">
                                                 {log.actual.slice(0, PICK).map(n => (
-                                                    <span key={n} className="w-5 h-5 rounded-full bg-slate-700 light:bg-slate-200 text-white light:text-slate-700 flex items-center justify-center text-[9px] font-bold">{n}</span>
+                                                    <span key={n} className="w-5 h-5 rounded-full bg-slate-700 light:bg-slate-200 text-white light:text-slate-700 flex items-center justify-center text-[11px] font-bold">{n}</span>
                                                 ))}
-                                                {!isSeparate && activeGameConfig?.settings?.specialNumber?.enabled && log.actual[PICK] && <span className="w-5 h-5 rounded-full bg-indigo-900 light:bg-indigo-100 text-indigo-300 light:text-indigo-700 flex items-center justify-center text-[9px] font-bold">{log.actual[PICK]}</span>}
+                                                {!isSeparate && activeGameConfig?.settings?.specialNumber?.enabled && log.actual[PICK] && <span className="w-5 h-5 rounded-full bg-indigo-900 light:bg-indigo-100 text-indigo-300 light:text-indigo-700 flex items-center justify-center text-[11px] font-bold">{log.actual[PICK]}</span>}
                                             </div>
                                         </td>
                                         <td className="p-0 border-r border-slate-800/30 light:border-slate-200">{getCell(log.predictions.h1, log.hits.h1, log.meta.h1)}</td>

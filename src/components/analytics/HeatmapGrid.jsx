@@ -36,14 +36,14 @@ const HeatmapGrid = ({ data, isLightMode }) => {
             if (intensity < 0.3) return 'bg-orange-100 text-orange-800';
             if (intensity < 0.6) return 'bg-orange-300 text-orange-900';
             if (intensity < 0.8) return 'bg-orange-400 text-white';
-            return 'bg-red-500 text-white font-bold shadow-lg shadow-red-500/30';
+            return 'bg-red-500 text-white font-bold  ';
         } else {
             // 0% -> Slate-800, 100% -> Red-500
             if (intensity < 0.1) return 'bg-slate-800/50 text-slate-600';
             if (intensity < 0.3) return 'bg-indigo-900/40 text-indigo-300';
             if (intensity < 0.6) return 'bg-purple-600/60 text-white';
             if (intensity < 0.8) return 'bg-orange-600/80 text-white';
-            return 'bg-red-500 text-white font-bold shadow-lg shadow-red-500/50 scale-110 z-10';
+            return 'bg-red-500 text-white font-bold   scale-110 z-10';
         }
     };
 
@@ -60,14 +60,14 @@ const HeatmapGrid = ({ data, isLightMode }) => {
                     <div
                         key={cell.number}
                         className={`
-                            relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg text-xs sm:text-sm transition-all duration-500 cursor-help group
-                            ${getColor(cell.intensity)}
-                        `}
+ relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg text-xs sm:text-sm transition-all duration-500 cursor-help group
+ ${getColor(cell.intensity)}
+ `}
                     >
                         {cell.number}
 
                         {/* Tooltip */}
-                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-black text-white text-[10px] rounded whitespace-nowrap z-20 pointer-events-none">
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block px-2 py-1 bg-black text-white text-xs rounded whitespace-nowrap z-20 pointer-events-none">
                             {t('heatmapGrid.countTooltip', { n: cell.score.toFixed(1) })}
                         </div>
                     </div>
@@ -75,7 +75,7 @@ const HeatmapGrid = ({ data, isLightMode }) => {
             </div>
 
             {/* Legend */}
-            <div className="flex gap-4 mt-6 text-[10px] text-slate-400 font-medium">
+            <div className="flex gap-4 mt-6 text-xs text-slate-400 font-medium">
                 <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-slate-800 light:bg-slate-200"></div> {t('heatmapGrid.cold')}</div>
                 <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-purple-600/60 light:bg-orange-300"></div> {t('heatmapGrid.warm')}</div>
                 <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-red-500"></div> {t('heatmapGrid.hot')}</div>

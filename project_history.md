@@ -6,6 +6,22 @@ A chronological record of your work and accomplishments on the project.
 
 ---
 
+## 📅 2026-11-17
+
+### 🚢 Launch Readiness: Correctness, Calmer UI, Tests
+- **Fixed**: Prize checking now follows the official tables for all three games (Lotto 6/49 7th/general prize, Super Lotto zone 2, 539) and lives in `src/utils/prize.js`. The Vault no longer crashes after verifying (`hits.includes` on a number).
+- **Fixed**: Manual draw entry crashed on submit (`parsedNumbers` was undefined); the fortune cookie button crashed (`FORTUNE_COOKIES` was undefined); `MultiBetCell` called a hook conditionally.
+- **Fixed**: Next-period numbers restart at `000001` in a new year; sounds reuse a single `AudioContext`; corrupted localStorage no longer blanks the page (safe storage helpers + error boundary).
+- **Added**: Settings (game, background, light mode, sound) persist between visits. Saved picks are checked automatically once their draw is in the data, with a per-method scoreboard.
+- **Added**: Latest-draw card with the next expected draw date; copy button on every pick; Vitest suite (69 tests); working ESLint config; PWA manifest and icon; real README.
+- **Changed**: Plain-language navigation with text labels (bottom tab bar on phones), a visible three-way game picker, a "Mine" panel replacing the hidden logo-click sidebar, and a calmer flat default look. The coloured backgrounds remain as options.
+- **Changed**: Labs, Backtest, Playground, the fortune room, `html2canvas` and TensorFlow.js are loaded on demand. Initial JavaScript went from about 3.0 MB to about 0.8 MB.
+- **Security**: The update endpoint no longer accepts `Bearer undefined` when `CRON_SECRET` is unset; it is GET-only, limited to the three history files, and validates every upstream record. Imported backups and stored data are rebuilt field by field (`src/utils/sanitize.js`). Security headers (CSP, HSTS, frame denial) added in `vercel.json`. Dependencies upgraded to Vite 6 / Vitest 5; `npm audit` reports 0 vulnerabilities.
+- **Changed**: Labs, Backtest, history and chart panels lost their glow, all-caps and scale animations, and got plain-language titles. Test suite is now 115 tests.
+- **Removed**: The hard-coded export/import password prompt (it was visible in the client bundle and protected nothing); replaced with ordinary confirmations.
+
+---
+
 ## 📅 2026-08-07
 
 ### 📱 Mobile-Friendly TopBar & Workspace

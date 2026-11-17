@@ -2,7 +2,7 @@ export const getSecureRandomNumber = (min, max) => {
     // Uses crypto.getRandomValues for better entropy than Math.random()
     const range = max - min + 1;
     const array = new Uint32Array(1);
-    window.crypto.getRandomValues(array);
+    globalThis.crypto.getRandomValues(array);
     return min + (array[0] % range);
 };
 

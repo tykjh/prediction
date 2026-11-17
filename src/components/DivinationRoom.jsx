@@ -27,6 +27,29 @@ const TAROT_CARDS = [
     { name: "The World", meaning: "Completion, integration, accomplishment, travel." }
 ];
 
+const FORTUNE_COOKIES = {
+    zh: [
+        '好事不用急，它正在路上。',
+        '今天適合把一件拖很久的小事做完。',
+        '運氣常常躲在你多走的那一步裡。',
+        '有人正在想念你，打個電話吧。',
+        '小小的堅持，會在意想不到的時候回報你。',
+        '別把所有希望都放在一張彩券上，留一點給自己。',
+        '今晚早點睡，明天會比較順。',
+        '你比自己以為的更有辦法。',
+    ],
+    en: [
+        'Good things are on their way. No need to rush them.',
+        'Today is a good day to finish one small thing you keep putting off.',
+        'Luck often hides in the extra step you take.',
+        'Someone is thinking of you. Give them a call.',
+        'A little persistence pays off when you least expect it.',
+        'Do not pin every hope on one ticket. Keep some for yourself.',
+        'Sleep early tonight. Tomorrow will go more smoothly.',
+        'You are more capable than you think.',
+    ],
+};
+
 
 import { FORTUNE_POEMS } from '../data/fortunePoems';
 import { LEI_YU_SHI_POEMS } from '../data/leiyushi_poems';
@@ -37,7 +60,7 @@ import { GUANYIN_POEMS } from '../data/guanyin_poems';
 const DIRECTIONS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 
 const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightMode }) => {
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
     const [poemSource, setPoemSource] = useState('leiyushi'); // 'leiyushi' | 'daily' | 'sixty' | 'penghu' | 'guanyin'
     const [poem, setPoem] = useState(null);
     const [candidates, setCandidates] = useState([]); // Stage 1 result
@@ -88,41 +111,41 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
             const luck = data?.header?.luck;
             if (luck && luck.includes('吉')) {
                 return isLightMode
-                    ? "bg-gradient-to-br from-red-50 via-amber-50 to-orange-50 border-red-200 shadow-xl shadow-red-200/50"
-                    : "bg-gradient-to-br from-red-600 via-red-500 to-amber-500 shadow-2xl shadow-red-500/50 border-amber-300";
+                    ? "bg-gradient-to-br from-red-50 via-amber-50 to-orange-50 border-red-200  "
+                    : "bg-gradient-to-br from-red-600 via-red-500 to-amber-500   border-amber-300";
             }
             if (luck && luck.includes('凶')) {
-                return isLightMode ? "bg-slate-100 border-slate-300 shadow-xl" : "bg-slate-950 border-slate-700 shadow-xl shadow-black";
+                return isLightMode ? "bg-slate-100 border-slate-300 " : "bg-slate-950 border-slate-700  shadow-black";
             }
             return isLightMode ? "bg-red-50 border-red-200" : "bg-red-900/20 border-red-500/30";
         }
         // 60 Jia Zi logic
         else if (poemSource === 'sixty') {
             return isLightMode
-                ? "bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 border-indigo-200 shadow-xl shadow-indigo-200/50"
-                : "bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-950 shadow-2xl shadow-indigo-500/50 border-indigo-300";
+                ? "bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 border-indigo-200  "
+                : "bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-950   border-indigo-300";
         }
         // Penghu logic
         else if (poemSource === 'penghu') {
             return isLightMode
-                ? "bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50 border-emerald-200 shadow-xl shadow-emerald-200/50"
-                : "bg-gradient-to-br from-teal-900 via-emerald-900 to-teal-950 shadow-2xl shadow-emerald-500/50 border-emerald-300";
+                ? "bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50 border-emerald-200  "
+                : "bg-gradient-to-br from-teal-900 via-emerald-900 to-teal-950   border-emerald-300";
         }
         // Guanyin logic
         else if (poemSource === 'guanyin') {
             return isLightMode
-                ? "bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border-amber-200 shadow-xl shadow-amber-200/50"
-                : "bg-gradient-to-br from-orange-950 via-amber-900 to-yellow-950 shadow-2xl shadow-amber-500/50 border-amber-300";
+                ? "bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border-amber-200  "
+                : "bg-gradient-to-br from-orange-950 via-amber-900 to-yellow-950   border-amber-300";
         }
         // Daily Fortune logic
         else {
             if (data.title && data.title.includes('大吉')) {
                 return isLightMode
-                    ? "bg-gradient-to-br from-red-50 via-amber-50 to-orange-50 border-red-200 shadow-xl shadow-red-200/50"
-                    : "bg-gradient-to-br from-red-600 via-red-500 to-amber-500 shadow-2xl shadow-red-500/50 border-amber-300";
+                    ? "bg-gradient-to-br from-red-50 via-amber-50 to-orange-50 border-red-200  "
+                    : "bg-gradient-to-br from-red-600 via-red-500 to-amber-500   border-amber-300";
             }
             if (data.title && data.title.includes('凶')) {
-                return isLightMode ? "bg-slate-200 border-slate-300 shadow-xl" : "bg-slate-950 border-slate-700 shadow-xl shadow-black";
+                return isLightMode ? "bg-slate-200 border-slate-300 " : "bg-slate-950 border-slate-700  shadow-black";
             }
             return isLightMode ? "bg-red-50 border-red-200" : "bg-red-900/20 border-red-500/30";
         }
@@ -133,25 +156,25 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
         if (poemSource === 'leiyushi') {
             const luck = data?.header?.luck;
             if (luck && luck.includes('凶')) return isLightMode ? "text-slate-700" : "text-slate-400";
-            if (luck && luck.includes('吉')) return isLightMode ? "text-red-700 drop-shadow-sm" : "text-white drop-shadow-md";
+            if (luck && luck.includes('吉')) return isLightMode ? "text-red-700 " : "text-white ";
             return isLightMode ? "text-amber-700" : "text-amber-400";
         }
         // 60 Jia Zi logic
         else if (poemSource === 'sixty') {
-            return isLightMode ? "text-indigo-800 drop-shadow-sm" : "text-indigo-100 drop-shadow-md";
+            return isLightMode ? "text-indigo-800 " : "text-indigo-100 ";
         }
         // Penghu logic
         else if (poemSource === 'penghu') {
-            return isLightMode ? "text-emerald-800 drop-shadow-sm" : "text-emerald-100 drop-shadow-md";
+            return isLightMode ? "text-emerald-800 " : "text-emerald-100 ";
         }
         // Guanyin logic
         else if (poemSource === 'guanyin') {
-            return isLightMode ? "text-amber-800 drop-shadow-sm" : "text-amber-100 drop-shadow-md";
+            return isLightMode ? "text-amber-800 " : "text-amber-100 ";
         }
         // Daily Fortune logic
         else {
             if (data.title && data.title.includes('凶')) return isLightMode ? "text-slate-700" : "text-slate-400";
-            if (data.title && data.title.includes('大吉')) return isLightMode ? "text-red-700 drop-shadow-sm" : "text-white drop-shadow-md";
+            if (data.title && data.title.includes('大吉')) return isLightMode ? "text-red-700 " : "text-white ";
             return isLightMode ? "text-amber-700" : "text-amber-400";
         }
     };
@@ -170,7 +193,8 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
 
     const crackCookie = () => {
         if (playSound) playSound('click');
-        const randomMsg = FORTUNE_COOKIES[Math.floor(Math.random() * FORTUNE_COOKIES.length)];
+        const messages = FORTUNE_COOKIES[lang] || FORTUNE_COOKIES.zh;
+        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
         setCookie(randomMsg);
     };
 
@@ -188,7 +212,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
 
             <div className={`grid grid-cols-1 ${embedded ? 'gap-6' : 'gap-8'}`}>
                 {/* 1. Fortune Poem */}
-                <div className="bg-slate-900/60 light:bg-white p-6 rounded-3xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center shadow-lg light:shadow-xl">
+                <div className="bg-slate-900/60 light:bg-white p-6 rounded-2xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center">
                     <div className="text-4xl mb-4">📜</div>
 
                     {/* Header showing current source */}
@@ -201,31 +225,31 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                         <div className="flex bg-black/40 light:bg-slate-100 p-1 rounded-full mb-6 border border-white/10 light:border-slate-200">
                             <button
                                 onClick={() => setPoemSource('leiyushi')}
-                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${poemSource === 'leiyushi' ? 'bg-amber-500 light:bg-amber-400 text-black light:text-amber-900 shadow-lg' : 'text-slate-400 light:text-slate-500 hover:text-white light:hover:text-amber-600'}`}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${poemSource === 'leiyushi' ? 'bg-amber-500 light:bg-amber-400 text-black light:text-amber-900 ' : 'text-slate-400 light:text-slate-500 hover:text-white light:hover:text-amber-600'}`}
                             >
                                 雷雨師
                             </button>
                             <button
                                 onClick={() => setPoemSource('sixty')}
-                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${poemSource === 'sixty' ? 'bg-indigo-500 light:bg-indigo-400 text-white shadow-lg' : 'text-slate-400 light:text-slate-500 hover:text-white light:hover:text-indigo-600'}`}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${poemSource === 'sixty' ? 'bg-indigo-500 light:bg-indigo-400 text-white ' : 'text-slate-400 light:text-slate-500 hover:text-white light:hover:text-indigo-600'}`}
                             >
                                 六十甲子
                             </button>
                             <button
                                 onClick={() => setPoemSource('penghu')}
-                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${poemSource === 'penghu' ? 'bg-emerald-500 light:bg-emerald-400 text-white shadow-lg' : 'text-slate-400 light:text-slate-500 hover:text-white light:hover:text-emerald-600'}`}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${poemSource === 'penghu' ? 'bg-emerald-500 light:bg-emerald-400 text-white ' : 'text-slate-400 light:text-slate-500 hover:text-white light:hover:text-emerald-600'}`}
                             >
                                 澎湖天后宮
                             </button>
                             <button
                                 onClick={() => setPoemSource('guanyin')}
-                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${poemSource === 'guanyin' ? 'bg-orange-600 light:bg-orange-400 text-white shadow-lg' : 'text-slate-400 light:text-slate-500 hover:text-white light:hover:text-orange-600'}`}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${poemSource === 'guanyin' ? 'bg-orange-600 light:bg-orange-400 text-white ' : 'text-slate-400 light:text-slate-500 hover:text-white light:hover:text-orange-600'}`}
                             >
                                 觀音一百籤
                             </button>
                             <button
                                 onClick={() => setPoemSource('daily')}
-                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${poemSource === 'daily' ? 'bg-amber-500 light:bg-amber-400 text-black light:text-amber-900 shadow-lg' : 'text-slate-400 light:text-slate-500 hover:text-white light:hover:text-amber-600'}`}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${poemSource === 'daily' ? 'bg-amber-500 light:bg-amber-400 text-black light:text-amber-900 ' : 'text-slate-400 light:text-slate-500 hover:text-white light:hover:text-amber-600'}`}
                             >
                                 東京淺草
                             </button>
@@ -245,7 +269,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                             </h3>
                             <button
                                 onClick={drawCandidates}
-                                className="px-8 py-3 rounded-full bg-gradient-to-r from-red-700 to-red-900 light:from-red-500 light:to-red-600 hover:from-red-600 hover:to-red-800 light:hover:from-red-400 light:hover:to-red-500 text-amber-100 light:text-white font-bold transition-all active:scale-95 shadow-lg shadow-red-900/40 light:shadow-red-500/30 border border-red-500/20 light:border-red-400"
+                                className="px-8 py-3 rounded-full bg-gradient-to-r from-red-700 to-red-900 light:from-red-500 light:to-red-600 hover:from-red-600 hover:to-red-800 light:hover:from-red-400 light:hover:to-red-500 text-amber-100 light:text-white font-bold transition-all border border-red-500/20 light:border-red-400"
                             >
                                 {t('divinationRoom.drawLotButton')}
                             </button>
@@ -255,25 +279,25 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                     {/* Stage 1: Animation */}
                     {isThinking && (
                         <div className="flex flex-col items-center justify-center animate-in fade-in duration-300 py-12">
-                            <div className="text-6xl mb-4 animate-bounce">🎲</div>
-                            <p className="text-amber-200 light:text-slate-700 font-mono animate-pulse">{t('divinationRoom.shakingCylinder')}</p>
+                            <div className="text-6xl mb-4">🎲</div>
+                            <p className="text-amber-200 light:text-slate-700 font-mono">{t('divinationRoom.shakingCylinder')}</p>
                         </div>
                     )}
 
                     {/* Stage 2: Selection (Bamboo Sticks) */}
                     {candidates.length > 0 && !poem && (
                         <div className="animate-in fade-in zoom-in duration-500 w-full mb-6">
-                            <h3 className="text-xl font-bold text-amber-100 light:text-slate-900 mb-6 animate-pulse">{t('divinationRoom.pickAStick')}</h3>
+                            <h3 className="text-xl font-bold text-amber-100 light:text-slate-900 mb-6">{t('divinationRoom.pickAStick')}</h3>
                             <div className="flex justify-center gap-4 h-48 items-end">
                                 {candidates.map((cand, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => selectCandidate(cand)}
-                                        className="group relative w-8 h-32 bg-amber-200 rounded-t-full hover:h-40 hover:-translate-y-2 transition-all duration-300 shadow-lg shadow-black/50 border border-amber-400 overflow-hidden"
+                                        className="group relative w-8 h-32 bg-amber-200 rounded-t-full hover:h-40 transition-all duration-300 shadow-black/50 border border-amber-400 overflow-hidden"
                                         title={t('divinationRoom.pickThisFortuneTitle')}
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-b from-amber-100 to-amber-600 opacity-80"></div>
-                                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs font-bold text-amber-900 rotate-90 whitespace-nowrap opacity-50 text-[8px]">
+                                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs font-bold text-amber-900 rotate-90 whitespace-nowrap opacity-50 text-[11px]">
                                             {t('divinationRoom.fortuneStickLabel')}
                                         </div>
                                     </button>
@@ -295,7 +319,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                             const saveText = `第${poem.header.number}籤 ${poem.header.luck}\n${poem.poem}\n【聖意】\n${poem.shengYi.join('\n')}`;
                                             onSave(saveText, '雷雨師');
                                         } else if (poemSource === 'sixty') {
-                                            const saveText = `${poem.header.number} 【${poem.header.stemBranch}】\n${poem.poem}\n五行：${poem.meta.nature}　方位：${poem.meta.direction}\n【故事】${poem.stories.join('、')}`;
+                                            const saveText = `${poem.header.number} 【${poem.header.stemBranch}】\n${poem.poem}\n五行：${poem.meta.nature}  方位：${poem.meta.direction}\n【故事】${poem.stories.join('、')}`;
                                             onSave(saveText, '六十甲子籤');
                                         } else if (poemSource === 'penghu') {
                                             const predictionsText = Object.entries(poem.predictions).map(([k, v]) => `[${k}] ${v}`).join('\n');
@@ -309,7 +333,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                             onSave(`${poem.title}\n\n${poem.text}`, '東京淺草觀音寺');
                                         }
                                     }}
-                                    className="absolute top-4 left-4 w-10 h-10 rounded-full bg-black/20 light:bg-white hover:bg-white/20 light:hover:bg-slate-50 text-white/50 light:text-indigo-400 hover:text-white light:hover:text-indigo-600 flex items-center justify-center transition-all active:scale-95 border border-white/10 light:border-slate-200 hover:border-white/30 shadow-sm"
+                                    className="absolute top-4 left-4 w-10 h-10 rounded-full bg-black/20 light:bg-white hover:bg-white/20 light:hover:bg-slate-50 text-white/50 light:text-indigo-400 hover:text-white light:hover:text-indigo-600 flex items-center justify-center transition-all border border-white/10 light:border-slate-200 hover:border-white/30 shadow-sm"
                                     title={t('divinationRoom.saveToVaultTitle')}
                                 >
                                     💾
@@ -320,12 +344,12 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                             {poemSource === 'leiyushi' && (
                                 <>
                                     <div className="absolute top-0 right-0 p-2 opacity-10 font-serif text-6xl text-red-500 font-bold">{poem.header.luck && poem.header.luck.includes('吉') ? '吉' : '運'}</div>
-                                    <div className={`text-2xl font-black mb-2 pt-2 ${getTextStyle(poem)}`}>
+                                    <div className={`text-2xl font-semibold mb-2 pt-2 ${getTextStyle(poem)}`}>
                                         第{poem.header.number}籤 {poem.header.luck}
                                     </div>
                                     <div className="text-sm font-serif opacity-70 mb-6 light:text-slate-600">{poem.header.cycle}</div>
 
-                                    <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line tracking-widest mb-8 bg-black/20 light:bg-slate-100/50 p-6 rounded-lg shadow-inner light:border light:border-slate-200">
+                                    <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line mb-8 bg-black/20 light:bg-slate-100/50 p-6 rounded-lg light:border light:border-slate-200">
                                         {poem.poem}
                                     </div>
 
@@ -394,8 +418,8 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                             {poemSource === 'daily' && (
                                 <>
                                     <div className="absolute top-0 right-0 p-2 opacity-10 font-serif text-6xl text-red-500 font-bold">吉</div>
-                                    <div className={`text-2xl font-black mb-6 pb-4 border-b border-white/10 ${getTextStyle(poem)}`}>{poem.title}</div>
-                                    <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line tracking-widest mb-8 bg-black/20 light:bg-slate-100/50 p-6 rounded-lg shadow-inner light:border light:border-slate-200">
+                                    <div className={`text-2xl font-semibold mb-6 pb-4 border-b border-white/10 ${getTextStyle(poem)}`}>{poem.title}</div>
+                                    <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line mb-8 bg-black/20 light:bg-slate-100/50 p-6 rounded-lg light:border light:border-slate-200">
                                         {poem.text}
                                     </div>
 
@@ -417,7 +441,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                             {poemSource === 'sixty' && (
                                 <>
                                     <div className="absolute top-0 right-0 p-2 opacity-10 font-serif text-6xl text-indigo-500 font-bold">{poem.header.stemBranch}</div>
-                                    <div className={`text-2xl font-black mb-2 pt-2 ${getTextStyle(poem)}`}>
+                                    <div className={`text-2xl font-semibold mb-2 pt-2 ${getTextStyle(poem)}`}>
                                         {poem.header.number} 【{poem.header.stemBranch}】
                                     </div>
 
@@ -428,7 +452,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                     </div>
 
                                     {/* Poem */}
-                                    <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line tracking-widest mb-8 bg-black/20 light:bg-indigo-50/50 p-6 rounded-lg shadow-inner light:border light:border-indigo-200">
+                                    <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line mb-8 bg-black/20 light:bg-indigo-50/50 p-6 rounded-lg light:border light:border-indigo-200">
                                         {poem.poem}
                                     </div>
 
@@ -476,12 +500,12 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                             {poemSource === 'guanyin' && (
                                 <>
                                     <div className="absolute top-0 right-0 p-2 opacity-20 font-serif text-6xl text-amber-500 font-bold">{poem.header.luck}</div>
-                                    <div className={`text-2xl font-black mb-1 pt-2 drop-shadow-md ${isLightMode ? 'text-amber-800' : 'text-amber-100'}`}>
+                                    <div className={`text-2xl font-semibold mb-1 pt-2 ${isLightMode ? 'text-amber-800' : 'text-amber-100'}`}>
                                         {poem.header.number} {poem.header.luck}
                                     </div>
                                     <div className={`text-sm font-serif opacity-70 mb-6 ${isLightMode ? 'text-amber-700' : 'text-amber-200'}`}>{poem.header.palace}</div>
 
-                                    <div className={`text-2xl font-serif leading-loose whitespace-pre-line tracking-widest mb-8 p-6 rounded-lg shadow-inner ${isLightMode ? 'bg-amber-50/50 text-amber-900 border border-amber-200' : 'bg-black/20 text-white/95'}`}>
+                                    <div className={`text-2xl font-serif leading-loose whitespace-pre-line mb-8 p-6 rounded-lg ${isLightMode ? 'bg-amber-50/50 text-amber-900 border border-amber-200' : 'bg-black/20 text-white/95'}`}>
                                         {poem.poem}
                                     </div>
 
@@ -541,7 +565,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                             {poemSource === 'penghu' && (
                                 <>
                                     <div className="absolute top-0 right-0 p-2 opacity-10 font-serif text-6xl text-emerald-500 font-bold">{poem.header.number.replace(/第|籤/g, '')}</div>
-                                    <div className={`text-2xl font-black mb-2 pt-2 ${getTextStyle(poem)}`}>
+                                    <div className={`text-2xl font-semibold mb-2 pt-2 ${getTextStyle(poem)}`}>
                                         {poem.header.number}
                                     </div>
 
@@ -554,14 +578,14 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                                                     <div className="text-emerald-300/50 text-xs font-bold mb-1 ml-1">
                                                         {idx === 0 ? `【${t('divinationRoom.poemOneLabel')}】` : `【${t('divinationRoom.poemTwoLabel')}】`}
                                                     </div>
-                                                    <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line tracking-widest bg-black/20 light:bg-emerald-50/50 p-6 rounded-lg shadow-inner border border-emerald-500/10 light:border-emerald-200">
+                                                    <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line bg-black/20 light:bg-emerald-50/50 p-6 rounded-lg border border-emerald-500/10 light:border-emerald-200">
                                                         {part}
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line tracking-widest mb-8 bg-black/20 light:bg-emerald-50/50 p-6 rounded-lg shadow-inner light:border light:border-emerald-200">
+                                        <div className="text-white/90 light:text-slate-900 text-2xl font-serif leading-loose whitespace-pre-line mb-8 bg-black/20 light:bg-emerald-50/50 p-6 rounded-lg light:border light:border-emerald-200">
                                             {poem.poem}
                                         </div>
                                     )}
@@ -596,7 +620,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
 
                             <button
                                 onClick={drawCandidates}
-                                className="mt-8 px-8 py-3 rounded-full bg-black/40 light:bg-emerald-100 hover:bg-black/60 light:hover:bg-emerald-200 text-amber-100 light:text-emerald-700 font-bold transition-all active:scale-95 border border-white/10 light:border-emerald-300 mx-auto block shadow-sm"
+                                className="mt-8 px-8 py-3 rounded-full bg-black/40 light:bg-emerald-100 hover:bg-black/60 light:hover:bg-emerald-200 text-amber-100 light:text-emerald-700 font-bold transition-all border border-white/10 light:border-emerald-300 mx-auto block shadow-sm"
                             >
                                 {t('divinationRoom.redrawButton')}
                             </button>
@@ -605,7 +629,7 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
                 </div>
 
                 {/* 2. Tarot Card */}
-                <div className="bg-slate-900/40 light:bg-white p-6 rounded-3xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center shadow-lg light:shadow-xl">
+                <div className="bg-slate-900/40 light:bg-white p-6 rounded-2xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center">
                     <div className="text-4xl mb-4">🎴</div>
                     <h3 className="text-xl font-bold text-indigo-300 light:text-indigo-700 mb-2">{t('divinationRoom.dailyTarotTitle')}</h3>
                     <p className="text-sm text-slate-400 light:text-slate-500 mb-6 min-h-[3rem]">
@@ -614,21 +638,21 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
 
                     {tarot && (
                         <div className="mb-6 animate-in zoom-in duration-500">
-                            <div className="text-2xl font-black text-white light:text-slate-800 mb-1">{tarot.name}</div>
-                            <div className="text-indigo-400 light:text-indigo-600 text-sm italic">"{tarot.meaning}"</div>
+                            <div className="text-2xl font-semibold text-white light:text-slate-800 mb-1">{tarot.name}</div>
+                            <div className="text-indigo-400 light:text-indigo-600 text-sm">"{tarot.meaning}"</div>
                         </div>
                     )}
 
                     <button
                         onClick={drawTarot}
-                        className="mt-auto px-6 py-2 rounded-full bg-indigo-600 light:bg-indigo-500 hover:bg-indigo-500 light:hover:bg-indigo-400 text-white font-bold transition-all active:scale-95 shadow-lg shadow-indigo-500/20 light:shadow-indigo-500/30"
+                        className="mt-auto px-6 py-2 rounded-full bg-indigo-600 light:bg-indigo-500 hover:bg-indigo-500 light:hover:bg-indigo-400 text-white font-bold transition-all"
                     >
                         {tarot ? t('divinationRoom.drawAgain') : t('divinationRoom.drawCard')}
                     </button>
                 </div>
 
                 {/* 3. Lucky Compass */}
-                <div className="bg-slate-900/40 light:bg-white p-6 rounded-3xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center shadow-lg light:shadow-xl">
+                <div className="bg-slate-900/40 light:bg-white p-6 rounded-2xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center">
                     <div className="text-4xl mb-4">🧭</div>
                     <h3 className="text-xl font-bold text-emerald-300 light:text-emerald-700 mb-2">{t('divinationRoom.luckyCompassTitle')}</h3>
                     <p className="text-sm text-slate-400 light:text-slate-500 mb-6 min-h-[3rem]">
@@ -637,21 +661,21 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
 
                     {direction && (
                         <div className="mb-6 animate-in zoom-in duration-500">
-                            <div className="text-3xl font-black text-emerald-400 light:text-emerald-600 mb-1">{t(`divinationRoom.dir${direction}`)}</div>
-                            <div className="text-emerald-500/60 light:text-emerald-700/60 text-xs uppercase tracking-widest font-bold">{t('divinationRoom.directionLabel')}</div>
+                            <div className="text-3xl font-semibold text-emerald-400 light:text-emerald-600 mb-1">{t(`divinationRoom.dir${direction}`)}</div>
+                            <div className="text-emerald-500/60 light:text-emerald-700/60 text-xs font-bold">{t('divinationRoom.directionLabel')}</div>
                         </div>
                     )}
 
                     <button
                         onClick={spinCompass}
-                        className="mt-auto px-6 py-2 rounded-full bg-emerald-600 light:bg-emerald-500 hover:bg-emerald-500 light:hover:bg-emerald-400 text-white font-bold transition-all active:scale-95 shadow-lg shadow-emerald-500/20 light:shadow-emerald-500/30"
+                        className="mt-auto px-6 py-2 rounded-full bg-emerald-600 light:bg-emerald-500 hover:bg-emerald-500 light:hover:bg-emerald-400 text-white font-bold transition-all"
                     >
                         {t('divinationRoom.spinCompassButton')}
                     </button>
                 </div>
 
                 {/* 4. Fortune Cookie */}
-                <div className="bg-slate-900/40 light:bg-white p-6 rounded-3xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center shadow-lg light:shadow-xl">
+                <div className="bg-slate-900/40 light:bg-white p-6 rounded-2xl border border-white/10 light:border-slate-200 flex flex-col items-center text-center">
                     <div className="text-4xl mb-4">🥠</div>
                     <h3 className="text-xl font-bold text-amber-300 light:text-amber-700 mb-2">{t('divinationRoom.fortuneCookieTitle')}</h3>
                     <p className="text-sm text-slate-400 light:text-slate-500 mb-6 min-h-[3rem]">
@@ -660,13 +684,13 @@ const DivinationRoom = ({ bgTheme, playSound, embedded = false, onSave, isLightM
 
                     {cookie && (
                         <div className="mb-6 animate-in zoom-in duration-500 bg-black/20 light:bg-amber-100/50 p-4 rounded-xl border border-white/5 light:border-amber-200">
-                            <div className="text-amber-200 light:text-amber-800 italic font-medium">"{cookie}"</div>
+                            <div className="text-amber-200 light:text-amber-800 font-medium">"{cookie}"</div>
                         </div>
                     )}
 
                     <button
                         onClick={crackCookie}
-                        className="mt-auto px-6 py-2 rounded-full bg-amber-600 light:bg-amber-500 hover:bg-amber-500 light:hover:bg-amber-400 text-white font-bold transition-all active:scale-95 shadow-lg shadow-amber-500/20 light:shadow-amber-500/30"
+                        className="mt-auto px-6 py-2 rounded-full bg-amber-600 light:bg-amber-500 hover:bg-amber-500 light:hover:bg-amber-400 text-white font-bold transition-all"
                     >
                         {t('divinationRoom.crackCookieButton')}
                     </button>

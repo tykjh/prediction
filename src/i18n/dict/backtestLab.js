@@ -33,7 +33,7 @@ export const backtestLab = {
         },
     },
     zh: {
-        title: '預測品質評估',
+        title: '各種選法的歷史成績',
         subtitle: '回測實驗室．滾動模擬',
         refDepth: '參考深度',
         accumulate: '累積模式',
@@ -61,7 +61,7 @@ export const backtestLab = {
         colMonteCarlo: '蒙地卡羅',
         colRandom: '隨機',
         help: {
-            title: '預測品質評估',
+            title: '各種選法的歷史成績',
             body: '滾動式回測：逐期重播所選的期別範圍，為每一期產生標準／加權／混合／先知／連鎖反應／蒙地卡羅／隨機預測，並與實際開獎結果比對。設定參考深度、起訖期別與注數後，點擊「開始回測」即可查看各策略的命中/期表現。',
         },
     },

@@ -230,16 +230,16 @@ const ZoneTwoHybrid = ({ zoneHistory, isLightMode }) => {
 
     return (
         <div className="w-full">
-            <div className="bg-slate-900/40 light:bg-white/80 backdrop-blur-xl rounded-[2rem] border border-white/5 light:border-slate-200 overflow-hidden shadow-xl relative">
+            <div className="bg-slate-900/40 light:bg-white/80 rounded-2xl border border-white/5 light:border-slate-200 overflow-hidden relative">
 
                 {/* Header */}
                 <div className="p-8 border-b border-white/5 light:border-slate-200 bg-gradient-to-r from-slate-900/50 to-transparent light:from-slate-50/50">
                     <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-600/20 border border-indigo-500/30 flex items-center justify-center text-2xl shadow-inner">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-600/20 border border-indigo-500/30 flex items-center justify-center text-2xl">
                             🔬
                         </div>
                         <div>
-                            <h2 className="text-xl font-black text-white light:text-slate-800">{t('zoneTwoHybrid.title')}</h2>
+                            <h2 className="text-xl font-semibold text-white light:text-slate-800">{t('zoneTwoHybrid.title')}</h2>
                             <p className="text-xs text-slate-400 light:text-slate-500 font-medium">{t('zoneTwoHybrid.subtitle')}</p>
                         </div>
                     </div>
@@ -247,7 +247,7 @@ const ZoneTwoHybrid = ({ zoneHistory, isLightMode }) => {
                     {/* Controls */}
                     <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">{t('zoneTwoHybrid.inputDataRef')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('zoneTwoHybrid.inputDataRef')}</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="number" className="w-20 bg-black/20 light:bg-white border border-white/10 light:border-slate-300 rounded px-2 py-1.5 text-xs text-white light:text-slate-800 text-center focus:outline-none focus:border-cyan-500"
@@ -261,7 +261,7 @@ const ZoneTwoHybrid = ({ zoneHistory, isLightMode }) => {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">{t('zoneTwoHybrid.testRange')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('zoneTwoHybrid.testRange')}</label>
                             <div className="flex items-center gap-2">
                                 <select
                                     className="bg-black/20 light:bg-white border border-white/10 light:border-slate-300 rounded px-3 py-1.5 text-xs text-white light:text-slate-800 outline-none cursor-pointer focus:border-cyan-500"
@@ -282,7 +282,7 @@ const ZoneTwoHybrid = ({ zoneHistory, isLightMode }) => {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">{t('zoneTwoHybrid.multiBets')}</label>
+                            <label className="text-xs font-bold text-slate-500">{t('zoneTwoHybrid.multiBets')}</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="number" className="w-16 bg-black/20 light:bg-white border border-white/10 light:border-slate-300 rounded px-2 py-1.5 text-xs text-cyan-300 light:text-cyan-600 text-center font-bold focus:outline-none focus:border-cyan-500"
@@ -298,13 +298,13 @@ const ZoneTwoHybrid = ({ zoneHistory, isLightMode }) => {
                         <button
                             onClick={runBacktest}
                             disabled={isRunning}
-                            className={`ml-auto px-6 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${isRunning ? 'bg-slate-800 text-slate-500 cursor-wait' : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg'}`}
+                            className={`ml-auto px-6 py-2 rounded-lg font-bold text-xs transition-all ${isRunning ? 'bg-slate-800 text-slate-500 cursor-wait' : 'bg-cyan-600 hover:bg-cyan-500 text-white '}`}
                         >
                             {isRunning ? t('zoneTwoHybrid.running', { pct: progress }) : t('zoneTwoHybrid.execute')}
                         </button>
                     </div>
                     {errorMsg && (
-                        <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-xs font-bold animate-pulse">
+                        <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-xs font-bold">
                             ⚠️ {errorMsg}
                         </div>
                     )}
@@ -321,22 +321,22 @@ const ZoneTwoHybrid = ({ zoneHistory, isLightMode }) => {
                     </div>
                     <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('zoneTwoHybrid.hotCount')}</label>
+                            <label className="text-xs text-slate-400 light:text-slate-500 font-bold">{t('zoneTwoHybrid.hotCount')}</label>
                             <input type="range" min="1" max="8" step="1" value={columnConfigs[activeTab].hotCount} onChange={e => updateConfig('hotCount', Number(e.target.value))} className="accent-cyan-500" />
                             <div className="text-center text-xs font-mono text-cyan-400">{columnConfigs[activeTab].hotCount}</div>
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('zoneTwoHybrid.coldCount')}</label>
+                            <label className="text-xs text-slate-400 light:text-slate-500 font-bold">{t('zoneTwoHybrid.coldCount')}</label>
                             <input type="range" min="1" max="8" step="1" value={columnConfigs[activeTab].coldCount} onChange={e => updateConfig('coldCount', Number(e.target.value))} className="accent-blue-500" />
                             <div className="text-center text-xs font-mono text-blue-400">{columnConfigs[activeTab].coldCount}</div>
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('zoneTwoHybrid.trendDepth')}</label>
+                            <label className="text-xs text-slate-400 light:text-slate-500 font-bold">{t('zoneTwoHybrid.trendDepth')}</label>
                             <input type="range" min="5" max="50" step="5" value={columnConfigs[activeTab].trendDepth} onChange={e => updateConfig('trendDepth', Number(e.target.value))} className="accent-purple-500" />
                             <div className="text-center text-xs font-mono text-purple-400">{columnConfigs[activeTab].trendDepth}</div>
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">{t('zoneTwoHybrid.strategy')}</label>
+                            <label className="text-xs text-slate-400 light:text-slate-500 font-bold">{t('zoneTwoHybrid.strategy')}</label>
                             <select value={columnConfigs[activeTab].weightStrategy} onChange={e => updateConfig('weightStrategy', e.target.value)} className="bg-slate-800 light:bg-white text-xs text-white light:text-slate-800 rounded px-2 py-1 outline-none">
                                 <option value="standard">{t('zoneTwoHybrid.standard')}</option>
                                 <option value="aggressive">{t('zoneTwoHybrid.aggressive')}</option>
@@ -349,7 +349,7 @@ const ZoneTwoHybrid = ({ zoneHistory, isLightMode }) => {
                 {/* Summary Panel */}
                 {summary && (
                     <div className="grid grid-cols-7 divide-x divide-white/10 light:divide-slate-200 border-b border-white/10 light:border-slate-200 bg-slate-950/30 light:bg-slate-100">
-                        <div className="p-4 flex flex-col justify-center items-center text-slate-500 text-[10px] uppercase font-bold">{t('zoneTwoHybrid.winRate')}</div>
+                        <div className="p-4 flex flex-col justify-center items-center text-slate-500 text-xs font-bold">{t('zoneTwoHybrid.winRate')}</div>
                         {['h1', 'h2', 'h3', 'h4', 'h5', 'rnd'].map((k, i) => (
                             <div key={k} className="p-4 text-center">
                                 <div className="text-xl text-yellow-500 font-bold">{summary.wins[k]}%</div>
@@ -361,12 +361,12 @@ const ZoneTwoHybrid = ({ zoneHistory, isLightMode }) => {
                 {/* Results Table */}
                 <div className="overflow-x-auto max-h-[500px] overflow-y-auto custom-scrollbar bg-slate-900 light:bg-slate-50">
                     <table className="w-full text-left border-collapse">
-                        <thead className="bg-slate-950/90 light:bg-white sticky top-0 z-20 backdrop-blur-md shadow-lg">
+                        <thead className="bg-slate-950/90 light:bg-white sticky top-0 z-20">
                             <tr>
-                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">{t('zoneTwoHybrid.period')}</th>
-                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">{t('zoneTwoHybrid.actual')}</th>
-                                {[1, 2, 3, 4, 5].map(i => <th key={i} className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">{t('zoneTwoHybrid.strat', { n: i })}</th>)}
-                                <th className="p-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 light:border-slate-200">{t('zoneTwoHybrid.random')}</th>
+                                <th className="p-3 text-xs font-bold text-slate-500 border-b border-slate-800 light:border-slate-200">{t('zoneTwoHybrid.period')}</th>
+                                <th className="p-3 text-xs font-bold text-slate-500 border-b border-slate-800 light:border-slate-200">{t('zoneTwoHybrid.actual')}</th>
+                                {[1, 2, 3, 4, 5].map(i => <th key={i} className="p-3 text-xs font-bold text-slate-500 border-b border-slate-800 light:border-slate-200">{t('zoneTwoHybrid.strat', { n: i })}</th>)}
+                                <th className="p-3 text-xs font-bold text-slate-500 border-b border-slate-800 light:border-slate-200">{t('zoneTwoHybrid.random')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800/50 light:divide-slate-200">
@@ -384,7 +384,7 @@ const ZoneTwoHybrid = ({ zoneHistory, isLightMode }) => {
                                 return (
                                     <tr key={log.period} className="hover:bg-white/5 light:hover:bg-slate-100">
                                         <td className="p-3 text-xs font-mono text-slate-400 light:text-slate-500">{log.period}</td>
-                                        <td className="p-3 text-sm font-black text-white light:text-slate-900 bg-black/10 light:bg-white">{actual}</td>
+                                        <td className="p-3 text-sm font-semibold text-white light:text-slate-900 bg-black/10 light:bg-white">{actual}</td>
                                         <td className="p-2"><Cell preds={log.predictions.h1} /></td>
                                         <td className="p-2"><Cell preds={log.predictions.h2} /></td>
                                         <td className="p-2"><Cell preds={log.predictions.h3} /></td>

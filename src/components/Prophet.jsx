@@ -180,12 +180,12 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
     return (
         <div className="w-full max-w-4xl mx-auto mt-8">
-            <div className="bg-slate-900/50 light:bg-white rounded-2xl p-6 border border-slate-800 light:border-slate-200 shadow-xl light:shadow-lg">
+            <div className="bg-slate-900/50 light:bg-white rounded-2xl p-6 border border-slate-800 light:border-slate-200">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-6">
                     <div>
                         <h2 className="text-xl font-bold text-white light:text-slate-800 flex items-center gap-2">
-                            🔮 The Prophet <span className="text-xs bg-indigo-900/50 light:bg-indigo-100 text-indigo-300 light:text-indigo-700 px-2 py-0.5 rounded border border-indigo-700/50 light:border-indigo-200">EXP-04</span>
+                            {t('prophet.heading')}
                         </h2>
                         <p className="text-xs text-slate-400 light:text-slate-500 mt-1">
                             {t('prophet.subtitle')}
@@ -195,7 +195,7 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     <div className="flex items-center gap-4">
                         {/* Controls */}
                         <div className="flex flex-col">
-                            <label className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">{t('prophet.refData')}</label>
+                            <label className="text-[11px] text-slate-500 font-bold mb-1">{t('prophet.refData')}</label>
                             <select
                                 value={range}
                                 onChange={(e) => setRange(Number(e.target.value))}
@@ -209,7 +209,7 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         </div>
 
                         <div className="flex flex-col border-l border-slate-700 pl-4">
-                            <label className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">{t('prophet.patternSize')}</label>
+                            <label className="text-[11px] text-slate-500 font-bold mb-1">{t('prophet.patternSize')}</label>
                             <select
                                 value={similarityWindow}
                                 onChange={(e) => setSimilarityWindow(Number(e.target.value))}
@@ -223,7 +223,7 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
                         <button
                             onClick={runProphet}
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg shadow-indigo-500/30 transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-indigo-500/50 hover:ring-2 hover:ring-white/20 ml-2"
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-xl transition-all duration-200 hover:ring-2 hover:ring-white/20 ml-2"
                         >
                             {t('prophet.summon')}
                         </button>
@@ -238,7 +238,7 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         {/* 1. Time Traveler */}
                         <div className="bg-slate-800/50 light:bg-slate-50 p-4 rounded-xl border border-slate-700 light:border-slate-200 relative group/card shadow-sm">
                             <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-xs font-bold text-blue-400 light:text-blue-600 uppercase tracking-wider">🕰️ {t('prophet.timeTraveler')}</h3>
+                                <h3 className="text-xs font-bold text-blue-400 light:text-blue-600">🕰️ {t('prophet.timeTraveler')}</h3>
                                 {onSave && predictors.knn?.numbers.length > 0 && (
                                     <button
                                         onClick={() => onSave(predictors.knn.numbers, 'Time Traveler')}
@@ -253,10 +253,10 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             </div>
                             <div className="flex flex-wrap gap-2 justify-center">
                                 {predictors.knn?.numbers.length > 0 ? predictors.knn.numbers.map(n => (
-                                    <span key={n} className="w-8 h-8 rounded-full bg-slate-700 light:bg-slate-200 flex items-center justify-center text-sm font-bold text-white light:text-slate-800 shadow-inner">{n}</span>
-                                )) : <span className="text-xs text-slate-500 italic">{t('prophet.noMatch')}</span>}
+                                    <span key={n} className="w-8 h-8 rounded-full bg-slate-700 light:bg-slate-200 flex items-center justify-center text-sm font-bold text-white light:text-slate-800">{n}</span>
+                                )) : <span className="text-xs text-slate-500">{t('prophet.noMatch')}</span>}
                             </div>
-                            <div className="text-[10px] text-slate-500 mt-2 text-center flex flex-col gap-1">
+                            <div className="text-xs text-slate-500 mt-2 text-center flex flex-col gap-1">
                                 {predictors.knn?.match ? (
                                     <>
                                         <span className="text-slate-400">{t('prophet.matchLabel')} <span className="text-blue-300">{predictors.knn.match.start}...{predictors.knn.match.end}</span></span>
@@ -271,7 +271,7 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         {/* 2. Chain Master */}
                         <div className="bg-slate-800/50 light:bg-slate-50 p-4 rounded-xl border border-slate-700 light:border-slate-200 relative group/card shadow-sm">
                             <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-xs font-bold text-green-400 light:text-green-600 uppercase tracking-wider">🔗 {t('prophet.chainMaster')}</h3>
+                                <h3 className="text-xs font-bold text-green-400 light:text-green-600">🔗 {t('prophet.chainMaster')}</h3>
                                 {onSave && predictors.markov.length > 0 && (
                                     <button
                                         onClick={() => onSave(predictors.markov, 'Chain Master')}
@@ -286,16 +286,16 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             </div>
                             <div className="flex flex-wrap gap-2 justify-center">
                                 {predictors.markov.map(n => (
-                                    <span key={n} className="w-8 h-8 rounded-full bg-slate-700 light:bg-slate-200 flex items-center justify-center text-sm font-bold text-white light:text-slate-800 shadow-inner">{n}</span>
+                                    <span key={n} className="w-8 h-8 rounded-full bg-slate-700 light:bg-slate-200 flex items-center justify-center text-sm font-bold text-white light:text-slate-800">{n}</span>
                                 ))}
                             </div>
-                            <div className="text-[10px] text-slate-500 mt-2 text-center">{t('prophet.basedOnMarkov')}</div>
+                            <div className="text-xs text-slate-500 mt-2 text-center">{t('prophet.basedOnMarkov')}</div>
                         </div>
 
                         {/* 3. Trend Setter */}
                         <div className="bg-slate-800/50 light:bg-slate-50 p-4 rounded-xl border border-slate-700 light:border-slate-200 relative group/card shadow-sm">
                             <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-xs font-bold text-orange-400 light:text-orange-600 uppercase tracking-wider">📈 {t('prophet.trendSetter')}</h3>
+                                <h3 className="text-xs font-bold text-orange-400 light:text-orange-600">📈 {t('prophet.trendSetter')}</h3>
                                 {onSave && predictors.reg.length > 0 && (
                                     <button
                                         onClick={() => onSave(predictors.reg, 'Trend Setter')}
@@ -310,33 +310,33 @@ const Prophet = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             </div>
                             <div className="flex flex-wrap gap-2 justify-center">
                                 {predictors.reg.map(n => (
-                                    <span key={n} className="w-8 h-8 rounded-full bg-slate-700 light:bg-slate-200 flex items-center justify-center text-sm font-bold text-white light:text-slate-800 shadow-inner">{n}</span>
+                                    <span key={n} className="w-8 h-8 rounded-full bg-slate-700 light:bg-slate-200 flex items-center justify-center text-sm font-bold text-white light:text-slate-800">{n}</span>
                                 ))}
                             </div>
-                            <div className="text-[10px] text-slate-500 mt-2 text-center">{t('prophet.basedOnRegression')}</div>
+                            <div className="text-xs text-slate-500 mt-2 text-center">{t('prophet.basedOnRegression')}</div>
                         </div>
 
                         {/* 4. THE VERDICT */}
                         {/* 4. THE VERDICT */}
-                        <div className="col-span-1 md:col-span-2 lg:col-span-1 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 light:from-indigo-100 light:to-purple-100 p-4 rounded-xl border border-indigo-500/50 light:border-indigo-200 relative overflow-hidden group shadow-lg">
+                        <div className="col-span-1 md:col-span-2 lg:col-span-1 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 light:from-indigo-100 light:to-purple-100 p-4 rounded-xl border border-indigo-500/50 light:border-indigo-200 relative overflow-hidden group">
                             <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="relative z-10 flex justify-between items-start">
                                 <div>
-                                    <h3 className="text-xs font-bold text-indigo-300 light:text-indigo-800 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                    <h3 className="text-xs font-bold text-indigo-300 light:text-indigo-800 mb-2 flex items-center gap-2">
                                         ⚖️ {t('prophet.verdict')}
                                     </h3>
                                     <div className="flex flex-wrap gap-2 justify-center">
                                         {predictors.consensus.map(n => (
-                                            <span key={n} className="w-8 h-8 rounded-full bg-white light:bg-indigo-600 flex items-center justify-center text-sm font-bold text-indigo-900 light:text-white shadow-lg shadow-indigo-500/50">{n}</span>
+                                            <span key={n} className="w-8 h-8 rounded-full bg-white light:bg-indigo-600 flex items-center justify-center text-sm font-bold text-indigo-900 light:text-white">{n}</span>
                                         ))}
                                     </div>
-                                    <div className="text-[10px] text-indigo-300/70 mt-2 text-center">{t('prophet.ensembleConsensus')}</div>
+                                    <div className="text-xs text-indigo-300/70 mt-2 text-center">{t('prophet.ensembleConsensus')}</div>
                                 </div>
 
                                 {onSave && (
                                     <button
                                         onClick={() => onSave(predictors.consensus, 'Prophet Verdict')}
-                                        className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center hover:bg-white hover:text-indigo-600 transition-all shadow-lg hover:shadow-indigo-500/50"
+                                        className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center hover:bg-white hover:text-indigo-600 transition-all"
                                         title={t('prophet.saveToVault')}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">

@@ -1,51 +1,43 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import MagicHeader from './MagicHeader';
+import LatestDrawCard from './LatestDrawCard';
 import InputSection from './InputSection';
 import PredictionRow from './PredictionRow';
 import HistoryList from './HistoryList';
 import AdvancedStatsHub from './analytics/AdvancedStatsHub';
 import HelpIcon from './HelpIcon';
 import { calculatePrediction, calculateHybridPrediction } from '../utils/prediction';
-import { trainAndPredict } from '../utils/lstmModel';
-import initialHistory from '../data/history.json';
+import { nextPeriodOf } from '../utils/drawSchedule';
 import { useLanguage } from '../i18n/LanguageContext';
 
-// Reusable Section Component (Moved from App.jsx)
-const CollapsibleSection = ({ title, children, defaultOpen = true, icon = "📊", playSound, helpTitle, helpBody }) => {
+const RANGE_STEPS = [10, 20, 30, 50, 100, 200];
+const MIN_HISTORY_FOR_AI = 10;
+
+const EMPTY_PREDICTION = { standard: [], weighted: [], hybrid: {}, lstm: [], lstmUnweighted: [] };
+
+// A titled block that can be folded away. Folded content stays mounted so
+// its settings are not lost.
+const CollapsibleSection = ({ title, hint, children, defaultOpen = true, playSound, helpTitle, helpBody }) => {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
     const toggle = () => {
         if (playSound) playSound('click');
-        setIsOpen(!isOpen);
+        setIsOpen((open) => !open);
     };
 
     return (
-        <section className={`rounded-3xl border border-white/10 light:border-slate-200/60 overflow-hidden transition-all duration-500 shadow-2xl light:shadow-xl backdrop-blur-xl ${isOpen ? 'bg-slate-900/40 light:bg-gradient-to-br light:from-white light:to-slate-100 ring-1 ring-white/10 light:ring-black/5 shadow-indigo-500/10 light:shadow-indigo-500/5' : 'bg-slate-900/20 hover:bg-slate-900/30 light:bg-white/40 light:hover:bg-white/60'}`}>
-            <div
-                onClick={toggle}
-                className="flex items-center justify-between gap-3 p-4 sm:p-6 cursor-pointer bg-gradient-to-r from-white/5 via-white/[0.02] to-transparent light:from-slate-50/50 light:to-transparent hover:from-white/10 light:hover:from-slate-100/50 transition-all select-none group border-b border-white/5 light:border-slate-100"
-            >
-                <div className="flex items-center gap-3 sm:gap-5 min-w-0">
-                    <span className="text-2xl sm:text-3xl shrink-0 filter drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300">{icon}</span>
-                    <div className="min-w-0">
-                        <h2 className="text-sm sm:text-lg font-black text-white light:text-slate-800 uppercase tracking-wide sm:tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 light:from-slate-800 light:to-slate-600 group-hover:to-white light:group-hover:to-slate-900 transition-all">{title}</h2>
-                        {isOpen && <div className="h-0.5 w-12 bg-indigo-500/50 light:bg-indigo-500/50 rounded-full mt-1 group-hover:w-full transition-all duration-700"></div>}
-                    </div>
-                </div>
-                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                    {helpTitle && <HelpIcon title={helpTitle} body={helpBody} />}
-                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-white/5 light:bg-slate-100 border border-white/10 light:border-slate-200 text-slate-400 light:text-slate-400 group-hover:bg-white/10 light:group-hover:bg-slate-200 group-hover:text-white light:group-hover:text-slate-600 transition-all duration-300 ${isOpen ? 'rotate-180 bg-indigo-500/20 light:bg-indigo-50 text-indigo-200 light:text-indigo-500 border-indigo-500/30' : ''}`}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </div>
-                </div>
+        <section className="rounded-2xl border border-white/10 bg-white/[0.04] light:border-stone-200 light:bg-white">
+            <div className="flex items-center gap-3 p-4 sm:px-6">
+                <button onClick={toggle} aria-expanded={isOpen} className="flex min-w-0 grow items-center gap-2 text-left">
+                    <span className={`text-stone-500 transition-transform ${isOpen ? 'rotate-90' : ''}`} aria-hidden="true">›</span>
+                    <h2 className="text-base font-semibold text-stone-100 light:text-stone-900">{title}</h2>
+                </button>
+                {helpTitle && <HelpIcon title={helpTitle} body={helpBody} />}
             </div>
 
-            <div className={`transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${isOpen ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-                <div className="p-4 sm:p-6 md:p-8 bg-black/20 light:bg-slate-100/50">
-                    {children}
-                </div>
+            <div className={isOpen ? 'px-4 pb-4 sm:px-6 sm:pb-6' : 'hidden'}>
+                {hint && <p className="mb-4 text-xs leading-relaxed text-stone-400 light:text-stone-500">{hint}</p>}
+                {children}
             </div>
         </section>
     );
@@ -53,321 +45,251 @@ const CollapsibleSection = ({ title, children, defaultOpen = true, icon = "📊"
 
 const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSound, isLightMode, reducedMotion, activeGameConfig }) => {
     const { t } = useLanguage();
-    // Local state for Prediction Engine
-    const [prediction, setPrediction] = useState({
-        standard: [],
-        weighted: [],
-        hybrid: {},
-        lstm: [],
-        lstmUnweighted: [] // Raw array
-    });
+    const gameID = activeGameConfig.id;
+    const { pickCount, specialNumber } = activeGameConfig.settings;
 
+    const [prediction, setPrediction] = useState(EMPTY_PREDICTION);
     const [loadingStates, setLoadingStates] = useState({
         standard: false,
         weighted: false,
         hybrid: false,
         lstm: false,
-        lstmUnweighted: false
+        lstmUnweighted: false,
     });
 
     const [predictIncludeSpecial, setPredictIncludeSpecial] = useState(true);
-    const [trainingStatus, setTrainingStatus] = useState('');
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState(null);
 
-    // Contextual AI Params (Lifted from HistoryList)
-    const [highlightCount, setHighlightCount] = useState(10); // HL Qty
-    const [hotColdRange, setHotColdRange] = useState(20); // Viz Rows (Trend Depth)
-    const [analysisDepth, setAnalysisDepth] = useState(200); // Lookback N: Default 200
+    // Hot / cold settings, shared with the history table below
+    const [highlightCount, setHighlightCount] = useState(10);
+    const [hotColdRange, setHotColdRange] = useState(20);
+    const [analysisDepth, setAnalysisDepth] = useState(200);
 
-    // New State for Prediction Range
     const [predictionRange, setPredictionRange] = useState('100');
 
-    // Filter history for prediction
-    // NOTE: Using historyData prop instead of local state
+    // Numbers picked for one game make no sense for another.
+    useEffect(() => {
+        setPrediction(EMPTY_PREDICTION);
+        setError(null);
+    }, [gameID]);
+
     const predictionHistory = useMemo(() => {
         if (!historyData) return [];
-        // If Analysis Depth (Lookback N) is set from Contextual AI, it takes precedence for Consistency?
-        // Or should we respect the dropdown?
-        // User asked to "Apply Contextual AI parameters", so let's use analysisDepth if set, otherwise predictionRange.
-        // Actually, let's keep predictionRange independent for other engines, but for Hybrid, we specificy it below.
-
         if (predictionRange === 'ALL') return historyData;
-        return historyData.slice(0, parseInt(predictionRange));
+        return historyData.slice(0, parseInt(predictionRange, 10));
     }, [historyData, predictionRange]);
 
-    // Generate range options
-    const rangeOptions = useMemo(() => {
-        if (!historyData) return [];
-        const options = [];
-        const total = historyData.length;
-        for (let i = 10; i <= total; i += 10) {
-            options.push(i);
-        }
-        return options;
-    }, [historyData]);
+    const rangeOptions = useMemo(
+        () => RANGE_STEPS.filter((n) => n < (historyData?.length || 0)),
+        [historyData],
+    );
 
-    // Local handleAddEntry removed, using props.onAddEntry directly
+    const nextPeriod = historyData.length > 0 ? nextPeriodOf(historyData[0].period) : '';
+    const copyLabel = `${t(`shell.game.${gameID}`)}${nextPeriod ? ` ${t('shell.latest.period', { period: nextPeriod })}` : ''}`;
+    const tooLittleHistory = predictionHistory.length < MIN_HISTORY_FOR_AI;
 
-    // --- Handlers for Individual Generation ---
+    // --- One handler per method ---
 
     const generateStandard = () => {
         if (playSound) playSound('predict');
-        setLoadingStates(prev => ({ ...prev, standard: true }));
+        setLoadingStates((prev) => ({ ...prev, standard: true }));
         setTimeout(() => {
-            const statsResult = calculatePrediction(predictionHistory, predictIncludeSpecial, activeGameConfig.settings);
-            setPrediction(prev => ({ ...prev, standard: statsResult.standard }));
-            setLoadingStates(prev => ({ ...prev, standard: false }));
-        }, 400); // Artificial delay for UX
+            const result = calculatePrediction(predictionHistory, predictIncludeSpecial, activeGameConfig.settings);
+            setPrediction((prev) => ({ ...prev, standard: result.standard }));
+            setLoadingStates((prev) => ({ ...prev, standard: false }));
+        }, 250);
     };
 
     const generateWeighted = () => {
         if (playSound) playSound('predict');
-        setLoadingStates(prev => ({ ...prev, weighted: true }));
+        setLoadingStates((prev) => ({ ...prev, weighted: true }));
         setTimeout(() => {
-            const statsResult = calculatePrediction(predictionHistory, predictIncludeSpecial, activeGameConfig.settings);
-            setPrediction(prev => ({ ...prev, weighted: statsResult.weighted }));
-            setLoadingStates(prev => ({ ...prev, weighted: false }));
-        }, 400);
+            const result = calculatePrediction(predictionHistory, predictIncludeSpecial, activeGameConfig.settings);
+            setPrediction((prev) => ({ ...prev, weighted: result.weighted }));
+            setLoadingStates((prev) => ({ ...prev, weighted: false }));
+        }, 250);
     };
 
     const generateHybrid = () => {
         if (playSound) playSound('predict');
-        setLoadingStates(prev => ({ ...prev, hybrid: true }));
+        setLoadingStates((prev) => ({ ...prev, hybrid: true }));
         setTimeout(() => {
-            // Determine Target History based on Contextual AI "Lookback N"
-            // If analysisDepth > 0, we slice the history. Else we use full history (or predictionHistory?)
-            // Let's use analysisDepth to be 1:1 with the visual analysis.
+            // Uses the "look back" setting from the history table so the pick
+            // matches the hot / cold numbers shown there.
             const targetSlice = analysisDepth > 0 ? historyData.slice(0, analysisDepth) : historyData;
-
-            // Fix: Pass object as 3rd arg, and gameConfig as 4th
-            const hybridResult = calculateHybridPrediction(
+            const result = calculateHybridPrediction(
                 targetSlice,
                 historyData,
                 {
                     includeSpecial: predictIncludeSpecial,
                     hotCount: highlightCount,
                     coldCount: highlightCount,
-                    trendDepth: hotColdRange
+                    trendDepth: hotColdRange,
                 },
-                activeGameConfig.settings
+                activeGameConfig.settings,
             );
-            setPrediction(prev => ({ ...prev, hybrid: hybridResult }));
-            setLoadingStates(prev => ({ ...prev, hybrid: false }));
-        }, 600);
+            setPrediction((prev) => ({ ...prev, hybrid: result }));
+            setLoadingStates((prev) => ({ ...prev, hybrid: false }));
+        }, 250);
     };
 
-    const generateAIWeighted = async () => {
-        if (predictionHistory.length < 10) return;
+    const runModel = async (key, useWeights) => {
+        if (tooLittleHistory) return;
         if (playSound) playSound('predict');
-        setLoadingStates(prev => ({ ...prev, lstm: true }));
+        setLoadingStates((prev) => ({ ...prev, [key]: true }));
         setError(null);
         setProgress(0);
 
         try {
-            await trainAndPredict(predictionHistory, (statusObj) => {
-                setProgress(statusObj.progress || 0);
-            }, true, activeGameConfig.settings);
-
-            // Re-run for result capture (refactor potential: trainAndPredict logic separation)
-            // Since trainAndPredict returns result, we use it directly
-            const result = await trainAndPredict(predictionHistory, (statusObj) => {
-                setProgress(statusObj.progress || 0);
-            }, true, activeGameConfig.settings);
-
-            setPrediction(prev => ({ ...prev, lstm: result }));
+            // The learning library is large, so it is only downloaded on first use.
+            const { trainAndPredict } = await import('../utils/lstmModel');
+            const result = await trainAndPredict(
+                predictionHistory,
+                (status) => setProgress(status.progress || 0),
+                useWeights,
+                activeGameConfig.settings,
+            );
+            setPrediction((prev) => ({ ...prev, [key]: result }));
         } catch (e) {
             setError(e.message);
         } finally {
-            setLoadingStates(prev => ({ ...prev, lstm: false }));
+            setLoadingStates((prev) => ({ ...prev, [key]: false }));
             setProgress(0);
         }
     };
 
-    const generateAIUnweighted = async () => {
-        if (predictionHistory.length < 10) return;
-        setLoadingStates(prev => ({ ...prev, lstmUnweighted: true }));
-        setError(null);
-        setProgress(0);
+    const modelBusy = loadingStates.lstm || loadingStates.lstmUnweighted;
+    const existingPeriods = historyData.map((h) => h.period);
+    const selectClass = 'rounded-lg border border-white/10 bg-transparent px-2 py-1.5 text-sm text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-500/50 light:border-stone-200 light:text-stone-900';
+    const optionClass = 'bg-stone-900 text-stone-100 light:bg-white light:text-stone-900';
 
-        try {
-            // Redundant call removed, just call once
-            const result = await trainAndPredict(predictionHistory, (statusObj) => {
-                setProgress(statusObj.progress || 0);
-            }, false, activeGameConfig.settings);
-
-            setPrediction(prev => ({ ...prev, lstmUnweighted: result }));
-        } catch (e) {
-            setError(e.message);
-        } finally {
-            setLoadingStates(prev => ({ ...prev, lstmUnweighted: false }));
-            setProgress(0);
-        }
-    };
-
-
-    const existingPeriods = historyData.map(h => h.period);
+    const rows = [
+        { key: 'standard', method: 'Standard', onGenerate: generateStandard, numbers: prediction.standard },
+        { key: 'weighted', method: 'Weighted', onGenerate: generateWeighted, numbers: prediction.weighted },
+        {
+            key: 'hybrid',
+            method: 'Hybrid',
+            onGenerate: generateHybrid,
+            numbers: prediction.hybrid.numbers,
+            stats: prediction.hybrid.stats,
+            meta: prediction.hybrid.meta,
+            type: 'hybrid',
+        },
+        {
+            key: 'lstm',
+            method: 'AI-Weighted',
+            onGenerate: () => runModel('lstm', true),
+            numbers: prediction.lstm,
+            type: 'ai',
+            disabled: tooLittleHistory || modelBusy,
+        },
+        {
+            key: 'lstmUnweighted',
+            method: 'AI-Pure',
+            onGenerate: () => runModel('lstmUnweighted', false),
+            numbers: prediction.lstmUnweighted,
+            type: 'ai',
+            disabled: tooLittleHistory || modelBusy,
+        },
+    ];
 
     return (
-        <div className="mx-auto space-y-6">
-
-            {/* Workspace Header */}
-            {/* Workspace Header */}
-            {/* Workspace Header */}
+        <div className="mx-auto space-y-5">
             <MagicHeader
-                title={t('workspace.headerTitle')}
-                subtitle={<>{t('workspace.headerSubtitleLine1')} <br />{t('workspace.headerSubtitleLine2')}</>}
-                icon="💠"
+                title={t('shell.pick.headerTitle')}
+                subtitle={t('shell.pick.headerSubtitle')}
                 themeIndex={bgTheme}
                 isLightMode={isLightMode}
                 reducedMotion={reducedMotion}
             />
 
-            {/* --- 1. Prediction Engine (Collapsible) --- */}
+            <LatestDrawCard historyData={historyData} activeGameConfig={activeGameConfig} />
+
+            {/* 1. Pick numbers */}
             <CollapsibleSection
-                title={t('workspace.sectionPredictionEngine')}
-                icon="✨"
-                defaultOpen={true}
+                title={t('shell.pick.sectionPick')}
+                playSound={playSound}
                 helpTitle={t('workspace.help.predictionEngine.title')}
                 helpBody={t('workspace.help.predictionEngine.body')}
             >
-                <div className="relative">
-                    {/* Global Settings for Engine */}
-                    <div className="flex flex-wrap justify-end items-center gap-4 mb-6 border-b border-slate-800/50 light:border-slate-200 pb-4">
-                        <label className="flex items-center gap-2 cursor-pointer bg-slate-800 light:bg-slate-100 px-4 py-2 rounded-full border border-slate-700 light:border-slate-200 hover:border-slate-500 transition-colors">
+                <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-stone-300 light:text-stone-700">
+                    <label className="flex items-center gap-2">
+                        <span className="text-stone-400 light:text-stone-500">{t('shell.pick.rangeLabel')}</span>
+                        <select value={predictionRange} onChange={(e) => setPredictionRange(e.target.value)} className={selectClass}>
+                            {rangeOptions.map((n) => (
+                                <option className={optionClass} key={n} value={n}>{t('shell.pick.rangeRecent', { n })}</option>
+                            ))}
+                            <option className={optionClass} value="ALL">{t('shell.pick.rangeAll', { n: historyData.length })}</option>
+                        </select>
+                    </label>
+
+                    {specialNumber.enabled && !specialNumber.isSeparate && (
+                        <label className="flex cursor-pointer items-center gap-2">
                             <input
                                 type="checkbox"
                                 checked={predictIncludeSpecial}
                                 onChange={(e) => setPredictIncludeSpecial(e.target.checked)}
-                                className="w-4 h-4 text-purple-500 rounded focus:ring-purple-600 bg-slate-700 light:bg-white border-gray-600 light:border-slate-300"
+                                className="h-4 w-4 accent-amber-500"
                             />
-                            <span className="text-xs font-bold text-slate-300 light:text-slate-700">{t('workspace.includeSpecialNo')}</span>
+                            <span>{t('shell.pick.includeSpecial')}</span>
                         </label>
+                    )}
 
+                    {nextPeriod && (
+                        <span className="text-xs text-stone-500 sm:ml-auto">{t('shell.pick.forPeriod', { period: nextPeriod })}</span>
+                    )}
+                </div>
 
-                        <div className="flex items-center gap-2 bg-slate-800 light:bg-slate-100 px-4 py-2 rounded-full border border-slate-700 light:border-slate-200 hover:border-slate-500 transition-colors">
-                            <span className="text-xs font-bold text-slate-400 light:text-slate-600">{t('workspace.analysisRange')}</span>
-                            <select
-                                value={predictionRange}
-                                onChange={(e) => setPredictionRange(e.target.value)}
-                                className="bg-transparent text-sm font-black text-white light:text-slate-800 focus:outline-none cursor-pointer"
-                            >
-                                <option className="bg-slate-900 light:bg-white text-slate-300 light:text-slate-900 font-bold" value="ALL">{t('workspace.allHistory', { n: historyData.length })}</option>
-                                {rangeOptions.map(opt => (
-                                    <option className="bg-slate-900 light:bg-white text-slate-300 light:text-slate-900 font-bold" key={opt} value={opt}>{t('workspace.recentDraws', { n: opt })}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Rows Container */}
-                    <div className="flex flex-col gap-6 relative z-10">
-
-                        {/* 1. Standard */}
+                <div className="flex flex-col gap-3">
+                    {rows.map((row) => (
                         <PredictionRow
-                            title={t('workspace.standardTitle')}
-                            subtitle={t('workspace.standardSubtitle')}
-                            onGenerate={generateStandard}
-                            isLoading={loadingStates.standard}
-                            numbers={prediction.standard}
-                            buttonColor="bg-blue-600 hover:bg-blue-500"
-                            boxColors="bg-blue-600"
-                            onSave={() => onSavePrediction(prediction.standard, 'Standard')}
-                            pickCount={activeGameConfig.settings.pickCount}
-                        />
-
-                        {/* 2. Weighted */}
-                        <PredictionRow
-                            title={t('workspace.weightedTitle')}
-                            subtitle={t('workspace.weightedSubtitle')}
-                            onGenerate={generateWeighted}
-                            isLoading={loadingStates.weighted}
-                            numbers={prediction.weighted}
-                            buttonColor="bg-purple-600 hover:bg-purple-500"
-                            boxColors="bg-purple-600"
-                            onSave={() => onSavePrediction(prediction.weighted, 'Weighted')}
-                            pickCount={activeGameConfig.settings.pickCount}
-                        />
-
-                        {/* 3. Hybrid */}
-                        <PredictionRow
-                            title={t('workspace.hybridTitle')}
-                            subtitle={t('workspace.hybridSubtitle')}
-                            onGenerate={generateHybrid}
-                            isLoading={loadingStates.hybrid}
-                            numbers={prediction.hybrid.numbers}
-                            stats={prediction.hybrid.stats}
-                            meta={prediction.hybrid.meta}
-                            type="hybrid"
-                            buttonColor="bg-amber-600 hover:bg-amber-500"
-                            boxColors="bg-amber-900/40 border-amber-500/30 text-amber-300"
-                            onSave={() => onSavePrediction(prediction.hybrid.numbers, 'Hybrid')}
-                            pickCount={activeGameConfig.settings.pickCount}
-                        />
-
-                        {/* 4. AI Weighted */}
-                        <PredictionRow
-                            title={t('workspace.aiWeightedTitle')}
-                            subtitle={t('workspace.aiWeightedSubtitle')}
-                            onGenerate={generateAIWeighted}
-                            isLoading={loadingStates.lstm}
-                            numbers={prediction.lstm}
-                            type="ai"
+                            key={row.key}
+                            title={t(`shell.method.${row.method}`)}
+                            subtitle={t(`shell.pick.sub.${row.method}`)}
+                            onGenerate={row.onGenerate}
+                            isLoading={loadingStates[row.key]}
+                            numbers={row.numbers}
+                            stats={row.stats}
+                            meta={row.meta}
+                            type={row.type}
                             progress={progress}
-                            buttonColor="bg-teal-600 hover:bg-teal-500"
-                            boxColors="bg-teal-600"
-                            onSave={() => onSavePrediction(prediction.lstm, 'AI-Weighted')}
-                            pickCount={activeGameConfig.settings.pickCount}
+                            disabled={row.disabled}
+                            note={row.type === 'ai' && tooLittleHistory ? t('shell.pick.needMoreHistory') : undefined}
+                            onSave={() => onSavePrediction(row.numbers, row.method)}
+                            pickCount={pickCount}
+                            copyLabel={copyLabel}
                         />
+                    ))}
 
-                        {/* 5. AI Unweighted */}
-                        <PredictionRow
-                            title={t('workspace.aiUnweightedTitle')}
-                            subtitle={t('workspace.aiUnweightedSubtitle')}
-                            onGenerate={generateAIUnweighted}
-                            isLoading={loadingStates.lstmUnweighted}
-                            numbers={prediction.lstmUnweighted} // Raw array
-                            type="ai"
-                            progress={progress}
-                            buttonColor="bg-emerald-600 hover:bg-emerald-500"
-                            boxColors="bg-emerald-600"
-                            onSave={() => onSavePrediction(prediction.lstmUnweighted, 'AI-Pure')}
-                            pickCount={activeGameConfig.settings.pickCount}
-                        />
-
-                        {/* Error Message */}
-                        {error && (
-                            <div className="text-red-400 text-sm font-bold bg-red-950/50 px-4 py-3 rounded-lg border border-red-500/20 flex items-center gap-2 mt-4">
-                                <span>⚠️</span> {error}
-                            </div>
-                        )}
-                    </div>
+                    {error && (
+                        <p className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-300 light:text-rose-700" role="alert">
+                            {error}
+                        </p>
+                    )}
                 </div>
             </CollapsibleSection>
 
-            {/* --- 2. Charts (Collapsible) --- */}
+            {/* 2. Charts */}
             <CollapsibleSection
-                title={t('workspace.sectionStatisticalAnalysis')}
-                icon="📈"
-                defaultOpen={true}
+                title={t('shell.pick.sectionStats')}
+                playSound={playSound}
                 helpTitle={t('workspace.help.statisticalAnalysis.title')}
                 helpBody={t('workspace.help.statisticalAnalysis.body')}
             >
                 <AdvancedStatsHub historyData={historyData} isLightMode={isLightMode} activeGameConfig={activeGameConfig} />
             </CollapsibleSection>
 
-            {/* --- 3. History (Collapsible) --- */}
+            {/* 3. Past draws */}
             <CollapsibleSection
-                title={t('workspace.sectionHistoricalData')}
-                icon="📜"
-                defaultOpen={true}
+                title={t('shell.pick.sectionHistory')}
+                playSound={playSound}
                 helpTitle={t('workspace.help.historicalData.title')}
                 helpBody={t('workspace.help.historicalData.body')}
             >
                 <HistoryList
                     historyData={historyData}
                     activeGameConfig={activeGameConfig}
-                    // Lifted State Params
                     highlightCount={highlightCount}
                     setHighlightCount={setHighlightCount}
                     hotColdRange={hotColdRange}
@@ -377,26 +299,22 @@ const Workspace = ({ historyData, onAddEntry, bgTheme, onSavePrediction, playSou
                 />
             </CollapsibleSection>
 
-            {/* --- 4. Input (Collapsible) --- */}
+            {/* 4. Manual entry: rarely needed now that data updates itself */}
             <CollapsibleSection
-                title={t('workspace.sectionDataManagement')}
-                icon="📝"
-                defaultOpen={true}
+                title={t('shell.pick.sectionAdd')}
+                hint={t('shell.pick.sectionAddHint')}
+                defaultOpen={false}
+                playSound={playSound}
                 helpTitle={t('workspace.help.dataManagement.title')}
                 helpBody={t('workspace.help.dataManagement.body')}
             >
                 <InputSection
                     onAddEntry={onAddEntry}
                     existingPeriods={existingPeriods}
-                    nextPeriod={historyData.length > 0 ? (BigInt(historyData[0].period) + 1n).toString() : ''}
+                    nextPeriod={nextPeriod}
                     activeGameConfig={activeGameConfig}
                 />
             </CollapsibleSection>
-
-            <footer className="text-center text-slate-600 text-xs py-8">
-                <p>{t('workspace.footer', { year: new Date().getFullYear() })}</p>
-            </footer>
-
         </div>
     );
 };

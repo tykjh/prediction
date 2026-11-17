@@ -117,12 +117,12 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
         <button
             onClick={() => setCurrentView(id)}
             className={`
-                flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300
-                ${currentView === id
-                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25 scale-105'
-                    : 'bg-slate-800/50 light:bg-slate-200/50 text-slate-400 light:text-slate-600 hover:bg-slate-700 light:hover:bg-slate-300'
-                }
-            `}
+ flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300
+ ${currentView === id
+ ? 'bg-indigo-500 text-white scale-105'
+ : 'bg-slate-800/50 light:bg-slate-200/50 text-slate-400 light:text-slate-600 hover:bg-slate-700 light:hover:bg-slate-300'
+ }
+ `}
         >
             <span>{icon}</span>
             <span className="hidden sm:inline">{label}</span>
@@ -130,7 +130,7 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
     );
 
     return (
-        <div className="bg-slate-800/80 light:bg-white rounded-3xl p-6 border border-white/10 light:border-slate-200 shadow-xl backdrop-blur-md">
+        <div className="bg-slate-800/80 light:bg-white rounded-2xl p-6 border border-white/10 light:border-slate-200">
 
             {/* 1. Toolbar */}
             <div className="flex flex-col xl:flex-row justify-between items-center gap-6 mb-8">
@@ -151,19 +151,19 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
                         <div className="flex bg-slate-900 light:bg-white rounded-xl p-1 mr-2 border border-white/10 light:border-slate-300">
                             <button
                                 onClick={() => setActiveZone('main')}
-                                className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${activeZone === 'main'
-                                    ? 'bg-cyan-600 text-white shadow-lg'
-                                    : 'text-slate-500 hover:text-slate-300'
-                                    }`}
+                                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${activeZone === 'main'
+ ? 'bg-cyan-600 text-white '
+ : 'text-slate-500 hover:text-slate-300'
+ }`}
                             >
                                 {t('advancedStatsHub.zoneMainLabel')}
                             </button>
                             <button
                                 onClick={() => setActiveZone('special')}
-                                className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${activeZone === 'special'
-                                    ? 'bg-rose-600 text-white shadow-lg'
-                                    : 'text-slate-500 hover:text-slate-300'
-                                    }`}
+                                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${activeZone === 'special'
+ ? 'bg-rose-600 text-white '
+ : 'text-slate-500 hover:text-slate-300'
+ }`}
                             >
                                 {t('advancedStatsHub.zoneSpecialLabel')}
                             </button>
@@ -172,7 +172,7 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
 
                     {/* Range */}
                     <div className="flex items-center gap-2 px-3">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t('advancedStatsHub.rangeLabel')}</span>
+                        <span className="text-xs font-bold text-slate-500">{t('advancedStatsHub.rangeLabel')}</span>
                         <select
                             value={rangeOption}
                             onChange={(e) => setRangeOption(e.target.value)}
@@ -192,7 +192,7 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
                         <div className={`w-8 h-4 rounded-full relative transition-colors ${useWeighted ? 'bg-purple-500' : 'bg-slate-600'}`}>
                             <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${useWeighted ? 'left-4.5' : 'left-0.5'}`}></div>
                         </div>
-                        <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">{t('advancedStatsHub.weightedLabel')}</span>
+                        <span className="text-xs font-bold text-slate-400 light:text-slate-600">{t('advancedStatsHub.weightedLabel')}</span>
                         <input type="checkbox" className="hidden" checked={useWeighted} onChange={e => setUseWeighted(e.target.checked)} />
                     </label>
 
@@ -204,7 +204,7 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
                                 <div className={`w-8 h-4 rounded-full relative transition-colors ${includeSpecial ? 'bg-pink-500' : 'bg-slate-600'}`}>
                                     <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${includeSpecial ? 'left-4.5' : 'left-0.5'}`}></div>
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-400 light:text-slate-600 uppercase">{t('advancedStatsHub.specialLabel')}</span>
+                                <span className="text-xs font-bold text-slate-400 light:text-slate-600">{t('advancedStatsHub.specialLabel')}</span>
                                 <input type="checkbox" className="hidden" checked={includeSpecial} onChange={e => setIncludeSpecial(e.target.checked)} />
                             </label>
                         </>
@@ -266,7 +266,7 @@ const AdvancedStatsHub = ({ historyData, isLightMode, activeGameConfig }) => {
             </div>
 
             <div className="mt-4 text-center">
-                <p className="text-[10px] text-slate-500 light:text-slate-400 font-mono">
+                <p className="text-xs text-slate-500 light:text-slate-400 font-mono">
                     {t('advancedStatsHub.analyzingFooter', {
                         n: processedHistory.length,
                         mode: useWeighted ? t('advancedStatsHub.recencyWeights') : t('advancedStatsHub.rawFrequency')

@@ -107,7 +107,7 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
     return (
         <div className="w-full max-w-4xl mx-auto">
-            <div className="bg-slate-900/50 light:bg-white rounded-2xl p-6 border border-slate-800 light:border-slate-200 select-none shadow-xl light:shadow-lg">
+            <div className="bg-slate-900/50 light:bg-white rounded-2xl p-6 border border-slate-800 light:border-slate-200 select-none">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-6">
                     <div>
@@ -120,7 +120,7 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <label className="text-[9px] uppercase font-bold text-slate-500 hidden md:block">{t('chaosHunter.historyDepth')}</label>
+                        <label className="text-[11px] font-bold text-slate-500 hidden md:block">{t('chaosHunter.historyDepth')}</label>
                         <select
                             value={range}
                             onChange={(e) => setRange(Number(e.target.value))}
@@ -136,7 +136,7 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     {lockedSet && (
                         <button
                             onClick={() => { setLockedSet(null); setGeneratedPreview(null); }}
-                            className="text-xs bg-slate-800 light:bg-slate-200 text-slate-300 light:text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-700 light:hover:bg-slate-300 transition-all duration-200 border border-slate-700 light:border-slate-300 active:scale-95 hover:text-white light:hover:text-slate-900"
+                            className="text-xs bg-slate-800 light:bg-slate-200 text-slate-300 light:text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-700 light:hover:bg-slate-300 transition-all duration-200 border border-slate-700 light:border-slate-300 hover:text-white light:hover:text-slate-900"
                         >
                             {t('chaosHunter.resetTarget')}
                         </button>
@@ -146,7 +146,7 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
             </div>
 
             {/* The Star Chart */}
-            <div className="relative w-full aspect-[16/9] bg-slate-950 light:bg-slate-50 rounded-xl border border-slate-800 light:border-slate-200 overflow-hidden cursor-crosshair group shadow-inner shadow-purple-900/10"
+            <div className="relative w-full aspect-[16/9] bg-slate-950 light:bg-slate-50 rounded-xl border border-slate-800 light:border-slate-200 overflow-hidden cursor-crosshair group"
                 onMouseMove={handleMouseMove}
                 onClick={handleClick}
                 onMouseLeave={() => { if (!lockedSet) { setHoverCoords(null); } }}
@@ -162,8 +162,8 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
                 ></div>
 
                 {/* Axis Labels */}
-                <div className="absolute bottom-2 right-4 text-[10px] text-slate-500 font-bold">{t('chaosHunter.sumAxis')}</div>
-                <div className="absolute top-4 left-2 text-[10px] text-slate-500 font-bold rotate-90 origin-left">{t('chaosHunter.spanAxis')}</div>
+                <div className="absolute bottom-2 right-4 text-xs text-slate-500 font-bold">{t('chaosHunter.sumAxis')}</div>
+                <div className="absolute top-4 left-2 text-xs text-slate-500 font-bold rotate-90 origin-left">{t('chaosHunter.spanAxis')}</div>
 
                 {/* Historical Stars */}
                 {dataPoints.map((pt, idx) => {
@@ -173,7 +173,7 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
                     return (
                         <div key={idx}
-                            className="absolute w-1.5 h-1.5 rounded-full bg-slate-400/30 light:bg-slate-600/30 hover:bg-white light:hover:bg-slate-900 hover:scale-150 transition-all duration-300 pointer-events-none"
+                            className="absolute w-1.5 h-1.5 rounded-full bg-slate-400/30 light:bg-slate-600/30 hover:bg-white light:hover:bg-slate-900 transition-all duration-300 pointer-events-none"
                             style={{ left: `${left}%`, top: `${top}%` }}
                         />
                     );
@@ -188,30 +188,30 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         }}
                     >
                         {/* Crosshair */}
-                        <div className={`w-20 h-20 border border-dashed rounded-full flex items-center justify-center ${lockedSet ? 'border-red-500 animate-pulse' : 'border-purple-400 opacity-50'}`}>
+                        <div className={`w-20 h-20 border border-dashed rounded-full flex items-center justify-center ${lockedSet ? 'border-red-500 ' : 'border-purple-400 opacity-50'}`}>
                             <div className={`w-1 h-1 rounded-full ${lockedSet ? 'bg-red-500' : 'bg-purple-400'}`}></div>
                         </div>
 
                         {/* Coordinates Label */}
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-slate-900/90 light:bg-white/95 text-[10px] px-2 py-1 rounded border border-slate-700 light:border-slate-300 whitespace-nowrap z-10 text-center shadow-lg light:shadow-xl backdrop-blur-sm">
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-slate-900/90 light:bg-white/95 text-xs px-2 py-1 rounded border border-slate-700 light:border-slate-300 whitespace-nowrap z-10 text-center">
                             <div className="text-slate-400 light:text-slate-600">{t('chaosHunter.sumLabel')} <span className="text-white light:text-slate-900 font-bold">{(lockedSet || hoverCoords).sum}</span></div>
                             <div className="text-slate-400 light:text-slate-600">{t('chaosHunter.spanLabel')} <span className="text-white light:text-slate-900 font-bold">{(lockedSet || hoverCoords).span}</span></div>
-                            {!lockedSet && <div className="text-[9px] text-purple-400 light:text-purple-600 mt-1 uppercase font-bold">{t('chaosHunter.clickToHunt')}</div>}
+                            {!lockedSet && <div className="text-[11px] text-purple-400 light:text-purple-600 mt-1 font-bold">{t('chaosHunter.clickToHunt')}</div>}
                         </div>
                     </div>
                 )}
             </div>
 
             {/* HUD / Results Panel */}
-            <div className="mt-4 min-h-[80px] flex items-center justify-between px-4 py-3 bg-slate-950 light:bg-white rounded-xl border border-slate-800 light:border-slate-200 shadow-xl light:shadow-lg">
+            <div className="mt-4 min-h-[80px] flex items-center justify-between px-4 py-3 bg-slate-950 light:bg-white rounded-xl border border-slate-800 light:border-slate-200">
                 {!generatedPreview && !lockedSet ? (
                     <div className="text-slate-500 text-sm flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span> {t('chaosHunter.targetHint')}
+                        <span className="w-2 h-2 rounded-full bg-purple-500"></span> {t('chaosHunter.targetHint')}
                     </div>
                 ) : (
                     <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2">
                         <div className="flex items-center gap-2">
-                            <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${lockedSet ? 'bg-red-900/30 text-red-400 light:bg-red-100 light:text-red-700 border border-red-800/50 light:border-red-200' : 'bg-purple-900/30 text-purple-400 light:bg-purple-100 light:text-purple-700 border border-purple-800/50 light:border-purple-200'}`}>
+                            <div className={`px-2 py-1 rounded text-xs font-bold ${lockedSet ? 'bg-red-900/30 text-red-400 light:bg-red-100 light:text-red-700 border border-red-800/50 light:border-red-200' : 'bg-purple-900/30 text-purple-400 light:bg-purple-100 light:text-purple-700 border border-purple-800/50 light:border-purple-200'}`}>
                                 {lockedSet ? t('chaosHunter.targetCaptured') : t('chaosHunter.scanning')}
                             </div>
                             <div className="text-xs text-slate-400">
@@ -222,7 +222,7 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         {/* The Numbers */}
                         <div className="flex gap-2">
                             {(lockedSet || generatedPreview).numbers.map(n => (
-                                <div key={n} className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold border-2 ${lockedSet ? 'bg-red-600 border-red-400 text-white shadow-lg shadow-red-900/50' : 'bg-purple-600 border-purple-400 text-white shadow-lg shadow-purple-900/50'}`}>
+                                <div key={n} className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold border-2 ${lockedSet ? 'bg-red-600 border-red-400 text-white ' : 'bg-purple-600 border-purple-400 text-white '}`}>
                                     {n}
                                 </div>
                             ))}
@@ -230,7 +230,7 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
                         {/* Click Hint */}
                         <div className="flex items-center gap-4">
-                            <div className="text-[10px] text-slate-500 hidden md:block">
+                            <div className="text-xs text-slate-500 hidden md:block">
                                 {lockedSet ? t('chaosHunter.clickToReset') : ''}
                             </div>
 
@@ -240,10 +240,10 @@ const ChaosHunter = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                         e.stopPropagation(); // Prevent reset click
                                         onSave(lockedSet.numbers, 'Chaos Hunter');
                                     }}
-                                    className="w-10 h-10 rounded-full bg-slate-800 light:bg-slate-100 text-slate-400 light:text-slate-500 border border-slate-700 light:border-slate-300 hover:bg-white hover:text-purple-600 hover:border-white transition-all shadow-lg flex items-center justify-center group/save"
+                                    className="w-10 h-10 rounded-full bg-slate-800 light:bg-slate-100 text-slate-400 light:text-slate-500 border border-slate-700 light:border-slate-300 hover:bg-white hover:text-purple-600 hover:border-white transition-all flex items-center justify-center group/save"
                                     title={t('chaosHunter.saveToVault')}
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 transition-transform group-hover/save:scale-110">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 transition-transform">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
                                     </svg>
                                 </button>

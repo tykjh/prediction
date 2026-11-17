@@ -101,7 +101,7 @@ const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
     return (
         <div className="w-full max-w-4xl mx-auto">
-            <div className="bg-slate-900/50 light:bg-white rounded-2xl p-6 border border-slate-800 light:border-slate-200 shadow-xl light:shadow-lg">
+            <div className="bg-slate-900/50 light:bg-white rounded-2xl p-6 border border-slate-800 light:border-slate-200">
                 {/* Header & Controls */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-6">
                     <div>
@@ -117,7 +117,7 @@ const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
                     <div className="flex flex-wrap items-center gap-4 bg-slate-950/50 light:bg-slate-50 p-2 rounded-xl border border-slate-800/50 light:border-slate-200">
                         {/* Analysis Window Selector */}
                         <div className="flex flex-col">
-                            <label className="text-[9px] text-slate-500 light:text-slate-500 font-bold uppercase tracking-wider mb-1">{t('monteCarlo.refData')}</label>
+                            <label className="text-[11px] text-slate-500 light:text-slate-500 font-bold mb-1">{t('monteCarlo.refData')}</label>
                             <select
                                 value={analysisWindow}
                                 onChange={(e) => setAnalysisWindow(Number(e.target.value))}
@@ -132,7 +132,7 @@ const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
 
                         {/* Sim Count Selector */}
                         <div className="flex flex-col border-l border-slate-800 light:border-slate-300 pl-4">
-                            <label className="text-[9px] text-slate-500 light:text-slate-500 font-bold uppercase tracking-wider mb-1">{t('monteCarlo.simulations')}</label>
+                            <label className="text-[11px] text-slate-500 light:text-slate-500 font-bold mb-1">{t('monteCarlo.simulations')}</label>
                             <select
                                 value={simCount}
                                 onChange={(e) => setSimCount(Number(e.target.value))}
@@ -149,11 +149,11 @@ const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
                         onClick={runSimulation}
                         disabled={isRunning}
                         className={`
-                            px-6 py-3 rounded-xl font-bold text-white shadow-lg transition-all
-                            ${isRunning
-                                ? 'bg-slate-700 cursor-wait'
-                                : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:scale-105 active:scale-95 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/50 hover:ring-2 hover:ring-white/20'}
-                        `}
+ px-6 py-3 rounded-xl font-bold text-white transition-all
+ ${isRunning
+ ? 'bg-slate-700 cursor-wait'
+ : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:ring-2 hover:ring-white/20'}
+ `}
                     >
                         {isRunning ? t('monteCarlo.running') : t('monteCarlo.run')}
                     </button>
@@ -179,16 +179,16 @@ const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
                             {onSave && (
                                 <button
                                     onClick={() => onSave(results.top6, 'Monte Carlo Sim')}
-                                    className="absolute right-0 top-0 w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-lg"
+                                    className="absolute right-0 top-0 w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all"
                                     title={t('monteCarlo.saveResult')}
                                 >
                                     💾
                                 </button>
                             )}
-                            <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-4">{t('monteCarlo.mostLikely')}</h3>
+                            <h3 className="text-sm font-bold text-emerald-400 mb-4">{t('monteCarlo.mostLikely')}</h3>
                             <div className="flex flex-wrap justify-center gap-3">
                                 {results.top6.map(num => (
-                                    <div key={num} className="w-12 h-12 rounded-full bg-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-xl font-bold text-white border-2 border-emerald-400">
+                                    <div key={num} className="w-12 h-12 rounded-full bg-emerald-600 flex items-center justify-center text-xl font-bold text-white border-2 border-emerald-400">
                                         {num}
                                     </div>
                                 ))}
@@ -201,7 +201,7 @@ const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                 const heightPct = (item.count / results.distribution[0].count) * 100;
                                 return (
                                     <div key={item.num} className="flex flex-col items-center group w-full max-w-[40px]">
-                                        <div className="text-[8px] md:text-[9px] text-emerald-400 mb-1 opacity-100 whitespace-nowrap">
+                                        <div className="text-[11px] md:text-[9px] text-emerald-400 mb-1 opacity-100 whitespace-nowrap">
                                             {((item.count / simCount) * 100).toFixed(1)}%
                                         </div>
                                         <div
@@ -215,7 +215,7 @@ const MonteCarlo = ({ history, onSave, isLightMode, activeGameConfig }) => {
                                 )
                             })}
                         </div>
-                        <p className="text-center text-[10px] text-slate-500 mt-2">{t('monteCarlo.topFrequent', { n: simCount.toLocaleString() })}</p>
+                        <p className="text-center text-xs text-slate-500 mt-2">{t('monteCarlo.topFrequent', { n: simCount.toLocaleString() })}</p>
                     </div>
                 )}
             </div>
